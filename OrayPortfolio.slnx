@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="OrayPortfolio.Application/OrayPortfolio.Application.csproj" />
+  <Project Path="OrayPortfolio.Domain/OrayPortfolio.Domain.csproj" />
+  <Project Path="OrayPortfolio.Infrastructure/OrayPortfolio.Infrastructure.csproj" />
+  <Project Path="OrayPortfolio.Web/OrayPortfolio.Web.csproj" />
+</Solution>
