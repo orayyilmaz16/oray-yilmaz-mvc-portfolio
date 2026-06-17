@@ -1,16 +1,17 @@
-﻿using OrayPortfolio.Domain.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace OrayPortfolio.Domain.Entities
+namespace OrayPortfolio.Application.DTOs.Education
 {
-    public class Education : BaseEntity
+    public class EducationDto
     {
+        public int Id { get; set; }
         public string? School { get; set; }
         public string? Degree { get; set; }
         public string? Department { get; set; }
-
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-
         public string? Description { get; set; }
     }
 }

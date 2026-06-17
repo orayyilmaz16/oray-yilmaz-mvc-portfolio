@@ -12,5 +12,8 @@ namespace OrayPortfolio.Application.Interfaces.Repositories
         Task AddAsync(T entity);
         void Update(T entity);
         void Delete(T entity);
+
+        // Eksik olan kısım → Artık ekliyoruz
+        Task DeleteAsync(int id);
     }
 }

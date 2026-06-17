@@ -1,30 +1,270 @@
 ﻿@model List<ProjectUpdateDto>
 
-<h2 class="mb-3">Projeler</h2>
+<style>
+    /* Sayfa Üst Kısmı */
+    .ap-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        animation: ap-fade-up 0.4s var(--ease) both;
+    }
 
-<a class="btn btn-primary mb-3" href="/Admin/Project/Create">Yeni Proje</a>
+    .ap-page-title {
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Başlık</th>
-            <th>Teknolojiler</th>
-            <th>Github</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model)
-        {
-            <tr>
-                <td>@p.Title</td>
-                <td>@p.Technologies</td>
-                <td><a href="@p.GithubUrl" target="_blank">Github</a></td>
-                <td>
-                    <a class="btn btn-warning btn-sm" href="/Admin/Project/Edit/@p.Id">Düzenle</a>
-                    <a class="btn btn-danger btn-sm" href="/Admin/Project/Delete/@p.Id">Sil</a>
-                </td>
-            </tr>
+    /* Ana Buton (Yeni Proje) */
+    .ap-btn-primary {
+        background: linear-gradient(135deg, var(--brand), var(--brand-light));
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 14.5px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    }
+
+        .ap-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(109, 94, 249, 0.6);
+            color: #fff;
         }
-    </tbody>
-</table>
+
+    /* Tablo Konteyneri */
+    .ap-table-wrapper {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden; /* Köşelerin yuvarlak kalması için */
+        animation: ap-fade-up 0.5s var(--ease) 0.1s both; /* Hafif gecikmeli geliş */
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Tablo Tasarımı */
+    .ap-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        margin: 0;
+    }
+
+        .ap-table th {
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--line);
+            font-weight: 600;
+        }
+
+        .ap-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--line);
+            color: var(--text);
+            vertical-align: middle;
+            font-size: 0.95rem;
+            transition: background 0.2s var(--ease);
+        }
+
+        .ap-table tbody tr:hover td {
+            background: var(--surface-hover);
+        }
+
+        .ap-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    .ap-table-title {
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    /* Teknolojiler Etiketi (Badge) */
+    .ap-tech-badge {
+        background: rgba(109, 94, 249, 0.15);
+        color: var(--brand-light);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-right: 6px;
+        margin-bottom: 4px;
+        border: 1px solid rgba(109, 94, 249, 0.2);
+    }
+
+    /* GitHub Linki */
+    .ap-github-link {
+        color: var(--text-dim);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s var(--ease);
+        font-size: 0.9rem;
+        background: rgba(255,255,255,0.03);
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+    }
+
+        .ap-github-link:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.08);
+            border-color: var(--line);
+        }
+
+    /* İşlem Butonları (Düzenle/Sil) */
+    .ap-action-btns {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+
+    .ap-btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s var(--ease);
+        border: 1px solid transparent;
+        font-size: 14px;
+    }
+
+    .ap-btn-edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+        .ap-btn-edit:hover {
+            background: rgba(255, 193, 7, 0.2);
+            border-color: rgba(255, 193, 7, 0.4);
+            transform: translateY(-2px);
+            color: #ffc107;
+        }
+
+    .ap-btn-delete {
+        background: rgba(251, 69, 112, 0.1);
+        color: var(--danger);
+    }
+
+        .ap-btn-delete:hover {
+            background: rgba(251, 69, 112, 0.2);
+            border-color: rgba(251, 69, 112, 0.4);
+            transform: translateY(-2px);
+            color: var(--danger);
+        }
+
+    /* Boş Durum (Veri Yoksa) */
+    .ap-empty-state {
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+        .ap-empty-state i {
+            font-size: 3rem;
+            color: var(--line);
+            margin-bottom: 16px;
+        }
+
+        .ap-empty-state p {
+            color: var(--text-dim);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+    
+</style>
+
+<div class="ap-page-header">
+    <h2 class="ap-page-title">Projeler Yönetimi</h2>
+    <a class="ap-btn-primary" href="/Admin/Project/Create">
+        <i class="fa-solid fa-plus"></i> Yeni Proje Ekle
+    </a>
+</div>
+
+<div class="ap-table-wrapper">
+    <table class="ap-table">
+        <thead>
+            <tr>
+                <th>Başlık</th>
+                <th>Teknolojiler</th>
+                <th>Bağlantılar</th>
+                <th style="text-align: right;">İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var p in Model)
+                {
+                    <tr>
+                        <td class="ap-table-title">@p.Title</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(p.Technologies))
+                            {
+                                // Teknolojileri virgülle ayrılmış varsayarak etiketlere bölüyoruz
+                                var techs = p.Technologies.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var tech in techs)
+                                {
+                                    <span class="ap-tech-badge">@tech.Trim()</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(p.GithubUrl))
+                            {
+                                <a href="@p.GithubUrl" target="_blank" class="ap-github-link">
+                                    <i class="fa-brands fa-github"></i> Görüntüle
+                                </a>
+                            }
+                            else
+                            {
+                                <span style="color: var(--text-faint); font-size: 0.85rem;">Bağlantı Yok</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="ap-action-btns">
+                                <a class="ap-btn-icon ap-btn-edit" href="/Admin/Project/Edit/@p.Id" title="Düzenle">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <a class="ap-btn-icon ap-btn-delete" href="/Admin/Project/Delete/@p.Id" title="Sil"
+                                   onclick="return confirm('Bu projeyi silmek istediğinize emin misiniz?');">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">
+                        <div class="ap-empty-state">
+                            <i class="fa-solid fa-folder-open"></i>
+                            <p>Henüz eklenmiş bir proje bulunmuyor.</p>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

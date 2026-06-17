@@ -1,144 +1,422 @@
 ﻿@using OrayPortfolio.Application.DTOs.Dashboard
 @model DashboardViewModel
 
-<h2 class="mb-4">Dashboard</h2>
+<style>
+    /* Dashboard Özel Stilleri */
+    .ap-dashboard-header {
+        color: var(--text);
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        letter-spacing: -0.5px;
+    }
 
-<!-- İstatistik Kartları -->
-<div class="row">
+    /* Kart Tasarımları */
+    .ap-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+        height: 100%;
+        opacity: 0;
+        animation: ap-fade-up 0.5s var(--ease) forwards;
+    }
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 text-center">
-            <div class="card-body">
-                <h3>@Model.ProjectCount</h3>
-                <p class="text-muted">Projeler</p>
+        .ap-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
+            border-color: var(--brand-light);
+        }
+
+    /* İstatistik Kartı İçerikleri */
+    .ap-stat-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .ap-stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+        .ap-stat-icon.project {
+            background: rgba(109, 94, 249, 0.15);
+            color: var(--brand-light);
+        }
+
+        .ap-stat-icon.experience {
+            background: rgba(45, 212, 191, 0.15);
+            color: var(--accent);
+        }
+
+        .ap-stat-icon.certificate {
+            background: rgba(251, 69, 112, 0.15);
+            color: var(--danger);
+        }
+
+        .ap-stat-icon.skill {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+
+    .ap-stat-info h3 {
+        color: var(--text);
+        font-size: 1.75rem;
+        font-weight: 800;
+        margin: 0;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .ap-stat-icon.volunteer {
+        background: #ff7f50;
+        color: #fff;
+    }
+
+    .ap-stat-info p {
+        color: var(--text-dim);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Başlıklar ve Listeler */
+    .ap-card-title {
+        color: var(--text);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .ap-list-group {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+    }
+
+    .ap-list-item {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--line);
+        color: var(--text-dim);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: background 0.2s, color 0.2s;
+    }
+
+        .ap-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .ap-list-item:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .ap-list-item i {
+            color: var(--brand);
+            font-size: 0.85rem;
+        }
+
+    /* Profil Tamamlanma Barı */
+    .ap-progress-wrapper {
+        background: rgba(0,0,0,0.2);
+        border-radius: 99px;
+        height: 10px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+    }
+
+    .ap-progress-bar {
+        background: linear-gradient(90deg, var(--brand), var(--accent));
+        height: 100%;
+        border-radius: 99px;
+        box-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 8px;
+        font-size: 0; /* Gizli text, sadece hover/tooltipte kullanılabilir */
+        transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .ap-progress-text {
+        color: var(--text-dim);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-top: 8px;
+        text-align: right;
+    }
+
+    /* Gecikmeli Animasyonlar (Stagger Effect) */
+    .delay-1 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.3s;
+    }
+
+    .delay-4 {
+        animation-delay: 0.4s;
+    }
+
+    .delay-5 {
+        animation-delay: 0.5s;
+    }
+</style>
+
+<h2 class="ap-dashboard-header">Genel Bakış</h2>
+
+<div class="row g-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-1">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon project">
+                    <i class="fa-solid fa-diagram-project"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.ProjectCount</h3>
+                    <p>Projeler</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 text-center">
-            <div class="card-body">
-                <h3>@Model.ExperienceCount</h3>
-                <p class="text-muted">Deneyimler</p>
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-5">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon volunteer">
+                    <i class="fa-solid fa-handshake-angle"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.VolunteerWorkCount</h3>
+                    <p>Gönüllü Çalışmalar</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 text-center">
-            <div class="card-body">
-                <h3>@Model.CertificateCount</h3>
-                <p class="text-muted">Sertifikalar</p>
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-2">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon experience">
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.ExperienceCount</h3>
+                    <p>Deneyimler</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 text-center">
-            <div class="card-body">
-                <h3>@Model.SkillCount</h3>
-                <p class="text-muted">Yetenekler</p>
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-3">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon certificate">
+                    <i class="fa-solid fa-certificate"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.CertificateCount</h3>
+                    <p>Sertifikalar</p>
+                </div>
             </div>
         </div>
     </div>
 
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-4">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon skill">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.SkillCount</h3>
+                    <p>Yetenekler</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Profil Tamamlanma Yüzdesi -->
-<div class="card mt-4 shadow-sm border-0">
-    <div class="card-body">
-        <h5>Profil Tamamlanma Oranı</h5>
-        <div class="progress mt-2">
-            <div class="progress-bar bg-success" role="progressbar"
-                 style="width:@Model.ProfileCompletion%;">
-                @Model.ProfileCompletion%
+<div class="row g-4 mt-1">
+    <div class="col-12">
+        <div class="ap-card delay-5">
+            <h5 class="ap-card-title">Profil Tamamlanma Oranı</h5>
+            <div class="ap-progress-wrapper mt-3">
+                <div class="ap-progress-bar" style="width: 0%" data-target="@Model.ProfileCompletion"></div>
+            </div>
+            <div class="ap-progress-text">@Model.ProfileCompletion% Tamamlandı</div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="ap-card delay-5">
+            <h5 class="ap-card-title">Genel İstatistik Dağılımı</h5>
+            <div style="position: relative; height:300px; width:100%">
+                <canvas id="statsChart"></canvas>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Grafik -->
-<div class="card mt-4 shadow-sm border-0">
-    <div class="card-body">
-        <h5>Genel İstatistik Grafiği</h5>
-        <canvas id="statsChart" height="120"></canvas>
+<div class="row g-4 mt-1">
+    <div class="col-md-6">
+        <div class="ap-card delay-5">
+            <h5 class="ap-card-title">Son Eklenen Projeler</h5>
+            <div class="ap-list-group">
+                @if (Model.LastProjects != null && Model.LastProjects.Any())
+                {
+                    foreach (var p in Model.LastProjects)
+                    {
+                        <div class="ap-list-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>@p.Title</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="ap-list-item" style="justify-content: center;">
+                        <span>Henüz proje eklenmemiş.</span>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
-</div>
-
-<!-- Son Eklenenler -->
-<div class="row mt-4">
 
     <div class="col-md-6">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h5>Son Eklenen Projeler</h5>
-                <ul class="list-group">
-                    @if (Model.LastProjects != null && Model.LastProjects.Any())
+        <div class="ap-card delay-5">
+            <h5 class="ap-card-title">Son Eklenen Sertifikalar</h5>
+            <div class="ap-list-group">
+                @if (Model.LastCertificates != null && Model.LastCertificates.Any())
+                {
+                    foreach (var c in Model.LastCertificates)
                     {
-                        foreach (var p in Model.LastProjects)
-                        {
-                            <li class="list-group-item">@p.Title</li>
-                        }
+                        <div class="ap-list-item">
+                            <i class="fa-solid fa-award"></i>
+                            <span>@c.Title</span>
+                        </div>
                     }
-                    else
-                    {
-                        <li class="list-group-item text-muted">Henüz proje eklenmemiş.</li>
-                    }
-                </ul>
+                }
+                else
+                {
+                    <div class="ap-list-item" style="justify-content: center;">
+                        <span>Henüz sertifika eklenmemiş.</span>
+                    </div>
+                }
             </div>
         </div>
     </div>
-
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h5>Son Eklenen Sertifikalar</h5>
-                <ul class="list-group">
-                    @if (Model.LastCertificates != null && Model.LastCertificates.Any())
-                    {
-                        foreach (var c in Model.LastCertificates)
-                        {
-                            <li class="list-group-item">@c.Title</li>
-                        }
-                    }
-                    else
-                    {
-                        <li class="list-group-item text-muted">Henüz sertifika eklenmemiş.</li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </div>
-
 </div>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    // --- 1. Progress Bar Animasyonu ---
+    setTimeout(() => {
+    const progressBar = document.querySelector('.ap-progress-bar');
+    if(progressBar) {
+    const target = progressBar.getAttribute('data-target');
+    progressBar.style.width = target + '%';
+    }
+    }, 100);
+
+    // --- 2. Karanlık Temaya Uygun Chart.js Yapılandırması ---
     const ctx = document.getElementById('statsChart');
+
+    // CSS root değişkenlerinden renkleri çekmek
+    const style = getComputedStyle(document.body);
+    const colorBrand = style.getPropertyValue('--brand').trim() || '#6d5ef9';
+    const colorAccent = style.getPropertyValue('--accent').trim() || '#2dd4bf';
+    const colorDanger = style.getPropertyValue('--danger').trim() || '#fb4570';
+    const colorTextDim = style.getPropertyValue('--text-dim').trim() || '#8b93a7';
+    const colorLine = style.getPropertyValue('--line').trim() || '#242b3a';
 
     new Chart(ctx, {
     type: 'bar',
     data: {
     labels: ['Projeler', 'Deneyimler', 'Sertifikalar', 'Yetenekler', 'Gönüllü İşler'],
     datasets: [{
-    label: 'Adet',
+    label: 'Toplam Adet',
     data: [
     @Model.ProjectCount,
     @Model.ExperienceCount,
     @Model.CertificateCount,
     @Model.SkillCount,
-    @Model.VolunteerCount
+    @Model.VolunteerWorkCount
     ],
     backgroundColor: [
-    '#0d6efd',
-    '#198754',
+    colorBrand,
+    colorAccent,
+    colorDanger,
     '#ffc107',
-    '#0dcaf0',
-    '#6f42c1'
-    ]
+    '#0dcaf0'
+    ],
+    borderRadius: 6, // Çubuk kenarlarını yumuşat
+    borderWidth: 0,
+    barPercentage: 0.6
     }]
+    },
+    options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+    legend: {
+    display: false // Grafiğin üstündeki labelı gizledik, daha temiz görünür
+    },
+    tooltip: {
+    backgroundColor: '#171c28',
+    titleColor: '#eef1f6',
+    bodyColor: '#8b93a7',
+    borderColor: '#242b3a',
+    borderWidth: 1,
+    padding: 10,
+    displayColors: true,
+    cornerRadius: 8
     }
+    },
+    scales: {
+    y: {
+    beginAtZero: true,
+    grid: {
+    color: colorLine,
+    drawBorder: false
+    },
+    ticks: {
+    color: colorTextDim,
+    font: { family: "'Plus Jakarta Sans', sans-serif" },
+    stepSize: 1
+    }
+    },
+    x: {
+    grid: {
+    display: false,
+    drawBorder: false
+    },
+    ticks: {
+    color: colorTextDim,
+    font: { family: "'Plus Jakarta Sans', sans-serif" }
+    }
+    }
+    }
+    }
+    });
     });
 </script>

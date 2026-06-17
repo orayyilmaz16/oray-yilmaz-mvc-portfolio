@@ -50,5 +50,12 @@ namespace OrayPortfolio.Infrastructure.Repositories
         {
             return await _dbSet.Where(predicate).ToListAsync();
         }
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity != null)
+                _dbSet.Remove(entity);
+        }
     }
 }

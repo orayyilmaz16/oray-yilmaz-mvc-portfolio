@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OrayPortfolio.Application.Interfaces.Services;
 using OrayPortfolio.Application.DTOs.VolunteerWork;
+using OrayPortfolio.Application.Interfaces.Services;
 
 namespace OrayPortfolio.Web.Areas.Admin.Controllers
 {
@@ -28,9 +28,6 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(VolunteerWorkCreateDto dto)
         {
-            if (!ModelState.IsValid)
-                return View(dto);
-
             await _service.CreateAsync(dto);
             return RedirectToAction("Index");
         }
@@ -42,11 +39,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(VolunteerWorkUpdateDto dto)
+        public async Task<IActionResult> Edit(VolunteerWorkDto dto)
         {
-            if (!ModelState.IsValid)
-                return View(dto);
-
             await _service.UpdateAsync(dto);
             return RedirectToAction("Index");
         }

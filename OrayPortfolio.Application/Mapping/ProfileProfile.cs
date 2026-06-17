@@ -8,6 +8,7 @@ namespace OrayPortfolio.Application.Mapping
     {
         public ProfileProfile()
         {
+            CreateMap<OrayPortfolio.Domain.Entities.Profile, ProfileDto>();
             CreateMap<OrayPortfolio.Domain.Entities.Profile, ProfileUpdateDto>().ReverseMap();
         }
     }

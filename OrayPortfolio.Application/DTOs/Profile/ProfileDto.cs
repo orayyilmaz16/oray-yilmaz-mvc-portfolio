@@ -1,8 +1,6 @@
-﻿
-
-namespace OrayPortfolio.Application.DTOs.Profile
+﻿namespace OrayPortfolio.Application.DTOs.Profile
 {
-    public class ProfileUpdateDto
+    public class ProfileDto
     {
         public int Id { get; set; }
 
@@ -16,6 +14,6 @@ namespace OrayPortfolio.Application.DTOs.Profile
         public string? InstagramUrl { get; set; }
         public string? Email { get; set; }
 
-        public string? ProfileImageUrl { get; set; } // Admin panelde gösterim için
+        public string? ProfileImageUrl { get; set; }
     }
 }

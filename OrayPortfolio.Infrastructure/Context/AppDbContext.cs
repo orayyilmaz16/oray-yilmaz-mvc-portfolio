@@ -42,11 +42,7 @@ namespace OrayPortfolio.Infrastructure.Context
                 .HasForeignKey(m => m.CertificateId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Media>()
-                .HasOne(m => m.VolunteerWork)
-                .WithMany(v => v.MediaFiles)
-                .HasForeignKey(m => m.VolunteerWorkId)
-                .OnDelete(DeleteBehavior.Cascade);
+            
 
             base.OnModelCreating(modelBuilder);
         }

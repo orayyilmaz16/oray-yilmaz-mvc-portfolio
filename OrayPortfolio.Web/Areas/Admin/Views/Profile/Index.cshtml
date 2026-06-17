@@ -1,80 +1,361 @@
 ﻿@model ProfileUpdateDto
 
-<h2 class="mb-4">Profil Bilgileri</h2>
+<style>
+    /* Ortak Form CSS */
+    .ap-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        animation: ap-fade-up 0.4s var(--ease) both;
+    }
 
-<form method="post" enctype="multipart/form-data">
+    .ap-page-title {
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
 
-    <input type="hidden" asp-for="Id" />
+    .ap-form-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        animation: ap-fade-up 0.5s var(--ease) 0.1s both;
+    }
 
-    <div class="row">
-        <div class="col-md-8">
+    .ap-form-group {
+        margin-bottom: 24px;
+    }
 
-            <div class="mb-3">
-                <label class="form-label">Ad Soyad</label>
-                <input class="form-control" asp-for="FullName" />
+    .ap-form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+        .ap-form-label i {
+            color: var(--brand-light);
+            font-size: 1rem;
+        }
+
+    .ap-input {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: var(--text);
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition: all 0.3s var(--ease);
+    }
+
+        .ap-input::placeholder {
+            color: rgba(139, 147, 167, 0.4);
+        }
+
+        .ap-input:focus {
+            outline: none;
+            border-color: var(--brand);
+            background: rgba(0, 0, 0, 0.35);
+            box-shadow: 0 0 0 4px rgba(109, 94, 249, 0.15);
+        }
+
+    textarea.ap-input {
+        resize: vertical;
+    }
+
+    /* Sosyal Medya Input Grupları */
+    .ap-input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .ap-input-group-icon {
+        position: absolute;
+        left: 16px;
+        color: var(--text-faint);
+        font-size: 1.1rem;
+        transition: color 0.3s var(--ease);
+    }
+
+    .ap-input-group .ap-input {
+        padding-left: 48px;
+    }
+
+    .ap-input-group:focus-within .ap-input-group-icon {
+        color: var(--brand-light);
+    }
+
+    /* Sağ Taraftaki Fotoğraf Kartı */
+    .ap-photo-card {
+        background: rgba(0, 0, 0, 0.15);
+        border: 1px dashed var(--line);
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .ap-photo-preview {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--surface);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        margin-bottom: 20px;
+        transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
+    }
+
+        .ap-photo-preview:hover {
+            transform: scale(1.05);
+            border-color: var(--brand);
+        }
+
+    .ap-photo-empty {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: var(--surface-hover);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: var(--line);
+        margin-bottom: 20px;
+        border: 4px solid var(--surface);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    /* Dosya Yükleme Butonu (File Input) */
+    .ap-input[type="file"] {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+        .ap-input[type="file"]::file-selector-button {
+            background: var(--surface-hover);
+            color: var(--text);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 6px 12px;
+            margin-right: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s var(--ease);
+        }
+
+            .ap-input[type="file"]::file-selector-button:hover {
+                background: rgba(109, 94, 249, 0.15);
+                border-color: var(--brand-light);
+                color: var(--brand-light);
+            }
+
+    /* Güncelleme Butonu */
+    .ap-btn-submit {
+        background: linear-gradient(135deg, var(--brand), var(--brand-light));
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        width: 100%;
+        justify-content: center;
+    }
+
+        .ap-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -6px rgba(109, 94, 249, 0.6);
+        }
+
+    /* Bölücü Çizgi */
+    .ap-divider {
+        height: 1px;
+        background: var(--line);
+        margin: 32px 0;
+        border: none;
+    }
+
+   
+</style>
+
+<div class="ap-page-header">
+    <h2 class="ap-page-title">Profil Bilgileri</h2>
+</div>
+
+<div class="ap-form-card">
+    <form method="post" enctype="multipart/form-data">
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row g-5">
+            <div class="col-lg-8">
+
+                <h4 class="mb-4" style="color: var(--text); font-weight: 600; font-size: 1.1rem;">Temel Bilgiler</h4>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="ap-form-group">
+                            <label class="ap-form-label"><i class="fa-solid fa-user"></i> Ad Soyad</label>
+                            <input class="ap-input" asp-for="FullName" required />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ap-form-group">
+                            <label class="ap-form-label"><i class="fa-solid fa-briefcase"></i> Ünvan</label>
+                            <input class="ap-input" asp-for="Title" placeholder="Örn: Senior Software Engineer" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-quote-left"></i> Kısa Biyografi</label>
+                    <textarea class="ap-input" asp-for="ShortBio" rows="2" placeholder="Kendinizi anlatan kısa ve öz bir cümle..."></textarea>
+                </div>
+
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-align-left"></i> Uzun Biyografi</label>
+                    <textarea class="ap-input" asp-for="LongBio" rows="5" placeholder="Hakkınızda bölümünde görünecek detaylı metin..."></textarea>
+                </div>
+
+                <hr class="ap-divider" />
+
+                <h4 class="mb-4" style="color: var(--text); font-weight: 600; font-size: 1.1rem;">İletişim & Sosyal Medya</h4>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="ap-form-group">
+                            <label class="ap-form-label">Email Adresi</label>
+                            <div class="ap-input-group">
+                                <i class="fa-solid fa-envelope ap-input-group-icon"></i>
+                                <input type="email" class="ap-input" asp-for="Email" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="ap-form-group">
+                            <label class="ap-form-label">GitHub</label>
+                            <div class="ap-input-group">
+                                <i class="fa-brands fa-github ap-input-group-icon"></i>
+                                <input type="url" class="ap-input" asp-for="GithubUrl" placeholder="https://github.com/..." />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="ap-form-group">
+                            <label class="ap-form-label">LinkedIn</label>
+                            <div class="ap-input-group">
+                                <i class="fa-brands fa-linkedin ap-input-group-icon"></i>
+                                <input type="url" class="ap-input" asp-for="LinkedinUrl" placeholder="https://linkedin.com/in/..." />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="ap-form-group">
+                            <label class="ap-form-label">Instagram</label>
+                            <div class="ap-input-group">
+                                <i class="fa-brands fa-instagram ap-input-group-icon"></i>
+                                <input type="url" class="ap-input" asp-for="InstagramUrl" placeholder="https://instagram.com/..." />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Ünvan</label>
-                <input class="form-control" asp-for="Title" />
+            <div class="col-lg-4">
+                <div class="ap-photo-card">
+
+                    <h5 style="color: var(--text); font-weight: 600; margin-bottom: 20px;">Profil Fotoğrafı</h5>
+
+                    @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                    {
+                        <img src="@Model.ProfileImageUrl" class="ap-photo-preview" alt="Mevcut Profil Fotoğrafı" />
+                    }
+                    else
+                    {
+                        <div class="ap-photo-empty">
+                            <i class="fa-solid fa-user-astronaut"></i>
+                        </div>
+                        <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 20px;">
+                            Henüz profil fotoğrafı yüklenmemiş.
+                        </p>
+                    }
+
+                    <div class="ap-form-group w-100" style="margin-bottom: 0;">
+                        <label class="ap-form-label" style="justify-content: center;">Yeni Fotoğraf Seç</label>
+                        <input type="file" class="ap-input" name="ProfileImage" accept="image/*" />
+                    </div>
+
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label">Kısa Biyografi</label>
-                <textarea class="form-control" asp-for="ShortBio" rows="2"></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Uzun Biyografi</label>
-                <textarea class="form-control" asp-for="LongBio" rows="5"></textarea>
-            </div>
-
-            <hr />
-
-            <h4 class="mt-4">İletişim & Sosyal Medya</h4>
-
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input class="form-control" asp-for="Email" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Github</label>
-                <input class="form-control" asp-for="GithubUrl" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">LinkedIn</label>
-                <input class="form-control" asp-for="LinkedinUrl" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Instagram</label>
-                <input class="form-control" asp-for="InstagramUrl" />
-            </div>
-
         </div>
 
-        <div class="col-md-4">
-
-            <h5>Profil Fotoğrafı</h5>
-
-            @if (!string.IsNullOrEmpty(Model.ProfileImagePath))
-            {
-                <img src="@Model.ProfileImagePath" class="img-fluid rounded mb-3" />
-            }
-            else
-            {
-                <p class="text-muted">Henüz profil fotoğrafı yüklenmemiş.</p>
-            }
-
-            <div class="mb-3">
-                <label class="form-label">Yeni Fotoğraf Yükle</label>
-                <input type="file" class="form-control" name="ProfileImage" />
+        <div class="row mt-4">
+            <div class="col-12">
+                <button type="submit" class="ap-btn-submit">
+                    <i class="fa-solid fa-floppy-disk"></i> Profil Bilgilerini Güncelle
+                </button>
             </div>
-
         </div>
-    </div>
 
-    <button class="btn btn-success mt-3">Güncelle</button>
-</form>
+    </form>
+</div>
+<script>
+    const fileInput = document.querySelector('input[name="ProfileImage"]');
+    const previewImg = document.querySelector('.ap-photo-preview');
+    const emptyBox = document.querySelector('.ap-photo-empty');
+
+    fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+
+            // Boş avatar varsa gizle
+            if (emptyBox) emptyBox.style.display = "none";
+
+            // Eğer önceden fotoğraf varsa sadece src değiştir
+            if (previewImg) {
+                previewImg.src = e.target.result;
+            }
+            else {
+                // Fotoğraf yoksa yeni img oluştur
+                const img = document.createElement("img");
+                img.className = "ap-photo-preview";
+                img.src = e.target.result;
+                document.querySelector(".ap-photo-card").prepend(img);
+            }
+        };
+
+        reader.readAsDataURL(file);
+    });
+</script>

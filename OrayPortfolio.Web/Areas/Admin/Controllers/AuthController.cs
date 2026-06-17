@@ -14,6 +14,27 @@ public class AuthController : Controller
         _config = config;
     }
 
+    private void GenerateQrCode()
+    {
+        var secret = _config["AdminAuth:TwoFactorKey"];
+        var issuer = "OrayPortfolio";
+        var label = "Admin";
+
+        string otpauth = $"otpauth://totp/{issuer}:{label}?secret={secret}&issuer={issuer}";
+
+        using var qrGenerator = new QRCodeGenerator();
+        var qrData = qrGenerator.CreateQrCode(otpauth, QRCodeGenerator.ECCLevel.Q);
+        var qrCode = new QRCode(qrData);
+
+        using Bitmap qrBitmap = qrCode.GetGraphic(20);
+        using MemoryStream ms = new MemoryStream();
+        qrBitmap.Save(ms, ImageFormat.Png);
+
+        ViewBag.QR = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
+    }
+
+
+
     [HttpGet]
     public IActionResult Login()
     {
@@ -33,6 +54,7 @@ public class AuthController : Controller
 
         ViewBag.QR = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
 
+        GenerateQrCode();
         return View();
     }
 
@@ -47,6 +69,7 @@ public class AuthController : Controller
 
         if (RateLimitService.IsBlocked(ip))
         {
+            GenerateQrCode();
             ViewBag.Error = "Çok fazla deneme yaptın. 5 dakika sonra tekrar dene.";
             return View();
         }
@@ -54,6 +77,7 @@ public class AuthController : Controller
         if (username != adminUser || PasswordHasher.Hash(password) != adminHash)
         {
             RateLimitService.RegisterFail(ip);
+            GenerateQrCode();
             ViewBag.Error = "Kullanıcı adı veya şifre hatalı.";
             return View();
         }
@@ -61,12 +85,12 @@ public class AuthController : Controller
         if (!TwoFactorService.ValidateCode(twoFactorKey, code))
         {
             RateLimitService.RegisterFail(ip);
+            GenerateQrCode();
             ViewBag.Error = "2FA kodu hatalı.";
             return View();
         }
 
         RateLimitService.Reset(ip);
-
         HttpContext.Session.SetString("AdminAuth", "true");
 
         return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
@@ -74,9 +98,12 @@ public class AuthController : Controller
 
 
 
+
+
+    [HttpGet]
     public IActionResult Logout()
     {
         HttpContext.Session.Remove("AdminAuth");
-        return RedirectToAction("Login");
+        return RedirectToAction("Login", "Auth", new { area = "Admin" });
     }
 }

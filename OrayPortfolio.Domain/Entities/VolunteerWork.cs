@@ -10,6 +10,6 @@ namespace OrayPortfolio.Domain.Entities
 
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public ICollection<Media>? MediaFiles { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

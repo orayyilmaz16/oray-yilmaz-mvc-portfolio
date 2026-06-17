@@ -33,31 +33,12 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Tüm sorguları paralel başlat
-            var projectsTask = _projectService.GetAllAsync();
-            var experiencesTask = _experienceService.GetAllAsync();
-            var certificatesTask = _certificateService.GetAllAsync();
-            var skillsTask = _skillService.GetAllAsync();
-            var volunteersTask = _volunteerService.GetAllAsync();
-            var profileTask = _profileService.GetAsync();
-
-            // Hepsini aynı anda bekle
-            await Task.WhenAll(
-                projectsTask,
-                experiencesTask,
-                certificatesTask,
-                skillsTask,
-                volunteersTask,
-                profileTask
-            );
-
-            // Sonuçları al
-            var projects = projectsTask.Result;
-            var experiences = experiencesTask.Result;
-            var certificates = certificatesTask.Result;
-            var skills = skillsTask.Result;
-            var volunteers = volunteersTask.Result;
-            var profile = profileTask.Result;
+            var projects = await _projectService.GetAllAsync();
+            var experiences = await _experienceService.GetAllAsync();
+            var certificates = await _certificateService.GetAllAsync();
+            var skills = await _skillService.GetAllAsync();
+            var volunteers = await _volunteerService.GetAllAsync();
+            var profile = await _profileService.GetAsync();
 
             var model = new DashboardViewModel
             {
@@ -65,7 +46,7 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 ExperienceCount = experiences.Count,
                 CertificateCount = certificates.Count,
                 SkillCount = skills.Count,
-                VolunteerCount = volunteers.Count,
+                VolunteerWorkCount = volunteers.Count,
                 Profile = profile,
                 LastProjects = projects.OrderByDescending(p => p.Id).Take(5).ToList(),
                 LastCertificates = certificates.OrderByDescending(c => c.Id).Take(5).ToList(),
@@ -75,27 +56,28 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        private int CalculateProfileCompletion(ProfileUpdateDto profile)
+        private int CalculateProfileCompletion(ProfileDto profile)
         {
             if (profile == null)
                 return 0;
 
             var fields = new[]
             {
-                profile.FullName,
-                profile.Title,
-                profile.ShortBio,
-                profile.LongBio,
-                profile.Email,
-                profile.GithubUrl,
-                profile.LinkedinUrl,
-                profile.ProfileImagePath
-            };
+        profile.FullName,
+        profile.Title,
+        profile.ShortBio,
+        profile.LongBio,
+        profile.Email,
+        profile.GithubUrl,
+        profile.LinkedinUrl,
+        profile.ProfileImageUrl
+    };
 
             int filled = fields.Count(f => !string.IsNullOrWhiteSpace(f));
             int total = fields.Length;
 
             return (int)((double)filled / total * 100);
         }
+
     }
 }

@@ -10,11 +10,11 @@ namespace OrayPortfolio.Application.DTOs.Dashboard
         public int ExperienceCount { get; set; }
         public int CertificateCount { get; set; }
         public int SkillCount { get; set; }
-        public int VolunteerCount { get; set; }
+        public int VolunteerWorkCount { get; set; }
 
         public int ProfileCompletion { get; set; }
 
-        public ProfileUpdateDto? Profile { get; set; }
+        public ProfileDto Profile { get; set; }
 
         public List<ProjectUpdateDto> LastProjects { get; set; } = new();
         public List<CertificateUpdateDto> LastCertificates { get; set; } = new();

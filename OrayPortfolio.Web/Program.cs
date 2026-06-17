@@ -43,7 +43,6 @@ builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
 Console.WriteLine("Two Factor Key: " + TwoFactorKeyGenerator.GenerateSecretKey());
-Console.WriteLine("Hash: " + PasswordHasher.Hash("CodeGen1040!"));
 
 // ----------------------
 // Middleware

@@ -17,15 +17,44 @@ namespace OrayPortfolio.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<ProfileUpdateDto> GetAsync()
+        // PROFİLİ GETİR — YOKSA OLUŞTUR
+        public async Task<ProfileDto> GetAsync()
         {
             var entity = (await _uow.Profiles.GetAllAsync()).FirstOrDefault();
-            return _mapper.Map<ProfileUpdateDto>(entity);
+
+            // Profil yoksa otomatik oluştur
+            if (entity == null)
+            {
+                entity = new Domain.Entities.Profile
+                {
+                    FullName = "",
+                    Title = "",
+                    ShortBio = "",
+                    LongBio = "",
+                    Email = "",
+                    GithubUrl = "",
+                    LinkedinUrl = "",
+                    InstagramUrl = "",
+                    ProfileImageUrl = ""
+                };
+
+                await _uow.Profiles.AddAsync(entity);
+                await _uow.SaveAsync();
+            }
+
+            return _mapper.Map<ProfileDto>(entity);
         }
 
+        // PROFİLİ GÜNCELLE
         public async Task<bool> UpdateAsync(ProfileUpdateDto dto)
         {
-            var entity = _mapper.Map<Domain.Entities.Profile>(dto);
+            var entity = await _uow.Profiles.GetByIdAsync(dto.Id);
+
+            if (entity == null)
+                return false;
+
+            _mapper.Map(dto, entity);
+
             _uow.Profiles.Update(entity);
             return await _uow.SaveAsync() > 0;
         }

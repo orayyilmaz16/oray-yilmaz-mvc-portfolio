@@ -1,5 +1,13 @@
-﻿@{
+﻿@using AutoMapper
+@using OrayPortfolio.Application.Interfaces.Services
+@using OrayPortfolio.Domain.Entities
+@inject IProfileService ProfileService
+@{
     Layout = null;
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+
+    // "await" kelimesini ve "Async" takısını sildik:
+    var profile = await ProfileService.GetAsync();
 }
 
 <!DOCTYPE html>
@@ -9,99 +17,703 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - Admin Panel</title>
 
-    <!-- Bootstrap -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-            body {
-                background: #f5f6fa;
+            :root {
+                --bg: #0b0e14;
+                --sidebar-bg: #10141d;
+                --surface: #171c28;
+                --surface-hover: #1f2533;
+                --line: #242b3a;
+                --text: #eef1f6;
+                --text-dim: #8b93a7;
+                --text-faint: #5c6478;
+                --brand: #6d5ef9;
+                --brand-light: #8b7bff;
+                --accent: #2dd4bf;
+                --danger: #fb4570;
+                --topbar-h: 72px;
+                --sidebar-w: 252px;
+                --ease: cubic-bezier(.22, 1, .36, 1);
             }
 
-            /* Sidebar */
-            .admin-sidebar {
-                width: 240px;
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+                margin: 0;
+                min-height: 100vh;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            ::selection {
+                background: var(--brand);
+                color: #fff;
+            }
+
+            body::before {
+                content: "";
+                position: fixed;
+                top: -10%;
+                right: -10%;
+                width: 480px;
+                height: 480px;
+                background: radial-gradient(circle, rgba(109, 94, 249, .14), transparent 70%);
+                pointer-events: none;
+                z-index: 0;
+            }
+
+            .ap-menu-btn {
+                display: none;
+                align-items: center;
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                border: 1px solid var(--line);
+                background: var(--surface);
+                cursor: pointer;
+                flex-shrink: 0;
+                transition: background .2s var(--ease), border-color .2s var(--ease);
+            }
+
+                .ap-menu-btn:hover {
+                    background: var(--surface-hover);
+                    border-color: var(--brand);
+                }
+
+                .ap-menu-btn span {
+                    display: block;
+                    width: 16px;
+                    height: 2px;
+                    background: var(--text);
+                    border-radius: 2px;
+                    position: relative;
+                    transition: transform .25s var(--ease), opacity .25s var(--ease);
+                }
+
+                    .ap-menu-btn span::before, .ap-menu-btn span::after {
+                        content: "";
+                        position: absolute;
+                        left: 0;
+                        width: 16px;
+                        height: 2px;
+                        background: var(--text);
+                        border-radius: 2px;
+                        transition: transform .25s var(--ease);
+                    }
+
+                    .ap-menu-btn span::before {
+                        top: -5px;
+                    }
+
+                    .ap-menu-btn span::after {
+                        top: 5px;
+                    }
+
+                .ap-menu-btn.is-active span {
+                    background: transparent;
+                }
+
+                    .ap-menu-btn.is-active span::before {
+                        transform: translateY(5px) rotate(45deg);
+                    }
+
+                    .ap-menu-btn.is-active span::after {
+                        transform: translateY(-5px) rotate(-45deg);
+                    }
+
+            .ap-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(5, 7, 12, .6);
+                backdrop-filter: blur(2px);
+                z-index: 1015;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity .25s var(--ease), visibility .25s var(--ease);
+            }
+
+                .ap-overlay.is-visible {
+                    opacity: 1;
+                    visibility: visible;
+                }
+
+            .ap-sidebar {
+                width: var(--sidebar-w);
                 height: 100vh;
                 position: fixed;
                 top: 0;
                 left: 0;
-                background: #1f2937;
-                padding-top: 70px; /* navbar yüksekliği */
+                background: var(--sidebar-bg);
+                border-right: 1px solid var(--line);
+                display: flex;
+                flex-direction: column;
+                z-index: 1020;
+                transition: transform .3s var(--ease);
             }
 
-                .admin-sidebar a {
-                    display: block;
-                    padding: 12px 20px;
-                    color: #d1d5db;
-                    text-decoration: none;
-                    font-size: 15px;
+            .ap-sidebar__brand {
+                height: var(--topbar-h);
+                display: flex;
+                align-items: center;
+                padding: 0 22px;
+                border-bottom: 1px solid var(--line);
+                flex-shrink: 0;
+            }
+
+            .ap-sidebar__brand-link {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                color: var(--text);
+            }
+
+            .ap-sidebar__mark {
+                font-family: 'JetBrains Mono', monospace;
+                font-weight: 600;
+                font-size: 14px;
+                color: #fff;
+                background: linear-gradient(135deg, var(--brand), var(--accent));
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+                box-shadow: 0 0 0 0 rgba(109, 94, 249, .5);
+            }
+
+            .ap-sidebar__brand-link:hover .ap-sidebar__mark {
+                transform: rotate(-8deg) scale(1.06);
+                box-shadow: 0 6px 18px -4px rgba(109, 94, 249, .55);
+            }
+
+            .ap-sidebar__wordmark {
+                font-weight: 700;
+                font-size: 16.5px;
+                letter-spacing: .2px;
+            }
+
+            .ap-sidebar__wordmark-accent {
+                color: var(--brand-light);
+            }
+
+            .ap-sidebar__nav {
+                flex: 1;
+                overflow-y: auto;
+                padding: 22px 14px;
+            }
+
+            .ap-sidebar__group {
+                margin-bottom: 22px;
+            }
+
+            .ap-sidebar__label {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 10.5px;
+                letter-spacing: 1.6px;
+                text-transform: uppercase;
+                color: var(--text-faint);
+                margin: 0 0 8px 10px;
+            }
+
+            .ap-sidebar__link {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 12px;
+                margin-bottom: 2px;
+                border-radius: 10px;
+                color: var(--text-dim);
+                font-size: 14.5px;
+                font-weight: 500;
+                opacity: 0;
+                transform: translateX(-8px);
+                animation: ap-link-in .45s var(--ease) forwards;
+                transition: background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
+            }
+
+                .ap-sidebar__link:hover {
+                    background: var(--surface-hover);
+                    color: var(--text);
+                    transform: translateX(2px);
                 }
 
-                    .admin-sidebar a:hover {
-                        background: #374151;
+                .ap-sidebar__link:focus-visible {
+                    outline: 2px solid var(--brand-light);
+                    outline-offset: 2px;
+                }
+
+                .ap-sidebar__link::before {
+                    content: "";
+                    position: absolute;
+                    left: -14px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 3px;
+                    height: 0;
+                    border-radius: 3px;
+                    background: linear-gradient(180deg, var(--brand), var(--accent));
+                    transition: height .25s var(--ease);
+                }
+
+                .ap-sidebar__link.active {
+                    background: linear-gradient(90deg, rgba(109, 94, 249, .16), rgba(109, 94, 249, .03));
+                    color: #fff;
+                }
+
+                    .ap-sidebar__link.active::before {
+                        height: 60%;
+                    }
+
+                    .ap-sidebar__link.active .ap-sidebar__icon {
+                        background: linear-gradient(135deg, var(--brand), var(--accent));
                         color: #fff;
                     }
 
-            /* İçerik alanı */
-            .admin-content {
-                margin-left: 240px;
-                padding: 30px;
-                margin-top: 70px; /* navbar yüksekliği kadar boşluk EKLENDİ */
+            .ap-sidebar__icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                background: var(--surface);
+                color: var(--text-dim);
+                font-size: 13px;
+                flex-shrink: 0;
+                transition: background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
             }
 
-            .navbar-brand {
-                font-weight: bold;
+            .ap-sidebar__link:hover .ap-sidebar__icon {
+                transform: translateY(-1px);
+            }
+
+            .ap-sidebar__footer {
+                margin: 0 14px 18px;
+                padding: 12px 14px;
+                border-radius: 10px;
+                background: var(--surface);
+                border: 1px solid var(--line);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-shrink: 0;
+            }
+
+            .ap-sidebar__status-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--accent);
+                box-shadow: 0 0 0 0 rgba(45, 212, 191, .55);
+                animation: ap-pulse 2.2s ease-out infinite;
+                flex-shrink: 0;
+            }
+
+            .ap-sidebar__status-text {
+                font-size: 12.5px;
+                color: var(--text-dim);
+            }
+
+            .ap-topbar {
+                position: fixed;
+                top: 0;
+                left: var(--sidebar-w);
+                right: 0;
+                height: var(--topbar-h);
+                background: rgba(11, 14, 20, .72);
+                backdrop-filter: blur(14px);
+                border-bottom: 1px solid var(--line);
+                z-index: 1030;
+                transition: left .3s var(--ease), box-shadow .25s var(--ease);
+            }
+
+                .ap-topbar.is-scrolled {
+                    box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5);
+                }
+
+            .ap-topbar__inner {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 26px;
+                gap: 16px;
+            }
+
+            .ap-topbar__left {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                min-width: 0;
+            }
+
+            .ap-topbar__eyebrow {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 11px;
+                color: var(--text-faint);
+                letter-spacing: .5px;
+            }
+
+            .ap-topbar__heading {
+                font-size: 17px;
+                font-weight: 700;
+                margin: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .ap-profile__trigger {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-radius: 999px;
+                padding: 6px 14px 6px 6px;
+                color: var(--text);
+                cursor: pointer;
+                transition: background .2s var(--ease), border-color .2s var(--ease);
+            }
+
+                .ap-profile__trigger:hover, .ap-profile__trigger[aria-expanded="true"] {
+                    background: var(--surface-hover);
+                    border-color: var(--brand);
+                }
+
+            .ap-profile__avatar {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, var(--brand), var(--accent));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-size: 13px;
+                flex-shrink: 0;
+            }
+
+            .ap-profile__name {
+                font-size: 13.5px;
+                font-weight: 600;
+            }
+
+            .ap-profile__caret {
+                font-size: 10px;
+                color: var(--text-faint);
+                transition: transform .25s var(--ease);
+            }
+
+            .ap-profile__trigger[aria-expanded="true"] .ap-profile__caret {
+                transform: rotate(180deg);
+            }
+
+            .ap-profile__menu {
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                padding: 8px;
+                min-width: 200px;
+                box-shadow: 0 16px 40px -12px rgba(0, 0, 0, .55);
+                margin-top: 10px !important;
+            }
+
+                .ap-profile__menu .dropdown-item {
+                    color: var(--text-dim);
+                    border-radius: 8px;
+                    padding: 9px 12px;
+                    font-size: 14px;
+                    transition: background .15s var(--ease), color .15s var(--ease);
+                }
+
+                    .ap-profile__menu .dropdown-item:hover, .ap-profile__menu .dropdown-item:focus {
+                        background: var(--surface-hover);
+                        color: var(--text);
+                    }
+
+                .ap-profile__menu .dropdown-divider {
+                    border-color: var(--line);
+                    margin: 6px 4px;
+                }
+
+            .ap-profile__logout:hover {
+                color: var(--danger) !important;
+                background: rgba(251, 69, 112, .1) !important;
+            }
+
+            .ap-content {
+                margin-left: var(--sidebar-w);
+                padding: calc(var(--topbar-h) + 26px) 28px 40px;
+                min-height: 100vh;
+                position: relative;
+                z-index: 1;
+                animation: ap-fade-up .5s var(--ease) both;
+            }
+
+            @@keyframes ap-pulse {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(45, 212, 191, .55);
+                }
+
+                70% {
+                    box-shadow: 0 0 0 7px rgba(45, 212, 191, 0);
+                }
+
+                100% {
+                    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0);
+                }
+            }
+
+            @@keyframes ap-link-in {
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @@keyframes ap-fade-up {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @@media (max-width: 991.98px) {
+                .ap-menu-btn {
+                    display: inline-flex;
+                }
+
+                .ap-sidebar {
+                    transform: translateX(-100%);
+                }
+
+                    .ap-sidebar.is-open {
+                        transform: translateX(0);
+                        box-shadow: 0 0 40px rgba(0,0,0,.5);
+                    }
+
+                .ap-topbar {
+                    left: 0;
+                }
+
+                .ap-content {
+                    margin-left: 0;
+                    padding: calc(var(--topbar-h) + 20px) 18px 32px;
+                }
+            }
+
+            @@media (max-width: 575.98px) {
+                .ap-topbar__heading {
+                    font-size: 15px;
+                }
+
+                .ap-profile__name {
+                    display: none;
+                }
+            }
+
+            @@media (prefers-reduced-motion: reduce) {
+                * {
+                    animation-duration: .001ms !important;
+                    animation-iteration-count: 1 !important;
+                    transition-duration: .001ms !important;
+                }
             }
     </style>
 </head>
 
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-                <i class="fa-solid fa-gauge"></i> Admin Panel
+    <div class="ap-overlay" id="apOverlay"></div>
+
+    <aside class="ap-sidebar" id="apSidebar">
+        <div class="ap-sidebar__brand">
+            <a class="ap-sidebar__brand-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <span class="ap-sidebar__mark">&lt;/&gt;</span>
+                <span class="ap-sidebar__wordmark">Admin<span class="ap-sidebar__wordmark-accent">Panel</span></span>
             </a>
         </div>
-    </nav>
 
-    <!-- Sidebar -->
-    <div class="admin-sidebar">
-        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-            <i class="fa-solid fa-chart-line"></i> Dashboard
-        </a>
+        <nav class="ap-sidebar__nav">
+            <div class="ap-sidebar__group">
+                <p class="ap-sidebar__label">Genel</p>
+                <a class="ap-sidebar__link @(currentController == "Dashboard" ? "active" : "")"
+                   style="animation-delay:.03s"
+                   asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                    <span class="ap-sidebar__icon"><i class="fa-solid fa-gauge-high"></i></span>
+                    <span>Dashboard</span>
+                </a>
+            </div>
 
-        <a asp-area="Admin" asp-controller="Project" asp-action="Index">
-            <i class="fa-solid fa-diagram-project"></i> Projeler
-        </a>
+            <div class="ap-sidebar__group">
+                <p class="ap-sidebar__label">İçerik Yönetimi</p>
+                <a class="ap-sidebar__link @(currentController == "Project" ? "active" : "")"
+                   style="animation-delay:.07s"
+                   asp-area="Admin" asp-controller="Project" asp-action="Index">
+                    <span class="ap-sidebar__icon"><i class="fa-solid fa-diagram-project"></i></span>
+                    <span>Projeler</span>
+                </a>
 
-        <a asp-area="Admin" asp-controller="Experience" asp-action="Index">
-            <i class="fa-solid fa-briefcase"></i> Deneyimler
-        </a>
+                <a class="ap-sidebar__link @(currentController == "Experience" ? "active" : "")"
+                   style="animation-delay:.11s"
+                   asp-area="Admin" asp-controller="Experience" asp-action="Index">
+                    <span class="ap-sidebar__icon"><i class="fa-solid fa-briefcase"></i></span>
+                    <span>Deneyimler</span>
+                </a>
 
-        <a asp-area="Admin" asp-controller="Media" asp-action="Upload">
-            <i class="fa-solid fa-upload"></i> Medya Yükle
-        </a>
+                <a class="ap-sidebar__link @(currentController == "Media" ? "active" : "")"
+                   style="animation-delay:.15s"
+                   asp-area="Admin" asp-controller="Media" asp-action="Upload">
+                    <span class="ap-sidebar__icon"><i class="fa-solid fa-upload"></i></span>
+                    <span>Medya Yükle</span>
+                </a>
 
-        <a asp-area="Admin" asp-controller="Certificate" asp-action="Index">
-            <i class="fa-solid fa-certificate"></i> Sertifikalar
-        </a>
+                <a class="ap-sidebar__link @(currentController == "Certificate" ? "active" : "")"
+                   style="animation-delay:.19s"
+                   asp-area="Admin" asp-controller="Certificate" asp-action="Index">
+                    <span class="ap-sidebar__icon"><i class="fa-solid fa-certificate"></i></span>
+                    <span>Sertifikalar</span>
+                </a>
 
-        <a asp-area="Admin" asp-controller="Skill" asp-action="Index">
-            <i class="fa-solid fa-code"></i> Yetenekler
-        </a>
-    </div>
+                <a class="ap-sidebar__link @(currentController == "Skill" ? "active" : "")"
+                   style="animation-delay:.23s"
+                   asp-area="Admin" asp-controller="Skill" asp-action="Index">
+                    <span class="ap-sidebar__icon"><i class="fa-solid fa-code"></i></span>
+                    <span>Yetenekler</span>
+                </a>
 
-    <!-- Content -->
-    <div class="admin-content">
+                <a class="ap-sidebar__link @(currentController == "VolunteerWork" ? "active" : "")"
+                   style="animation-delay:.27s"
+                   asp-area="Admin" asp-controller="VolunteerWork" asp-action="Index">
+                    <span class="ap-sidebar__icon"><i class="fa-solid fa-handshake-angle"></i></span>
+                    <span>Gönüllü Çalışmalar</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="ap-sidebar__footer">
+            <span class="ap-sidebar__status-dot"></span>
+            <span class="ap-sidebar__status-text">Site Aktif</span>
+        </div>
+    </aside>
+
+    <header class="ap-topbar" id="apTopbar">
+        <div class="ap-topbar__inner">
+            <div class="ap-topbar__left">
+                <button class="ap-menu-btn" id="apMenuBtn" type="button" aria-label="Menüyü aç/kapat" aria-expanded="false">
+                    <span></span>
+                </button>
+                <div>
+                    <div class="ap-topbar__eyebrow">Admin</div>
+                    <h1 class="ap-topbar__heading">@ViewData["Title"]</h1>
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <button class="ap-profile__trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="ap-profile__avatar" style="overflow: hidden;">
+
+                        @if (profile != null && !string.IsNullOrEmpty(profile.ProfileImageUrl))
+                        {
+                            <img src="@profile.ProfileImageUrl" alt="Profil Fotoğrafı"
+                                 style="width: 100%; height: 100%; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-user"></i>
+                        }
+
+                    </span>
+
+                    <span class="ap-profile__name">Profilim</span>
+                    <i class="fa-solid fa-chevron-down ap-profile__caret"></i>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end ap-profile__menu">
+                    <li>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="Profile" asp-action="Index">
+                            <i class="fa-solid fa-user-circle me-2"></i>Profilim
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                        <a class="dropdown-item ap-profile__logout" href="/Admin/Auth/Logout">
+                            <i class="fa-solid fa-right-from-bracket me-2"></i>Çıkış Yap
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="ap-content">
         @RenderBody()
-    </div>
+    </main>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        (function () {
+        var sidebar = document.getElementById('apSidebar');
+        var overlay = document.getElementById('apOverlay');
+        var menuBtn = document.getElementById('apMenuBtn');
+        var topbar = document.getElementById('apTopbar');
+
+        function closeSidebar() {
+        sidebar.classList.remove('is-open');
+        overlay.classList.remove('is-visible');
+        menuBtn.classList.remove('is-active');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        function toggleSidebar() {
+        var isOpen = sidebar.classList.toggle('is-open');
+        overlay.classList.toggle('is-visible', isOpen);
+        menuBtn.classList.toggle('is-active', isOpen);
+        menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+
+        if (menuBtn) {
+        menuBtn.addEventListener('click', toggleSidebar);
+        }
+        if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+        }
+
+        sidebar.querySelectorAll('.ap-sidebar__link').forEach(function (link) {
+        link.addEventListener('click', closeSidebar);
+        });
+
+        window.addEventListener('scroll', function () {
+        topbar.classList.toggle('is-scrolled', window.scrollY > 4);
+        });
+        })();
+    </script>
 
 </body>
 </html>

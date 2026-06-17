@@ -1,38 +1,229 @@
 ﻿@model ExperienceCreateDto
 
-<h2>Yeni Deneyim Ekle</h2>
+<style>
+    /* Ortak Form CSS */
+    .ap-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        animation: ap-fade-up 0.4s var(--ease) both;
+    }
 
-<form method="post">
+    .ap-page-title {
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
 
-    <div class="mb-3">
-        <label>Şirket</label>
-        <input class="form-control" asp-for="Company" />
-    </div>
+    .ap-btn-back {
+        background: var(--surface);
+        color: var(--text-dim);
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--line);
+        transition: all 0.2s var(--ease);
+    }
 
-    <div class="mb-3">
-        <label>Pozisyon</label>
-        <input class="form-control" asp-for="Position" />
-    </div>
+        .ap-btn-back:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+            transform: translateX(-4px);
+        }
 
-    <div class="mb-3">
-        <label>Açıklama</label>
-        <textarea class="form-control" asp-for="Description"></textarea>
-    </div>
+    .ap-form-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        animation: ap-fade-up 0.5s var(--ease) 0.1s both;
+    }
 
-    <div class="mb-3">
-        <label>Başlangıç Tarihi</label>
-        <input type="date" class="form-control" asp-for="StartDate" />
-    </div>
+    .ap-form-group {
+        margin-bottom: 24px;
+    }
 
-    <div class="mb-3">
-        <label>Bitiş Tarihi</label>
-        <input type="date" class="form-control" asp-for="EndDate" />
-    </div>
+    .ap-form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 
-    <div class="form-check mb-3">
-        <input class="form-check-input" asp-for="IsCurrent" />
-        <label class="form-check-label">Halen Çalışıyorum</label>
-    </div>
+        .ap-form-label i {
+            color: var(--brand-light);
+            font-size: 1rem;
+        }
 
-    <button class="btn btn-success">Kaydet</button>
-</form>
+    .ap-input {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: var(--text);
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition: all 0.3s var(--ease);
+        color-scheme: dark; /* Takvim ikonunu karanlık yapar */
+    }
+
+        .ap-input::placeholder {
+            color: rgba(139, 147, 167, 0.4);
+        }
+
+        .ap-input:focus {
+            outline: none;
+            border-color: var(--brand);
+            background: rgba(0, 0, 0, 0.35);
+            box-shadow: 0 0 0 4px rgba(109, 94, 249, 0.15);
+        }
+
+        .ap-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    textarea.ap-input {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .ap-check-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--line);
+        padding: 14px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: border-color 0.2s var(--ease);
+    }
+
+        .ap-check-wrapper:hover {
+            border-color: var(--text-faint);
+        }
+
+    .ap-check-input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--accent);
+    }
+
+    .ap-check-label {
+        color: var(--text);
+        font-weight: 500;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .ap-btn-submit {
+        background: linear-gradient(135deg, var(--brand), var(--brand-light));
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+        .ap-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -6px rgba(109, 94, 249, 0.6);
+        }
+
+    
+</style>
+
+<div class="ap-page-header">
+    <h2 class="ap-page-title">Yeni Deneyim Ekle</h2>
+    <a class="ap-btn-back" href="/Admin/Experience/Index">
+        <i class="fa-solid fa-arrow-left"></i> Geri Dön
+    </a>
+</div>
+
+<div class="ap-form-card">
+    <form method="post">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-building"></i> Şirket Adı</label>
+                    <input class="ap-input" asp-for="Company" placeholder="Örn: Google, Microsoft" required />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-user-tie"></i> Pozisyon</label>
+                    <input class="ap-input" asp-for="Position" placeholder="Örn: Senior Software Engineer" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="ap-form-group">
+            <label class="ap-form-label"><i class="fa-solid fa-align-left"></i> Sorumluluklar & Açıklama</label>
+            <textarea class="ap-input" asp-for="Description" placeholder="Bu pozisyonda neler yaptınız, hangi teknolojileri kullandınız?"></textarea>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-regular fa-calendar"></i> Başlangıç Tarihi</label>
+                    <input type="date" class="ap-input" asp-for="StartDate" required />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-regular fa-calendar-check"></i> Bitiş Tarihi</label>
+                    <input type="date" class="ap-input" id="EndDateInput" asp-for="EndDate" />
+                </div>
+            </div>
+        </div>
+
+        <div class="ap-form-group">
+            <label class="ap-check-wrapper">
+                <input type="checkbox" class="ap-check-input" id="IsCurrentCheckbox" asp-for="IsCurrent" />
+                <span class="ap-check-label"><i class="fa-solid fa-clock-rotate-left text-accent me-2"></i>Halen bu şirkette çalışıyorum</span>
+            </label>
+        </div>
+
+        <button type="submit" class="ap-btn-submit">
+            <i class="fa-solid fa-floppy-disk"></i> Deneyimi Kaydet
+        </button>
+
+    </form>
+</div>
+
+<script>
+    // Halen çalışıyorum seçiliyse bitiş tarihini deaktif yap
+    document.getElementById('IsCurrentCheckbox').addEventListener('change', function() {
+        var endDateInput = document.getElementById('EndDateInput');
+        if(this.checked) {
+            endDateInput.value = '';
+            endDateInput.disabled = true;
+        } else {
+            endDateInput.disabled = false;
+        }
+    });
+</script>

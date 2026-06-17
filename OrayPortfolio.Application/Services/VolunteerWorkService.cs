@@ -17,16 +17,16 @@ namespace OrayPortfolio.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<List<VolunteerWorkUpdateDto>> GetAllAsync()
+        public async Task<List<VolunteerWorkDto>> GetAllAsync()
         {
             var data = await _uow.VolunteerWorks.GetAllAsync();
-            return _mapper.Map<List<VolunteerWorkUpdateDto>>(data);
+            return _mapper.Map<List<VolunteerWorkDto>>(data);
         }
 
-        public async Task<VolunteerWorkUpdateDto> GetByIdAsync(int id)
+        public async Task<VolunteerWorkDto?> GetByIdAsync(int id)
         {
             var entity = await _uow.VolunteerWorks.GetByIdAsync(id);
-            return _mapper.Map<VolunteerWorkUpdateDto>(entity);
+            return _mapper.Map<VolunteerWorkDto>(entity);
         }
 
         public async Task<bool> CreateAsync(VolunteerWorkCreateDto dto)
@@ -36,20 +36,22 @@ namespace OrayPortfolio.Application.Services
             return await _uow.SaveAsync() > 0;
         }
 
-        public async Task<bool> UpdateAsync(VolunteerWorkUpdateDto dto)
+        public async Task<bool> UpdateAsync(VolunteerWorkDto dto)
         {
-            var entity = _mapper.Map<VolunteerWork>(dto);
+            var entity = await _uow.VolunteerWorks.GetByIdAsync(dto.Id);
+            if (entity == null) return false;
+
+            _mapper.Map(dto, entity);
             _uow.VolunteerWorks.Update(entity);
+
             return await _uow.SaveAsync() > 0;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _uow.VolunteerWorks.GetByIdAsync(id);
-            if (entity == null) return false;
-
-            _uow.VolunteerWorks.Delete(entity);
+            await _uow.VolunteerWorks.DeleteAsync(id);
             return await _uow.SaveAsync() > 0;
         }
     }
+
 }

@@ -1,8 +1,10 @@
-﻿using OrayPortfolio.Domain.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace OrayPortfolio.Domain.Entities
+namespace OrayPortfolio.Application.DTOs.Reference
 {
-    public class Reference : BaseEntity
+    public class ReferenceCreateDto
     {
         public string? FullName { get; set; }
         public string? Position { get; set; }

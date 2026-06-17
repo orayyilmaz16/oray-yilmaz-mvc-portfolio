@@ -8,5 +8,9 @@
 
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+
+        // Eğer fotoğraf yükleme olacaksa Web katmanında IFormFile ile alınacak
+        // Application katmanında sadece string path tutulur
+        public string? ImageUrl { get; set; }
     }
 }
