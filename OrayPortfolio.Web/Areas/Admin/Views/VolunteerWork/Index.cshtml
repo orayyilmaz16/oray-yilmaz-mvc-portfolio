@@ -1,0 +1,32 @@
+﻿@model List<VolunteerWorkUpdateDto>
+
+<h2>Gönüllü Çalışmalar</h2>
+
+<a class="btn btn-primary mb-3" href="/Admin/VolunteerWork/Create">Yeni Ekle</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Organizasyon</th>
+            <th>Rol</th>
+            <th>Başlangıç</th>
+            <th>Bitiş</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var v in Model)
+        {
+            <tr>
+                <td>@v.Organization</td>
+                <td>@v.Role</td>
+                <td>@v.StartDate.ToShortDateString()</td>
+                <td>@(v.EndDate?.ToShortDateString() ?? "Devam Ediyor")</td>
+                <td>
+                    <a class="btn btn-warning btn-sm" href="/Admin/VolunteerWork/Edit/@v.Id">Düzenle</a>
+                    <a class="btn btn-danger btn-sm" href="/Admin/VolunteerWork/Delete/@v.Id">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

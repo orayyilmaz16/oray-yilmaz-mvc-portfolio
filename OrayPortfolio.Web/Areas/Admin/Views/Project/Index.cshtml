@@ -1,0 +1,30 @@
+﻿@model List<ProjectUpdateDto>
+
+<h2 class="mb-3">Projeler</h2>
+
+<a class="btn btn-primary mb-3" href="/Admin/Project/Create">Yeni Proje</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Başlık</th>
+            <th>Teknolojiler</th>
+            <th>Github</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Title</td>
+                <td>@p.Technologies</td>
+                <td><a href="@p.GithubUrl" target="_blank">Github</a></td>
+                <td>
+                    <a class="btn btn-warning btn-sm" href="/Admin/Project/Edit/@p.Id">Düzenle</a>
+                    <a class="btn btn-danger btn-sm" href="/Admin/Project/Delete/@p.Id">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

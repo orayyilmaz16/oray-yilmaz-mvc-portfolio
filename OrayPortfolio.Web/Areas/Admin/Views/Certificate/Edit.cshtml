@@ -1,0 +1,25 @@
+﻿@model CertificateUpdateDto
+
+<h2>Sertifika Düzenle</h2>
+
+<form method="post">
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label>Başlık</label>
+        <input class="form-control" asp-for="Title" />
+    </div>
+
+    <div class="mb-3">
+        <label>Veren Kurum</label>
+        <input class="form-control" asp-for="Issuer" />
+    </div>
+
+    <div class="mb-3">
+        <label>Tarih</label>
+        <input type="date" class="form-control" asp-for="Date" />
+    </div>
+
+    <button class="btn btn-success">Güncelle</button>
+</form>

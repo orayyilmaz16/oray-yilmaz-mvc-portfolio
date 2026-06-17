@@ -1,0 +1,104 @@
+﻿@using OrayPortfolio.Domain.Entities
+@model IEnumerable<VolunteerWork>
+
+<h2 class="mb-4">Gönüllü Çalışmalar</h2>
+
+<div class="timeline">
+
+    @foreach (var v in Model)
+    {
+        <div class="timeline-item" data-aos="fade-up">
+
+            <div class="timeline-dot"></div>
+
+            <div class="timeline-content shadow-sm p-4 rounded">
+
+                <!-- Rol + Organizasyon -->
+                <h4>@v.Role</h4>
+                <p class="text-muted mb-1">@v.Organization</p>
+
+                <!-- Tarih -->
+                <small class="text-muted">
+                    @v.StartDate.ToString("dd MMM yyyy") →
+                    @(v.EndDate?.ToString("dd MMM yyyy") ?? "Devam Ediyor")
+                </small>
+
+                <!-- Açıklama -->
+                <p class="mt-3">@v.Description</p>
+
+                <!-- Medya Dosyaları -->
+                @if (v.MediaFiles != null && v.MediaFiles.Any())
+                {
+                    <div class="mt-3">
+                        <h6>Medya</h6>
+                        <div class="row mt-2">
+
+                            @foreach (var media in v.MediaFiles)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <div class="card shadow-sm border-0">
+
+                                        @if (media.FileType == "image")
+                                        {
+                                            <img src="@media.FilePath" class="img-fluid rounded" />
+                                        }
+                                        else
+                                        {
+                                            <a href="@media.FilePath" target="_blank" class="btn btn-outline-primary w-100">
+                                                Dosyayı Aç
+                                            </a>
+                                        }
+
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+<!-- Timeline CSS -->
+<style>
+    .timeline {
+        position: relative;
+        margin-left: 25px;
+        padding-left: 20px;
+    }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: #dee2e6;
+        }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 40px;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -2px;
+        width: 15px;
+        height: 15px;
+        background: #198754;
+        border-radius: 50%;
+        top: 5px;
+    }
+
+    .timeline-content {
+        margin-left: 25px;
+        background: #fff;
+    }
+</style>

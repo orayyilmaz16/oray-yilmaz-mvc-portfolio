@@ -1,0 +1,30 @@
+﻿@model List<SkillDto>
+
+<h2>Yetenekler</h2>
+
+<a class="btn btn-primary mb-3" href="/Admin/Skill/Create">Yeni Yetenek</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Ad</th>
+            <th>Seviye</th>
+            <th>Kategori</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.Name</td>
+                <td>@s.Level</td>
+                <td>@s.Category</td>
+                <td>
+                    <a class="btn btn-warning btn-sm" href="/Admin/Skill/Edit/@s.Id">Düzenle</a>
+                    <a class="btn btn-danger btn-sm" href="/Admin/Skill/Delete/@s.Id">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

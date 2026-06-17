@@ -1,0 +1,38 @@
+﻿@model ProjectCreateDto
+
+<h2>Yeni Proje Ekle</h2>
+
+<form method="post">
+
+    <div class="mb-3">
+        <label>Başlık</label>
+        <input class="form-control" asp-for="Title" />
+    </div>
+
+    <div class="mb-3">
+        <label>Açıklama</label>
+        <textarea class="form-control" asp-for="Description"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Teknolojiler</label>
+        <input class="form-control" asp-for="Technologies" />
+    </div>
+
+    <div class="mb-3">
+        <label>Proje URL</label>
+        <input class="form-control" asp-for="ProjectUrl" />
+    </div>
+
+    <div class="mb-3">
+        <label>Github URL</label>
+        <input class="form-control" asp-for="GithubUrl" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" asp-for="IsFeatured" />
+        <label class="form-check-label">Öne Çıkan Proje</label>
+    </div>
+
+    <button class="btn btn-success">Kaydet</button>
+</form>

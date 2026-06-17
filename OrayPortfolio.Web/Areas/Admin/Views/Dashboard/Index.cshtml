@@ -1,0 +1,144 @@
+﻿@using OrayPortfolio.Application.DTOs.Dashboard
+@model DashboardViewModel
+
+<h2 class="mb-4">Dashboard</h2>
+
+<!-- İstatistik Kartları -->
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 text-center">
+            <div class="card-body">
+                <h3>@Model.ProjectCount</h3>
+                <p class="text-muted">Projeler</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 text-center">
+            <div class="card-body">
+                <h3>@Model.ExperienceCount</h3>
+                <p class="text-muted">Deneyimler</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 text-center">
+            <div class="card-body">
+                <h3>@Model.CertificateCount</h3>
+                <p class="text-muted">Sertifikalar</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 text-center">
+            <div class="card-body">
+                <h3>@Model.SkillCount</h3>
+                <p class="text-muted">Yetenekler</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Profil Tamamlanma Yüzdesi -->
+<div class="card mt-4 shadow-sm border-0">
+    <div class="card-body">
+        <h5>Profil Tamamlanma Oranı</h5>
+        <div class="progress mt-2">
+            <div class="progress-bar bg-success" role="progressbar"
+                 style="width:@Model.ProfileCompletion%;">
+                @Model.ProfileCompletion%
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grafik -->
+<div class="card mt-4 shadow-sm border-0">
+    <div class="card-body">
+        <h5>Genel İstatistik Grafiği</h5>
+        <canvas id="statsChart" height="120"></canvas>
+    </div>
+</div>
+
+<!-- Son Eklenenler -->
+<div class="row mt-4">
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5>Son Eklenen Projeler</h5>
+                <ul class="list-group">
+                    @if (Model.LastProjects != null && Model.LastProjects.Any())
+                    {
+                        foreach (var p in Model.LastProjects)
+                        {
+                            <li class="list-group-item">@p.Title</li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item text-muted">Henüz proje eklenmemiş.</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5>Son Eklenen Sertifikalar</h5>
+                <ul class="list-group">
+                    @if (Model.LastCertificates != null && Model.LastCertificates.Any())
+                    {
+                        foreach (var c in Model.LastCertificates)
+                        {
+                            <li class="list-group-item">@c.Title</li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item text-muted">Henüz sertifika eklenmemiş.</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('statsChart');
+
+    new Chart(ctx, {
+    type: 'bar',
+    data: {
+    labels: ['Projeler', 'Deneyimler', 'Sertifikalar', 'Yetenekler', 'Gönüllü İşler'],
+    datasets: [{
+    label: 'Adet',
+    data: [
+    @Model.ProjectCount,
+    @Model.ExperienceCount,
+    @Model.CertificateCount,
+    @Model.SkillCount,
+    @Model.VolunteerCount
+    ],
+    backgroundColor: [
+    '#0d6efd',
+    '#198754',
+    '#ffc107',
+    '#0dcaf0',
+    '#6f42c1'
+    ]
+    }]
+    }
+    });
+</script>

@@ -1,0 +1,30 @@
+﻿@model List<CertificateUpdateDto>
+
+<h2>Sertifikalar</h2>
+
+<a class="btn btn-primary mb-3" href="/Admin/Certificate/Create">Yeni Sertifika</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Başlık</th>
+            <th>Veren</th>
+            <th>Tarih</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Title</td>
+                <td>@c.Issuer</td>
+                <td>@c.Date.ToShortDateString()</td>
+                <td>
+                    <a class="btn btn-warning btn-sm" href="/Admin/Certificate/Edit/@c.Id">Düzenle</a>
+                    <a class="btn btn-danger btn-sm" href="/Admin/Certificate/Delete/@c.Id">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

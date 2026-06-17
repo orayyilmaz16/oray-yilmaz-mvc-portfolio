@@ -1,0 +1,43 @@
+﻿@using OrayPortfolio.Domain.Entities
+@model IEnumerable<Project>
+
+<h2 class="mb-4">Projelerim</h2>
+
+<div class="row">
+
+    @foreach (var p in Model)
+    {
+        <div class="col-md-4 mb-4" data-aos="fade-up">
+            <div class="card shadow-sm border-0 h-100">
+
+                @if (!string.IsNullOrEmpty(p.CoverImageUrl))
+                {
+                    <img src="~/uploads/@p.CoverImageUrl" class="card-img-top" alt="@p.Title" />
+                }
+
+                <div class="card-body">
+                    <h5 class="card-title">@p.Title</h5>
+
+                    <p class="text-muted">
+                        @(p.Description?.Length > 100
+                            ? p.Description.Substring(0, 100) + "..."
+                            : p.Description)
+                    </p>
+
+                    <a asp-action="Detail" asp-route-id="@p.Id" class="btn btn-primary btn-sm">
+                        Detay
+                    </a>
+
+                    @if (!string.IsNullOrEmpty(p.GithubUrl))
+                    {
+                        <a href="@p.GithubUrl" target="_blank" class="btn btn-dark btn-sm ms-2">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                    }
+                </div>
+
+            </div>
+        </div>
+    }
+
+</div>

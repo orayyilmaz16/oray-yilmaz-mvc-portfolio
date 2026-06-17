@@ -1,0 +1,23 @@
+﻿@model SkillDto
+
+<h2>Yeni Yetenek</h2>
+
+<form method="post">
+
+    <div class="mb-3">
+        <label>Ad</label>
+        <input class="form-control" asp-for="Name" />
+    </div>
+
+    <div class="mb-3">
+        <label>Seviye (1-100)</label>
+        <input class="form-control" asp-for="Level" type="number" />
+    </div>
+
+    <div class="mb-3">
+        <label>Kategori</label>
+        <input class="form-control" asp-for="Category" />
+    </div>
+
+    <button class="btn btn-success">Kaydet</button>
+</form>

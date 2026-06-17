@@ -1,0 +1,32 @@
+﻿@model List<ExperienceUpdateDto>
+
+<h2 class="mb-3">Deneyimler</h2>
+
+<a class="btn btn-primary mb-3" href="/Admin/Experience/Create">Yeni Ekle</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Şirket</th>
+            <th>Pozisyon</th>
+            <th>Başlangıç</th>
+            <th>Bitiş</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Company</td>
+                <td>@item.Position</td>
+                <td>@item.StartDate.ToShortDateString()</td>
+                <td>@(item.EndDate?.ToShortDateString() ?? "Devam Ediyor")</td>
+                <td>
+                    <a class="btn btn-warning btn-sm" href="/Admin/Experience/Edit/@item.Id">Düzenle</a>
+                    <a class="btn btn-danger btn-sm" href="/Admin/Experience/Delete/@item.Id">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
