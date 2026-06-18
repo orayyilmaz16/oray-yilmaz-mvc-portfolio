@@ -1,4 +1,4 @@
-﻿@model List<SkillDto>
+﻿@model List<SkillUpdateDto>
 
 <style>
     /* Ortak Liste CSS */
@@ -190,7 +190,6 @@
 
    
 </style>
-
 <div class="ap-page-header">
     <h2 class="ap-page-title">Yetenekler</h2>
     <a class="ap-btn-primary" href="/Admin/Skill/Create">
@@ -217,6 +216,7 @@
                         <td class="ap-table-title">
                             <i class="fa-solid fa-bolt me-2" style="color: var(--text-faint);"></i> @s.Name
                         </td>
+
                         <td>
                             <div class="ap-level-wrapper">
                                 <div class="ap-level-bar-bg">
@@ -225,16 +225,21 @@
                                 <span class="ap-level-text">%@s.Level</span>
                             </div>
                         </td>
+
                         <td>
-                            <span class="ap-category-badge">@s.Category</span>
+                            <!-- Kategori alanı henüz DTO'da yok -->
                         </td>
+
                         <td>
                             <div class="ap-action-btns">
                                 <a class="ap-btn-icon ap-btn-edit" href="/Admin/Skill/Edit/@s.Id" title="Düzenle">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
-                                <a class="ap-btn-icon ap-btn-delete" href="/Admin/Skill/Delete/@s.Id" title="Sil"
-                                   onclick="return confirm('Bu yeteneği silmek istediğinize emin misiniz?');">
+
+                                <a class="ap-btn-icon ap-btn-delete"
+                                   href="/Admin/Skill/Delete/@s.Id"
+                                   onclick="return confirm('Bu yeteneği silmek istediğinize emin misiniz?');"
+                                   title="Sil">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </a>
                             </div>

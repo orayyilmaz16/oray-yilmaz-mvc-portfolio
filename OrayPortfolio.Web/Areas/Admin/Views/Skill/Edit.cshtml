@@ -1,6 +1,33 @@
-﻿@model SkillDto
+﻿@model SkillUpdateDto
 
 <style>
+    /* Input altı hataları tamamen gizle */
+    .ap-hidden-validation {
+        display: none !important;
+    }
+
+    /* Premium kırmızı hata kutusu */
+    .ap-error-box {
+        background: rgba(255, 0, 0, 0.12);
+        border: 1px solid rgba(255, 0, 0, 0.45);
+        color: #ff3b3b;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.45;
+        animation: ap-fade-in 0.25s ease, ap-shake 0.45s ease;
+    }
+
+        .ap-error-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .ap-error-box li {
+            margin-bottom: 4px;
+        }
+
     /* Ortak Form CSS */
     .ap-page-header {
         display: flex;
@@ -125,6 +152,20 @@
 </div>
 
 <div class="ap-form-card">
+
+    <!-- 🔥 TÜM VALIDASYON HATALARINI KIRMIZI KUTUDA GÖSTER -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="ap-error-box">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
     <form method="post">
 
         <input type="hidden" asp-for="Id" />
@@ -132,22 +173,21 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="ap-form-group">
-                    <label class="ap-form-label"><i class="fa-solid fa-bolt"></i> Yetenek Adı</label>
-                    <input class="ap-input" asp-for="Name" required />
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="ap-form-group">
-                    <label class="ap-form-label"><i class="fa-solid fa-layer-group"></i> Kategori</label>
-                    <input class="ap-input" asp-for="Category" required />
+                    <label class="ap-form-label">
+                        <i class="fa-solid fa-bolt"></i> Yetenek Adı
+                    </label>
+                    <input class="ap-input" asp-for="Name" />
+                    <span asp-validation-for="Name" class="ap-hidden-validation"></span>
                 </div>
             </div>
         </div>
 
         <div class="ap-form-group">
-            <label class="ap-form-label"><i class="fa-solid fa-chart-line"></i> Seviye (1-100)</label>
-            <input class="ap-input" asp-for="Level" type="number" min="1" max="100" required />
+            <label class="ap-form-label">
+                <i class="fa-solid fa-chart-line"></i> Seviye (1-100)
+            </label>
+            <input class="ap-input" asp-for="Level" type="number" min="1" max="100" />
+            <span asp-validation-for="Level" class="ap-hidden-validation"></span>
         </div>
 
         <button type="submit" class="ap-btn-edit-submit">

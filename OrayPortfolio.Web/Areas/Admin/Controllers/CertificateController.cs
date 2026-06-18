@@ -1,60 +1,78 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OrayPortfolio.Application.Interfaces.Services;
 using OrayPortfolio.Application.DTOs.Certificate;
+using OrayPortfolio.Application.Interfaces.Services;
+using OrayPortfolio.Web.Services;
 
-namespace OrayPortfolio.Web.Areas.Admin.Controllers
+[Area("Admin")]
+public class CertificateController : Controller
 {
-    [Area("Admin")]
-    public class CertificateController : Controller
+    private readonly ICertificateService _certificateService;
+    private readonly IFileService _fileService;
+
+    public CertificateController(ICertificateService certificateService, IFileService fileService)
     {
-        private readonly ICertificateService _service;
+        _certificateService = certificateService;
+        _fileService = fileService;
+    }
 
-        public CertificateController(ICertificateService service)
+    public async Task<IActionResult> Index()
+    {
+        var data = await _certificateService.GetAllAsync();
+        return View(data);
+    }
+
+    public IActionResult Create()
+    {
+        return View(new CertificateCreateDto());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CertificateCreateDto dto, IFormFile? FileUpload)
+    {
+        if (!ModelState.IsValid)
         {
-            _service = service;
+            TempData["Error"] = "Lütfen formdaki hataları düzeltin.";
+            return View(dto);
         }
 
-        public async Task<IActionResult> Index()
+        if (FileUpload != null && FileUpload.Length > 0)
+            dto.FileUrl = await _fileService.UploadAsync(FileUpload, "certificates");
+
+        await _certificateService.CreateAsync(dto);
+
+        TempData["Success"] = "Sertifika başarıyla eklendi.";
+        return RedirectToAction("Index");
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var data = await _certificateService.GetByIdAsync(id);
+        return View(data);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(CertificateUpdateDto dto, IFormFile? FileUpload)
+    {
+        if (!ModelState.IsValid)
         {
-            var data = await _service.GetAllAsync();
-            return View(data);
+            TempData["Error"] = "Lütfen formdaki hataları düzeltin.";
+            return View(dto);
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        if (FileUpload != null && FileUpload.Length > 0)
+            dto.FileUrl = await _fileService.UploadAsync(FileUpload, "certificates");
 
-        [HttpPost]
-        public async Task<IActionResult> Create(CertificateCreateDto dto)
-        {
-            if (!ModelState.IsValid)
-                return View(dto);
+        await _certificateService.UpdateAsync(dto);
 
-            await _service.CreateAsync(dto);
-            return RedirectToAction("Index");
-        }
+        TempData["Success"] = "Sertifika başarıyla güncellendi.";
+        return RedirectToAction("Index");
+    }
 
-        public async Task<IActionResult> Edit(int id)
-        {
-            var data = await _service.GetByIdAsync(id);
-            return View(data);
-        }
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _certificateService.DeleteAsync(id);
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(CertificateUpdateDto dto)
-        {
-            if (!ModelState.IsValid)
-                return View(dto);
-
-            await _service.UpdateAsync(dto);
-            return RedirectToAction("Index");
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _service.DeleteAsync(id);
-            return RedirectToAction("Index");
-        }
+        TempData["Success"] = "Sertifika başarıyla silindi.";
+        return RedirectToAction("Index");
     }
 }

@@ -1,10 +1,13 @@
 ﻿using OrayPortfolio.Application.DTOs.Skill;
 
-public interface ISkillService
+namespace OrayPortfolio.Application.Interfaces.Services
 {
-    Task<List<SkillDto>> GetAllAsync();
-    Task<bool> CreateAsync(SkillDto dto);
-    Task<bool> UpdateAsync(SkillDto dto);
-    Task<bool> DeleteAsync(int id);
-    Task<SkillDto?> GetByIdAsync(int id);
+    public interface ISkillService
+    {
+        Task<List<SkillUpdateDto>> GetAllAsync();
+        Task<SkillUpdateDto> GetByIdAsync(int id);
+        Task<bool> CreateAsync(SkillCreateDto dto);
+        Task<bool> UpdateAsync(SkillUpdateDto dto);
+        Task<bool> DeleteAsync(int id);
+    }
 }

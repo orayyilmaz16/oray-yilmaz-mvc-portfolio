@@ -8,8 +8,13 @@ namespace OrayPortfolio.Application.Mapping
     {
         public VolunteerWorkProfile()
         {
-            CreateMap<VolunteerWork, VolunteerWorkDto>().ReverseMap();
-            CreateMap<VolunteerWorkCreateDto, VolunteerWork>();
+            CreateMap<VolunteerWork, VolunteerWorkUpdateDto>().ReverseMap();
+
+            CreateMap<VolunteerWorkCreateDto, VolunteerWork>()
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl));
+
+            CreateMap<VolunteerWorkUpdateDto, VolunteerWork>()
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl));
         }
     }
 }

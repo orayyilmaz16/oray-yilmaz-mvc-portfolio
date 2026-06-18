@@ -38,10 +38,25 @@ namespace OrayPortfolio.Application.Services
 
         public async Task<bool> UpdateAsync(ExperienceUpdateDto dto)
         {
-            var entity = _mapper.Map<Experience>(dto);
+            var entity = await _uow.Experiences.GetByIdAsync(dto.Id);
+            if (entity == null) return false;
+
+            // 🔥 Sadece değişen alanları güncelle
+            entity.Company = dto.Company;
+            entity.Position = dto.Position;
+            entity.Description = dto.Description;
+            entity.StartDate = dto.StartDate;
+            entity.EndDate = dto.EndDate;
+            entity.IsCurrent = dto.IsCurrent;
+
+            // 🔥 Logo sadece yeni yüklenmişse değişsin
+            if (!string.IsNullOrWhiteSpace(dto.LogoImageUrl))
+                entity.LogoImageUrl = dto.LogoImageUrl;
+
             _uow.Experiences.Update(entity);
             return await _uow.SaveAsync() > 0;
         }
+
 
         public async Task<bool> DeleteAsync(int id)
         {

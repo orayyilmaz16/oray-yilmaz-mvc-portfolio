@@ -1,32 +1,229 @@
 ﻿@model VolunteerWorkCreateDto
 
-<h2>Yeni Gönüllü Çalışma</h2>
+<style>
+    /* Input altı hataları tamamen gizle */
+    .ap-hidden-validation {
+        display: none !important;
+    }
 
-<form method="post">
-    <div class="mb-3">
-        <label>Organizasyon</label>
-        <input asp-for="Organization" class="form-control" />
-    </div>
+    /* Premium kırmızı hata kutusu */
+    .ap-error-box {
+        background: rgba(255, 0, 0, 0.12);
+        border: 1px solid rgba(255, 0, 0, 0.45);
+        color: #ff3b3b;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.45;
+        animation: ap-fade-in 0.25s ease, ap-shake 0.45s ease;
+    }
 
-    <div class="mb-3">
-        <label>Rol</label>
-        <input asp-for="Role" class="form-control" />
-    </div>
+        .ap-error-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
 
-    <div class="mb-3">
-        <label>Açıklama</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-    </div>
+        .ap-error-box li {
+            margin-bottom: 4px;
+        }
 
-    <div class="mb-3">
-        <label>Başlangıç Tarihi</label>
-        <input asp-for="StartDate" type="date" class="form-control" />
-    </div>
+    /* Ortak Form CSS */
+    .ap-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        animation: ap-fade-up 0.4s var(--ease) both;
+    }
 
-    <div class="mb-3">
-        <label>Bitiş Tarihi</label>
-        <input asp-for="EndDate" type="date" class="form-control" />
-    </div>
+    .ap-page-title {
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
 
-    <button class="btn btn-success">Kaydet</button>
-</form>
+    .ap-btn-back {
+        background: var(--surface);
+        color: var(--text-dim);
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--line);
+        transition: all 0.2s var(--ease);
+    }
+
+        .ap-btn-back:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+            transform: translateX(-4px);
+        }
+
+    .ap-form-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        animation: ap-fade-up 0.5s var(--ease) 0.1s both;
+    }
+
+    .ap-form-group {
+        margin-bottom: 24px;
+    }
+
+    .ap-form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+        .ap-form-label i {
+            color: var(--brand-light);
+            font-size: 1rem;
+        }
+
+    .ap-input {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: var(--text);
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition: all 0.3s var(--ease);
+        color-scheme: dark;
+    }
+
+        .ap-input::placeholder {
+            color: rgba(139, 147, 167, 0.4);
+        }
+
+        .ap-input:focus {
+            outline: none;
+            border-color: var(--brand);
+            background: rgba(0, 0, 0, 0.35);
+            box-shadow: 0 0 0 4px rgba(109, 94, 249, 0.15);
+        }
+
+    textarea.ap-input {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .ap-btn-submit {
+        background: linear-gradient(135deg, var(--brand), var(--brand-light));
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+        .ap-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -6px rgba(109, 94, 249, 0.6);
+        }
+
+   
+</style>
+
+<div class="ap-page-header">
+    <h2 class="ap-page-title">Yeni Gönüllü Çalışma Ekle</h2>
+    <a class="ap-btn-back" href="/Admin/VolunteerWork/Index">
+        <i class="fa-solid fa-arrow-left"></i> Geri Dön
+    </a>
+</div>
+
+<div class="ap-form-card">
+
+    <!-- 🔥 TÜM VALIDASYON HATALARINI KIRMIZI KUTUDA GÖSTER -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="ap-error-box">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <form asp-area="Admin" asp-controller="VolunteerWork" asp-action="Create"
+          method="post" enctype="multipart/form-data">
+
+        <div class="ap-form-group">
+            <label class="ap-form-label">Organizasyon</label>
+            <input class="ap-input" asp-for="Organization" />
+            <span asp-validation-for="Organization" class="ap-hidden-validation"></span>
+        </div>
+
+        <div class="ap-form-group">
+            <label class="ap-form-label">Rol</label>
+            <input class="ap-input" asp-for="Role" />
+            <span asp-validation-for="Role" class="ap-hidden-validation"></span>
+        </div>
+
+        <div class="ap-form-group">
+            <label class="ap-form-label">Açıklama</label>
+            <textarea class="ap-input" asp-for="Description"></textarea>
+            <span asp-validation-for="Description" class="ap-hidden-validation"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="ap-form-group">
+                    <label class="ap-form-label">Başlangıç Tarihi</label>
+                    <input class="ap-input" asp-for="StartDate" type="date" />
+                    <span asp-validation-for="StartDate" class="ap-hidden-validation"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="ap-form-group">
+                    <label class="ap-form-label">Bitiş Tarihi</label>
+                    <input class="ap-input" asp-for="EndDate" type="date" />
+                    <span asp-validation-for="EndDate" class="ap-hidden-validation"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ap-form-group">
+            <label class="ap-check-wrapper">
+                <input type="checkbox" class="ap-check-input" asp-for="IsCurrent" />
+                <span class="ap-check-label">Halen Devam Ediyor</span>
+            </label>
+        </div>
+
+        <div class="ap-form-group">
+            <label class="ap-form-label">Görsel (Opsiyonel)</label>
+            <input type="file" name="ImageFile" class="ap-input" />
+        </div>
+
+        <button type="submit" class="ap-btn-submit">
+            <i class="fa-solid fa-floppy-disk"></i> Kaydet
+        </button>
+
+    </form>
+</div>

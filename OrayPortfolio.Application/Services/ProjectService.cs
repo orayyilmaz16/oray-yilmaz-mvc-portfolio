@@ -17,10 +17,10 @@ namespace OrayPortfolio.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<List<ProjectUpdateDto>> GetAllAsync()
+        public async Task<List<ProjectDto>> GetAllAsync()
         {
             var data = await _uow.Projects.GetAllAsync();
-            return _mapper.Map<List<ProjectUpdateDto>>(data);
+            return _mapper.Map<List<ProjectDto>>(data);
         }
 
         public async Task<ProjectUpdateDto> GetByIdAsync(int id)
@@ -38,7 +38,22 @@ namespace OrayPortfolio.Application.Services
 
         public async Task<bool> UpdateAsync(ProjectUpdateDto dto)
         {
-            var entity = _mapper.Map<Project>(dto);
+            var entity = await _uow.Projects.GetByIdAsync(dto.Id);
+            if (entity == null)
+                return false;
+
+            // Tüm alanları güncelle
+            entity.Title = dto.Title;
+            entity.Description = dto.Description;
+            entity.Technologies = dto.Technologies;
+            entity.ProjectUrl = dto.ProjectUrl;
+            entity.GithubUrl = dto.GithubUrl;
+            entity.IsFeatured = dto.IsFeatured;
+
+            // Kapak görseli değiştiyse güncelle
+            if (!string.IsNullOrEmpty(dto.CoverImageUrl))
+                entity.CoverImageUrl = dto.CoverImageUrl;
+
             _uow.Projects.Update(entity);
             return await _uow.SaveAsync() > 0;
         }

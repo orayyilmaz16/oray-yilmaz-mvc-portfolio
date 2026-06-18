@@ -1,9 +1,12 @@
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using OrayPortfolio.Application.Interfaces.Repositories;
 using OrayPortfolio.Application.Interfaces.Services;
 using OrayPortfolio.Application.Mapping;
 using OrayPortfolio.Application.Services;
+using OrayPortfolio.Application.Validations;
 using OrayPortfolio.Infrastructure.Context;
 using OrayPortfolio.Infrastructure.Repositories;
 using OrayPortfolio.Infrastructure.UnitOfWork;
@@ -13,9 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSession();
 
-
 // ----------------------
-// AutoMapper (TEK SATIR)
+// AutoMapper
 // ----------------------
 builder.Services.AddAutoMapper(typeof(ProfileProfile).Assembly);
 
@@ -35,10 +37,21 @@ builder.Services.AddScoped<ICertificateService, CertificateService>();
 builder.Services.AddScoped<IVolunteerWorkService, VolunteerWorkService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<ISkillService, SkillService>();
-builder.Services.AddScoped<IMediaService, MediaService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IEducationService, EducationService>();
+builder.Services.AddScoped<IReferenceService, ReferenceService>();
 
-// MVC
+// ----------------------
+// MVC + FluentValidation (SON SÜRÜM DOĞRU YAPI)
+// ----------------------
 builder.Services.AddControllersWithViews();
+
+// FluentValidation otomatik aktif
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+
+// Tüm validator’ları otomatik tara
+builder.Services.AddValidatorsFromAssembly(typeof(ProjectCreateDtoValidator).Assembly);
 
 var app = builder.Build();
 
@@ -56,6 +69,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
+app.UseSession();
 
 app.MapStaticAssets();
 
@@ -71,8 +85,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-app.UseSession();
-
 app.Run();
-
-

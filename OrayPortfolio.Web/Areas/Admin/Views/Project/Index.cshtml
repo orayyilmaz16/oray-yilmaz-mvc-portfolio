@@ -1,4 +1,4 @@
-﻿@model List<ProjectUpdateDto>
+﻿@model List<ProjectDto>
 
 <style>
     /* Sayfa Üst Kısmı */
@@ -200,6 +200,7 @@
     <table class="ap-table">
         <thead>
             <tr>
+                <th>Görsel</th>
                 <th>Başlık</th>
                 <th>Teknolojiler</th>
                 <th>Bağlantılar</th>
@@ -212,11 +213,27 @@
                 foreach (var p in Model)
                 {
                     <tr>
+
+                        <!-- 📌 Kapak Görseli -->
+                        <td>
+                            @if (!string.IsNullOrEmpty(p.CoverImageUrl))
+                            {
+                                <img src="@p.CoverImageUrl"
+                                     style="width:60px; height:60px; object-fit:cover; border-radius:8px;" />
+                            }
+                            else
+                            {
+                                <span style="color: var(--text-faint); font-size: 0.85rem;">Yok</span>
+                            }
+                        </td>
+
+                        <!-- Başlık -->
                         <td class="ap-table-title">@p.Title</td>
+
+                        <!-- Teknolojiler -->
                         <td>
                             @if (!string.IsNullOrEmpty(p.Technologies))
                             {
-                                // Teknolojileri virgülle ayrılmış varsayarak etiketlere bölüyoruz
                                 var techs = p.Technologies.Split(',', StringSplitOptions.RemoveEmptyEntries);
                                 foreach (var tech in techs)
                                 {
@@ -228,6 +245,8 @@
                                 <span class="text-muted">-</span>
                             }
                         </td>
+
+                        <!-- Github Linki -->
                         <td>
                             @if (!string.IsNullOrEmpty(p.GithubUrl))
                             {
@@ -240,6 +259,8 @@
                                 <span style="color: var(--text-faint); font-size: 0.85rem;">Bağlantı Yok</span>
                             }
                         </td>
+
+                        <!-- İşlemler -->
                         <td>
                             <div class="ap-action-btns">
                                 <a class="ap-btn-icon ap-btn-edit" href="/Admin/Project/Edit/@p.Id" title="Düzenle">
@@ -251,13 +272,14 @@
                                 </a>
                             </div>
                         </td>
+
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                         <div class="ap-empty-state">
                             <i class="fa-solid fa-folder-open"></i>
                             <p>Henüz eklenmiş bir proje bulunmuyor.</p>

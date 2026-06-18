@@ -1,4 +1,6 @@
-﻿@{
+﻿@using OrayPortfolio.Application.DTOs.Auth
+@model LoginViewModel
+@{
     Layout = null;
 }
 <!DOCTYPE html>
@@ -236,20 +238,36 @@
                     transform: translateY(0);
                 }
 
-            /* Hata Mesajı */
-            .ap-error-box {
-                background: rgba(251, 69, 112, 0.1);
-                border: 1px solid rgba(251, 69, 112, 0.2);
-                color: var(--danger);
-                padding: 12px 16px;
+                .ap-hidden-validation {
+                    display: none !important;
+                }
+
+                            .ap-error-box {
+                            background: rgba(255, 0, 0, 0.18);        /* Daha belirgin kırmızı */
+                            border: 1px solid rgba(255, 0, 0, 0.55);  /* Daha koyu kırmızı border */
+                            color: #ff2e2e;                           /* Koyu kırmızı yazı */
+                padding: 14px 18px;
                 border-radius: 12px;
-                margin-top: 16px;
-                font-size: 13.5px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                animation: ap-shake 0.5s var(--ease);
+                margin: 18px 0;
+                font-size: 14px;
+                line-height: 1.45;
+                animation: ap-fade-in 0.25s ease, ap-shake 0.45s ease;
+                display: block;                           /* Kutunun görünmesini garanti eder */
             }
+
+            /* Liste düzeni */
+            .ap-error-box ul {
+                margin: 0;
+                padding-left: 20px;
+            }
+
+            .ap-error-box li {
+                margin-bottom: 4px;
+            }
+
+           
+
+    
 
            
            
@@ -267,6 +285,19 @@
             <p class="ap-login-subtitle">Lütfen bilgilerinizi doğrulayın</p>
         </div>
 
+        <!-- 🔥 ÜSTTE KIRMIZI HATA KUTUSU -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="ap-error-box">
+                <ul>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
         @if (!string.IsNullOrEmpty(ViewBag.QR))
         {
             <div class="ap-qr-box">
@@ -281,19 +312,31 @@
         }
 
         <form method="post">
+
+            <!-- USERNAME -->
             <div class="ap-input-group">
-                <input class="ap-input" name="username" placeholder="Kullanıcı Adı" required autocomplete="username" />
+                <input class="ap-input" name="username" placeholder="Kullanıcı Adı" autocomplete="username" />
                 <i class="fa-solid fa-user ap-input-icon"></i>
+                <span asp-validation-for="Username" class="ap-hidden-validation"></span>
             </div>
 
-            <div class="ap-input-group">
-                <input class="ap-input" name="password" type="password" placeholder="Şifre" required autocomplete="current-password" />
+            <!-- PASSWORD -->
+            <div class="ap-input-group" style="position:relative;">
+                <input class="ap-input" id="passwordInput" name="password" type="password" placeholder="Şifre" autocomplete="current-password" />
                 <i class="fa-solid fa-lock ap-input-icon"></i>
+
+                <span id="togglePassword" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-dim);">
+                    <i class="fa-solid fa-eye"></i>
+                </span>
+
+                <span asp-validation-for="Password" class="ap-hidden-validation"></span>
             </div>
 
+            <!-- 2FA CODE -->
             <div class="ap-input-group">
-                <input class="ap-input" name="code" placeholder="2FA Kodu (6 Haneli)" required autocomplete="one-time-code" maxlength="6" pattern="\d*" />
+                <input class="ap-input" name="code" placeholder="2FA Kodu (6 Haneli)" autocomplete="one-time-code" maxlength="6" pattern="\d*" />
                 <i class="fa-solid fa-shield-halved ap-input-icon"></i>
+                <span asp-validation-for="Code" class="ap-hidden-validation"></span>
             </div>
 
             <button type="submit" class="ap-btn">
@@ -310,7 +353,29 @@
             }
         </form>
 
+        <div style="text-align:center; margin-top:20px;">
+            <a href="/" class="ap-btn-back" style="color:var(--text-dim); text-decoration:none;">
+                <i class="fa-solid fa-house"></i> Ana Sayfaya Dön
+            </a>
+        </div>
+
     </div>
+
+    <!-- ŞİFRE GÖSTER/GİZLE -->
+    <script>
+            const passwordInput = document.getElementById("passwordInput");
+            const togglePassword = document.getElementById("togglePassword");
+
+            togglePassword.addEventListener("click", () => {
+                const type = passwordInput.type === "password" ? "text" : "password";
+                passwordInput.type = type;
+
+                togglePassword.innerHTML =
+                    type === "password"
+                        ? '<i class="fa-solid fa-eye"></i>'
+                        : '<i class="fa-solid fa-eye-slash"></i>';
+            });
+    </script>
 
 </body>
 </html>

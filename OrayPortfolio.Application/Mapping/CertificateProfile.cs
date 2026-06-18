@@ -9,7 +9,12 @@ namespace OrayPortfolio.Application.Mapping
         public CertificateProfile()
         {
             CreateMap<Certificate, CertificateUpdateDto>().ReverseMap();
-            CreateMap<CertificateCreateDto, Certificate>();
+
+            CreateMap<CertificateCreateDto, Certificate>()
+                .ForMember(dest => dest.FileUrl, opt => opt.MapFrom(src => src.FileUrl));
+
+            CreateMap<CertificateUpdateDto, Certificate>()
+                .ForMember(dest => dest.FileUrl, opt => opt.MapFrom(src => src.FileUrl));
         }
     }
 }

@@ -168,6 +168,7 @@
    
 </style>
 
+
 <div class="ap-page-header">
     <h2 class="ap-page-title">Deneyimler</h2>
     <a class="ap-btn-primary" href="/Admin/Experience/Create">
@@ -179,6 +180,7 @@
     <table class="ap-table">
         <thead>
             <tr>
+                <th>Logo</th>
                 <th>Şirket</th>
                 <th>Pozisyon</th>
                 <th>Başlangıç</th>
@@ -186,35 +188,58 @@
                 <th style="text-align: right;">İşlemler</th>
             </tr>
         </thead>
+
         <tbody>
             @if (Model != null && Model.Any())
             {
                 foreach (var item in Model)
                 {
                     <tr>
-                        <td class="ap-table-title">
-                            <i class="fa-solid fa-building me-2" style="color: var(--text-faint);"></i> @item.Company
-                        </td>
-                        <td>@item.Position</td>
-                        <td class="ap-date-text">@item.StartDate.ToString("dd.MM.yyyy")</td>
+                        <!-- LOGO -->
                         <td>
-                            @if (item.EndDate.HasValue)
+                            @if (!string.IsNullOrWhiteSpace(item.LogoImageUrl))
                             {
-                                <span class="ap-date-text">@item.EndDate.Value.ToString("dd.MM.yyyy")</span>
+                                <img src="@item.LogoImageUrl"
+                                     style="width:45px; height:45px; object-fit:cover; border-radius:8px;" />
                             }
                             else
+                            {
+                                <span style="color:var(--text-dim); font-size:0.85rem;">—</span>
+                            }
+                        </td>
+
+                        <td class="ap-table-title">
+                            <i class="fa-solid fa-building me-2" style="color: var(--text-faint);"></i>
+                            @item.Company
+                        </td>
+
+                        <td>@item.Position</td>
+
+                        <td class="ap-date-text">
+                            @item.StartDate?.ToString("dd.MM.yyyy")
+                        </td>
+
+                        <td>
+                            @if (item.IsCurrent || item.EndDate == null)
                             {
                                 <span class="ap-status-badge">
                                     <i class="fa-solid fa-clock-rotate-left me-1"></i> Devam Ediyor
                                 </span>
                             }
+                            else
+                            {
+                                <span class="ap-date-text">@item.EndDate?.ToString("dd.MM.yyyy")</span>
+                            }
                         </td>
+
                         <td>
                             <div class="ap-action-btns">
-                                <a class="ap-btn-icon ap-btn-edit" href="/Admin/Experience/Edit/@item.Id" title="Düzenle">
+                                <a class="ap-btn-icon ap-btn-edit" href="/Admin/Experience/Edit/@item.Id">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
-                                <a class="ap-btn-icon ap-btn-delete" href="/Admin/Experience/Delete/@item.Id" title="Sil"
+
+                                <a class="ap-btn-icon ap-btn-delete"
+                                   href="/Admin/Experience/Delete/@item.Id"
                                    onclick="return confirm('Bu deneyimi silmek istediğinize emin misiniz?');">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </a>
@@ -226,7 +251,7 @@
             else
             {
                 <tr>
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="ap-empty-state">
                             <i class="fa-solid fa-briefcase"></i>
                             <p>Henüz eklenmiş bir deneyim bulunmuyor.</p>

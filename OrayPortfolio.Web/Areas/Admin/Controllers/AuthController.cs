@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OrayPortfolio.Application.DTOs.Auth;
 using OrayPortfolio.Web.Services;
 using QRCoder;
 using System.Drawing;
@@ -14,6 +15,7 @@ public class AuthController : Controller
         _config = config;
     }
 
+    // 🔥 QR CODE ÜRETİMİ (Tek Nokta)
     private void GenerateQrCode()
     {
         var secret = _config["AdminAuth:TwoFactorKey"];
@@ -33,77 +35,67 @@ public class AuthController : Controller
         ViewBag.QR = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
     }
 
-
-
+    // 🔥 LOGIN GET
     [HttpGet]
     public IActionResult Login()
     {
-        var secret = _config["AdminAuth:TwoFactorKey"];
-        var issuer = "OrayPortfolio";
-        var label = "Admin";
-
-        string otpauth = $"otpauth://totp/{issuer}:{label}?secret={secret}&issuer={issuer}";
-
-        using var qrGenerator = new QRCodeGenerator();
-        var qrData = qrGenerator.CreateQrCode(otpauth, QRCodeGenerator.ECCLevel.Q);
-        var qrCode = new QRCode(qrData);
-
-        using Bitmap qrBitmap = qrCode.GetGraphic(20);
-        using MemoryStream ms = new MemoryStream();
-        qrBitmap.Save(ms, ImageFormat.Png);
-
-        ViewBag.QR = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
-
         GenerateQrCode();
-        return View();
+        return View(new LoginViewModel());
     }
 
+    // 🔥 LOGIN POST
     [HttpPost]
-    public IActionResult Login(string username, string password, string code)
+    public IActionResult Login(LoginViewModel model)
     {
+        GenerateQrCode();
+
+        // FluentValidation hataları → Toastr ile gösterilecek
+        if (!ModelState.IsValid)
+            return View(model);
+
         var adminUser = _config["AdminAuth:Username"];
         var adminHash = _config["AdminAuth:PasswordHash"];
         var twoFactorKey = _config["AdminAuth:TwoFactorKey"];
 
         var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
 
+        // 🔥 Rate Limit Kontrolü
         if (RateLimitService.IsBlocked(ip))
         {
-            GenerateQrCode();
-            ViewBag.Error = "Çok fazla deneme yaptın. 5 dakika sonra tekrar dene.";
-            return View();
+            TempData["Error"] = "Çok fazla deneme yaptın. 5 dakika sonra tekrar dene.";
+            return View(model);
         }
 
-        if (username != adminUser || PasswordHasher.Hash(password) != adminHash)
+        // 🔥 Username + Password Kontrolü
+        if (model.Username != adminUser || PasswordHasher.Hash(model.Password) != adminHash)
         {
             RateLimitService.RegisterFail(ip);
-            GenerateQrCode();
-            ViewBag.Error = "Kullanıcı adı veya şifre hatalı.";
-            return View();
+            TempData["Error"] = "Kullanıcı adı veya şifre hatalı.";
+            return View(model);
         }
 
-        if (!TwoFactorService.ValidateCode(twoFactorKey, code))
+        // 🔥 2FA Kontrolü
+        if (!TwoFactorService.ValidateCode(twoFactorKey, model.Code))
         {
             RateLimitService.RegisterFail(ip);
-            GenerateQrCode();
-            ViewBag.Error = "2FA kodu hatalı.";
-            return View();
+            TempData["Error"] = "2FA kodu hatalı.";
+            return View(model);
         }
 
+        // 🔥 Başarılı giriş
         RateLimitService.Reset(ip);
         HttpContext.Session.SetString("AdminAuth", "true");
 
+        TempData["Success"] = "Başarıyla giriş yaptın!";
         return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
     }
 
-
-
-
-
+    // 🔥 LOGOUT
     [HttpGet]
     public IActionResult Logout()
     {
         HttpContext.Session.Remove("AdminAuth");
+        TempData["Success"] = "Başarıyla çıkış yaptın!";
         return RedirectToAction("Login", "Auth", new { area = "Admin" });
     }
 }

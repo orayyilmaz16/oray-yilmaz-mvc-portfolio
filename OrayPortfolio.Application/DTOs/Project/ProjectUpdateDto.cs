@@ -9,5 +9,9 @@
         public string? ProjectUrl { get; set; }
         public string? GithubUrl { get; set; }
         public bool IsFeatured { get; set; }
+
+        public string? CoverImageUrl { get; set; }
+
+
     }
 }

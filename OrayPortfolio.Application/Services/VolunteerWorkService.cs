@@ -17,16 +17,16 @@ namespace OrayPortfolio.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<List<VolunteerWorkDto>> GetAllAsync()
+        public async Task<List<VolunteerWorkUpdateDto>> GetAllAsync()
         {
             var data = await _uow.VolunteerWorks.GetAllAsync();
-            return _mapper.Map<List<VolunteerWorkDto>>(data);
+            return _mapper.Map<List<VolunteerWorkUpdateDto>>(data);
         }
 
-        public async Task<VolunteerWorkDto?> GetByIdAsync(int id)
+        public async Task<VolunteerWorkUpdateDto> GetByIdAsync(int id)
         {
             var entity = await _uow.VolunteerWorks.GetByIdAsync(id);
-            return _mapper.Map<VolunteerWorkDto>(entity);
+            return _mapper.Map<VolunteerWorkUpdateDto>(entity);
         }
 
         public async Task<bool> CreateAsync(VolunteerWorkCreateDto dto)
@@ -36,22 +36,34 @@ namespace OrayPortfolio.Application.Services
             return await _uow.SaveAsync() > 0;
         }
 
-        public async Task<bool> UpdateAsync(VolunteerWorkDto dto)
+        public async Task<bool> UpdateAsync(VolunteerWorkUpdateDto dto)
         {
             var entity = await _uow.VolunteerWorks.GetByIdAsync(dto.Id);
             if (entity == null) return false;
 
-            _mapper.Map(dto, entity);
-            _uow.VolunteerWorks.Update(entity);
+            entity.Organization = dto.Organization;
+            entity.Role = dto.Role;
+            entity.Description = dto.Description;
+            entity.StartDate = dto.StartDate;
+            entity.EndDate = dto.EndDate;
+            entity.IsCurrent = dto.IsCurrent;
 
+            if (!string.IsNullOrWhiteSpace(dto.ImageUrl))
+                entity.ImageUrl = dto.ImageUrl;
+
+            _uow.VolunteerWorks.Update(entity);
             return await _uow.SaveAsync() > 0;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            await _uow.VolunteerWorks.DeleteAsync(id);
+            var entity = await _uow.VolunteerWorks.GetByIdAsync(id);
+            if (entity == null) return false;
+
+            _uow.VolunteerWorks.Delete(entity);
             return await _uow.SaveAsync() > 0;
         }
     }
+
 
 }

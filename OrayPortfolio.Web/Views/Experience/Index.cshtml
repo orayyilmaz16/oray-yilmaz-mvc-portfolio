@@ -19,41 +19,19 @@
 
                 <!-- Tarih -->
                 <small class="text-muted">
-                    @e.StartDate.ToString("dd MMM yyyy") →
+                    @e.StartDate?.ToString("dd MMM yyyy") →
                     @(e.IsCurrent ? "Devam Ediyor" : e.EndDate?.ToString("dd MMM yyyy"))
                 </small>
 
                 <!-- Açıklama -->
                 <p class="mt-3">@e.Description</p>
 
-                <!-- Medya Dosyaları -->
-                @if (e.MediaFiles != null && e.MediaFiles.Any())
+                <!-- 📌 Yeni Medya Sistemi: Tek Görsel -->
+                @if (!string.IsNullOrEmpty(e.LogoImageUrl))
                 {
                     <div class="mt-3">
-                        <h6>Medya</h6>
-                        <div class="row mt-2">
-
-                            @foreach (var media in e.MediaFiles)
-                            {
-                                <div class="col-md-4 mb-3">
-                                    <div class="card shadow-sm border-0">
-
-                                        @if (media.FileType == "image")
-                                        {
-                                            <img src="@media.FilePath" class="img-fluid rounded" />
-                                        }
-                                        else
-                                        {
-                                            <a href="@media.FilePath" target="_blank" class="btn btn-outline-primary w-100">
-                                                Dosyayı Aç
-                                            </a>
-                                        }
-
-                                    </div>
-                                </div>
-                            }
-
-                        </div>
+                        <h6>Görsel</h6>
+                        <img src="@e.LogoImageUrl" class="img-fluid rounded shadow-sm" style="max-width: 300px;" />
                     </div>
                 }
 

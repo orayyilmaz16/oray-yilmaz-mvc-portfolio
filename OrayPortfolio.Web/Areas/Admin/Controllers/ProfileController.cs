@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrayPortfolio.Application.DTOs.Profile;
 using OrayPortfolio.Application.Interfaces.Services;
+using OrayPortfolio.Web.Services;
 
 namespace OrayPortfolio.Web.Areas.Admin.Controllers
 {
@@ -8,10 +9,12 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
     public class ProfileController : Controller
     {
         private readonly IProfileService _profileService;
+        private readonly IFileService _fileService;
 
-        public ProfileController(IProfileService profileService)
+        public ProfileController(IProfileService profileService, IFileService fileService)
         {
             _profileService = profileService;
+            _fileService = fileService;
         }
 
         public async Task<IActionResult> Index()
@@ -35,26 +38,24 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Index(ProfileUpdateDto model, IFormFile? ProfileImage)
         {
-            if (ProfileImage != null)
+            if (!ModelState.IsValid)
             {
-                var fileName = Guid.NewGuid() + Path.GetExtension(ProfileImage.FileName);
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/profile", fileName);
+                TempData["Error"] = "Lütfen formdaki hataları düzeltin.";
+                return View(model);
+            }
 
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await ProfileImage.CopyToAsync(stream);
-                }
-
-                model.ProfileImageUrl = "/uploads/profile/" + fileName;
+            // Yeni fotoğraf varsa yükle
+            if (ProfileImage != null && ProfileImage.Length > 0)
+            {
+                model.ProfileImageUrl = await _fileService.UploadAsync(ProfileImage, "profile");
             }
 
             await _profileService.UpdateAsync(model);
 
-            TempData["success"] = "Profil güncellendi";
+            TempData["Success"] = "Profil başarıyla güncellendi.";
             return RedirectToAction("Index");
         }
     }

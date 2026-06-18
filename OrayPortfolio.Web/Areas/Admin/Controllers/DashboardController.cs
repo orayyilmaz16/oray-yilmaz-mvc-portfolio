@@ -14,21 +14,27 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         private readonly ISkillService _skillService;
         private readonly IVolunteerWorkService _volunteerService;
         private readonly IProfileService _profileService;
+        private readonly IEducationService _educationService;
+        private readonly IReferenceService _referenceService;
 
         public DashboardController(
             IProjectService projectService,
+            IReferenceService referenceService,
             IExperienceService experienceService,
             ICertificateService certificateService,
             ISkillService skillService,
             IVolunteerWorkService volunteerService,
-            IProfileService profileService)
+            IProfileService profileService,
+            IEducationService educationService)
         {
             _projectService = projectService;
             _experienceService = experienceService;
+            _referenceService = referenceService;
             _certificateService = certificateService;
             _skillService = skillService;
             _volunteerService = volunteerService;
             _profileService = profileService;
+            _educationService = educationService;
         }
 
         public async Task<IActionResult> Index()
@@ -38,6 +44,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             var certificates = await _certificateService.GetAllAsync();
             var skills = await _skillService.GetAllAsync();
             var volunteers = await _volunteerService.GetAllAsync();
+            var references = await _referenceService.GetAllAsync();
+            var educations = await _educationService.GetAllAsync();
             var profile = await _profileService.GetAsync();
 
             var model = new DashboardViewModel
@@ -47,10 +55,16 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 CertificateCount = certificates.Count,
                 SkillCount = skills.Count,
                 VolunteerWorkCount = volunteers.Count,
-                Profile = profile,
+                ReferenceCount = references.Count,
+                EducationCount = educations.Count,
+
+                ProfileCompletion = CalculateProfileCompletion(profile),
+
                 LastProjects = projects.OrderByDescending(p => p.Id).Take(5).ToList(),
                 LastCertificates = certificates.OrderByDescending(c => c.Id).Take(5).ToList(),
-                ProfileCompletion = CalculateProfileCompletion(profile)
+                LastVolunteerWorks = volunteers.OrderByDescending(v => v.Id).Take(5).ToList(),
+                LastEducations = educations.OrderByDescending(e => e.Id).Take(5).ToList(),
+                LastReferences = references.OrderByDescending(r => r.Id).Take(5).ToList()
             };
 
             return View(model);
@@ -63,21 +77,20 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
 
             var fields = new[]
             {
-        profile.FullName,
-        profile.Title,
-        profile.ShortBio,
-        profile.LongBio,
-        profile.Email,
-        profile.GithubUrl,
-        profile.LinkedinUrl,
-        profile.ProfileImageUrl
-    };
+                profile.FullName,
+                profile.Title,
+                profile.ShortBio,
+                profile.LongBio,
+                profile.Email,
+                profile.GithubUrl,
+                profile.LinkedinUrl,
+                profile.ProfileImageUrl
+            };
 
             int filled = fields.Count(f => !string.IsNullOrWhiteSpace(f));
             int total = fields.Length;
 
             return (int)((double)filled / total * 100);
         }
-
     }
 }

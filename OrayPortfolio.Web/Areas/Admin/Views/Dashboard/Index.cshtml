@@ -159,6 +159,16 @@
         text-align: right;
     }
 
+    .ap-stat-icon.reference {
+        background: #6f42c1;
+        color: #fff;
+    }
+
+    .ap-stat-icon.education {
+        background: #0d6efd;
+        color: #fff;
+    }
+
     /* Gecikmeli Animasyonlar (Stagger Effect) */
     .delay-1 {
         animation-delay: 0.1s;
@@ -184,6 +194,8 @@
 <h2 class="ap-dashboard-header">Genel Bakış</h2>
 
 <div class="row g-4">
+
+    <!-- Projeler -->
     <div class="col-xl-3 col-md-6">
         <div class="ap-card delay-1">
             <div class="ap-stat-card">
@@ -198,20 +210,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
-        <div class="ap-card delay-5">
-            <div class="ap-stat-card">
-                <div class="ap-stat-icon volunteer">
-                    <i class="fa-solid fa-handshake-angle"></i>
-                </div>
-                <div class="ap-stat-info">
-                    <h3>@Model.VolunteerWorkCount</h3>
-                    <p>Gönüllü Çalışmalar</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Deneyimler -->
     <div class="col-xl-3 col-md-6">
         <div class="ap-card delay-2">
             <div class="ap-stat-card">
@@ -226,6 +225,7 @@
         </div>
     </div>
 
+    <!-- Sertifikalar -->
     <div class="col-xl-3 col-md-6">
         <div class="ap-card delay-3">
             <div class="ap-stat-card">
@@ -240,6 +240,7 @@
         </div>
     </div>
 
+    <!-- Yetenekler -->
     <div class="col-xl-3 col-md-6">
         <div class="ap-card delay-4">
             <div class="ap-stat-card">
@@ -253,19 +254,68 @@
             </div>
         </div>
     </div>
+
+    <!-- Gönüllü Çalışmalar -->
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-5">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon volunteer">
+                    <i class="fa-solid fa-handshake-angle"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.VolunteerWorkCount</h3>
+                    <p>Gönüllü Çalışmalar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eğitimler -->
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-6">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon education">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.EducationCount</h3>
+                    <p>Eğitimler</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Referanslar -->
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-7">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon reference">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.ReferenceCount</h3>
+                    <p>Referanslar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
+
+<!-- PROFİL TAMAMLANMA -->
 <div class="row g-4 mt-1">
     <div class="col-12">
         <div class="ap-card delay-5">
             <h5 class="ap-card-title">Profil Tamamlanma Oranı</h5>
             <div class="ap-progress-wrapper mt-3">
-                <div class="ap-progress-bar" style="width: 0%" data-target="@Model.ProfileCompletion"></div>
+                <div class="ap-progress-bar" style="width:0%" data-target="@Model.ProfileCompletion"></div>
             </div>
             <div class="ap-progress-text">@Model.ProfileCompletion% Tamamlandı</div>
         </div>
     </div>
 
+    <!-- GENEL İSTATİSTİK GRAFİĞİ -->
     <div class="col-12">
         <div class="ap-card delay-5">
             <h5 class="ap-card-title">Genel İstatistik Dağılımı</h5>
@@ -276,12 +326,16 @@
     </div>
 </div>
 
+
+<!-- SON EKLENENLER -->
 <div class="row g-4 mt-1">
-    <div class="col-md-6">
+
+    <!-- Son Projeler -->
+    <div class="col-md-4">
         <div class="ap-card delay-5">
             <h5 class="ap-card-title">Son Eklenen Projeler</h5>
             <div class="ap-list-group">
-                @if (Model.LastProjects != null && Model.LastProjects.Any())
+                @if (Model.LastProjects?.Any() == true)
                 {
                     foreach (var p in Model.LastProjects)
                     {
@@ -293,19 +347,18 @@
                 }
                 else
                 {
-                    <div class="ap-list-item" style="justify-content: center;">
-                        <span>Henüz proje eklenmemiş.</span>
-                    </div>
+                    <div class="ap-list-item" style="justify-content:center;">Henüz proje eklenmemiş.</div>
                 }
             </div>
         </div>
     </div>
 
-    <div class="col-md-6">
+    <!-- Son Sertifikalar -->
+    <div class="col-md-4">
         <div class="ap-card delay-5">
             <h5 class="ap-card-title">Son Eklenen Sertifikalar</h5>
             <div class="ap-list-group">
-                @if (Model.LastCertificates != null && Model.LastCertificates.Any())
+                @if (Model.LastCertificates?.Any() == true)
                 {
                     foreach (var c in Model.LastCertificates)
                     {
@@ -317,14 +370,88 @@
                 }
                 else
                 {
-                    <div class="ap-list-item" style="justify-content: center;">
-                        <span>Henüz sertifika eklenmemiş.</span>
-                    </div>
+                    <div class="ap-list-item" style="justify-content:center;">Henüz sertifika eklenmemiş.</div>
                 }
             </div>
         </div>
     </div>
+
+    <!-- Son Gönüllü Çalışmalar -->
+    <div class="col-md-4">
+        <div class="ap-card delay-5">
+            <h5 class="ap-card-title">Son Eklenen Gönüllü Çalışmalar</h5>
+            <div class="ap-list-group">
+                @if (Model.LastVolunteerWorks?.Any() == true)
+                {
+                    foreach (var v in Model.LastVolunteerWorks)
+                    {
+                        <div class="ap-list-item">
+                            <i class="fa-solid fa-handshake-angle"></i>
+                            <span>@v.Organization</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="ap-list-item" style="justify-content:center;">Henüz gönüllü çalışma eklenmemiş.</div>
+                }
+            </div>
+        </div>
+    </div>
+
 </div>
+
+
+<div class="row g-4 mt-1">
+
+    <!-- Son Eğitimler -->
+    <div class="col-md-6">
+        <div class="ap-card delay-5">
+            <h5 class="ap-card-title">Son Eklenen Eğitimler</h5>
+            <div class="ap-list-group">
+                @if (Model.LastEducations?.Any() == true)
+                {
+                    foreach (var e in Model.LastEducations)
+                    {
+                        <div class="ap-list-item">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <span>@e.School</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="ap-list-item" style="justify-content:center;">Henüz eğitim eklenmemiş.</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Son Referanslar -->
+    <div class="col-md-6">
+        <div class="ap-card delay-5">
+            <h5 class="ap-card-title">Son Eklenen Referanslar</h5>
+            <div class="ap-list-group">
+                @if (Model.LastReferences?.Any() == true)
+                {
+                    foreach (var r in Model.LastReferences)
+                    {
+                        <div class="ap-list-item">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>@r.FullName</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="ap-list-item" style="justify-content:center;">Henüz referans eklenmemiş.</div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>

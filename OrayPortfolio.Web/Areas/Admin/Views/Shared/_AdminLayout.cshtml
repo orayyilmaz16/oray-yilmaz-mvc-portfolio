@@ -536,7 +536,7 @@
                     display: none;
                 }
             }
-
+            
             @@media (prefers-reduced-motion: reduce) {
                 * {
                     animation-duration: .001ms !important;
@@ -544,6 +544,11 @@
                     transition-duration: .001ms !important;
                 }
             }
+
+            span.field-validation-error {
+                display: none !important;
+            }
+
     </style>
 </head>
 
@@ -579,6 +584,18 @@
                     <span>Projeler</span>
                 </a>
 
+                <a class="ap-sidebar__link @(currentController == "Education" ? "active" : "")"
+                   style="animation-delay:.25s"
+                   asp-area="Admin" asp-controller="Education" asp-action="Index">
+                    <span class="ap-sidebar__icon"><i class="fa-solid fa-graduation-cap"></i></span>
+                    <span>Eğitim</span>
+                </a>
+
+               
+
+
+
+
                 <a class="ap-sidebar__link @(currentController == "Experience" ? "active" : "")"
                    style="animation-delay:.11s"
                    asp-area="Admin" asp-controller="Experience" asp-action="Index">
@@ -586,13 +603,7 @@
                     <span>Deneyimler</span>
                 </a>
 
-                <a class="ap-sidebar__link @(currentController == "Media" ? "active" : "")"
-                   style="animation-delay:.15s"
-                   asp-area="Admin" asp-controller="Media" asp-action="Upload">
-                    <span class="ap-sidebar__icon"><i class="fa-solid fa-upload"></i></span>
-                    <span>Medya Yükle</span>
-                </a>
-
+               
                 <a class="ap-sidebar__link @(currentController == "Certificate" ? "active" : "")"
                    style="animation-delay:.19s"
                    asp-area="Admin" asp-controller="Certificate" asp-action="Index">
@@ -612,6 +623,13 @@
                    asp-area="Admin" asp-controller="VolunteerWork" asp-action="Index">
                     <span class="ap-sidebar__icon"><i class="fa-solid fa-handshake-angle"></i></span>
                     <span>Gönüllü Çalışmalar</span>
+                </a>
+
+                <a class="ap-sidebar__link @(currentController == "Reference" ? "active" : "")"
+                   style="animation-delay:.30s"
+                   asp-area="Admin" asp-controller="Reference" asp-action="Index">
+                    <span class="ap-sidebar__icon"><i class="fa-solid fa-user-tie"></i></span>
+                    <span>Referanslar</span>
                 </a>
             </div>
         </nav>
@@ -714,6 +732,33 @@
         });
         })();
     </script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-bottom-right",
+        "timeOut": "3000"
+        };
+    </script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script> toastr.success("@TempData["Success"]"); </script>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <script> toastr.error("@TempData["Error"]"); </script>
+    }
+
 
 </body>
 </html>

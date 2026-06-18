@@ -9,7 +9,12 @@ namespace OrayPortfolio.Application.Mapping
         public ExperienceProfile()
         {
             CreateMap<Experience, ExperienceUpdateDto>().ReverseMap();
-            CreateMap<ExperienceCreateDto, Experience>();
+
+            CreateMap<ExperienceCreateDto, Experience>()
+                .ForMember(dest => dest.LogoImageUrl, opt => opt.MapFrom(src => src.LogoImageUrl));
+
+            CreateMap<ExperienceUpdateDto, Experience>()
+                .ForMember(dest => dest.LogoImageUrl, opt => opt.MapFrom(src => src.LogoImageUrl));
         }
     }
 }

@@ -8,7 +8,8 @@ namespace OrayPortfolio.Application.Mapping
     {
         public SkillProfile()
         {
-            CreateMap<Skill, SkillDto>().ReverseMap();
+            CreateMap<Skill, SkillCreateDto>().ReverseMap();
+            CreateMap<Skill, SkillUpdateDto>().ReverseMap();
         }
     }
 }

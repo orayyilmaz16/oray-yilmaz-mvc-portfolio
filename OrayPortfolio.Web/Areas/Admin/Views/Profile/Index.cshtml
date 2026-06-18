@@ -1,6 +1,33 @@
 ﻿@model ProfileUpdateDto
 
 <style>
+    /* Input altı hataları tamamen gizle */
+    .ap-hidden-validation {
+        display: none !important;
+    }
+
+    /* Premium kırmızı hata kutusu */
+    .ap-error-box {
+        background: rgba(255, 0, 0, 0.12);
+        border: 1px solid rgba(255, 0, 0, 0.45);
+        color: #ff3b3b;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.45;
+        animation: ap-fade-in 0.25s ease, ap-shake 0.45s ease;
+    }
+
+        .ap-error-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .ap-error-box li {
+            margin-bottom: 4px;
+        }
+
     /* Ortak Form CSS */
     .ap-page-header {
         display: flex;
@@ -208,9 +235,24 @@
 </div>
 
 <div class="ap-form-card">
+
+    <!-- 🔥 TÜM VALIDASYON HATALARINI KIRMIZI KUTUDA GÖSTER -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="ap-error-box">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
     <form method="post" enctype="multipart/form-data">
 
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ProfileImageUrl" />
 
         <div class="row g-5">
             <div class="col-lg-8">
@@ -221,13 +263,16 @@
                     <div class="col-md-6">
                         <div class="ap-form-group">
                             <label class="ap-form-label"><i class="fa-solid fa-user"></i> Ad Soyad</label>
-                            <input class="ap-input" asp-for="FullName" required />
+                            <input class="ap-input" asp-for="FullName" />
+                            <span asp-validation-for="FullName" class="ap-hidden-validation"></span>
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="ap-form-group">
                             <label class="ap-form-label"><i class="fa-solid fa-briefcase"></i> Ünvan</label>
-                            <input class="ap-input" asp-for="Title" placeholder="Örn: Senior Software Engineer" required />
+                            <input class="ap-input" asp-for="Title" placeholder="Örn: Senior Software Engineer" />
+                            <span asp-validation-for="Title" class="ap-hidden-validation"></span>
                         </div>
                     </div>
                 </div>
@@ -235,11 +280,13 @@
                 <div class="ap-form-group">
                     <label class="ap-form-label"><i class="fa-solid fa-quote-left"></i> Kısa Biyografi</label>
                     <textarea class="ap-input" asp-for="ShortBio" rows="2" placeholder="Kendinizi anlatan kısa ve öz bir cümle..."></textarea>
+                    <span asp-validation-for="ShortBio" class="ap-hidden-validation"></span>
                 </div>
 
                 <div class="ap-form-group">
                     <label class="ap-form-label"><i class="fa-solid fa-align-left"></i> Uzun Biyografi</label>
                     <textarea class="ap-input" asp-for="LongBio" rows="5" placeholder="Hakkınızda bölümünde görünecek detaylı metin..."></textarea>
+                    <span asp-validation-for="LongBio" class="ap-hidden-validation"></span>
                 </div>
 
                 <hr class="ap-divider" />
@@ -254,6 +301,7 @@
                                 <i class="fa-solid fa-envelope ap-input-group-icon"></i>
                                 <input type="email" class="ap-input" asp-for="Email" />
                             </div>
+                            <span asp-validation-for="Email" class="ap-hidden-validation"></span>
                         </div>
                     </div>
 
@@ -264,6 +312,7 @@
                                 <i class="fa-brands fa-github ap-input-group-icon"></i>
                                 <input type="url" class="ap-input" asp-for="GithubUrl" placeholder="https://github.com/..." />
                             </div>
+                            <span asp-validation-for="GithubUrl" class="ap-hidden-validation"></span>
                         </div>
                     </div>
 
@@ -274,6 +323,7 @@
                                 <i class="fa-brands fa-linkedin ap-input-group-icon"></i>
                                 <input type="url" class="ap-input" asp-for="LinkedinUrl" placeholder="https://linkedin.com/in/..." />
                             </div>
+                            <span asp-validation-for="LinkedinUrl" class="ap-hidden-validation"></span>
                         </div>
                     </div>
 
@@ -284,6 +334,7 @@
                                 <i class="fa-brands fa-instagram ap-input-group-icon"></i>
                                 <input type="url" class="ap-input" asp-for="InstagramUrl" placeholder="https://instagram.com/..." />
                             </div>
+                            <span asp-validation-for="InstagramUrl" class="ap-hidden-validation"></span>
                         </div>
                     </div>
                 </div>
@@ -359,3 +410,13 @@
         reader.readAsDataURL(file);
     });
 </script>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <script>
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+                @:toastr.error("@error.ErrorMessage");
+        }
+    </script>
+}

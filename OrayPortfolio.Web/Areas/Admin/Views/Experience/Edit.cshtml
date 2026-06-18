@@ -1,6 +1,33 @@
 ﻿@model ExperienceUpdateDto
 
 <style>
+
+    /* Input altı hataları tamamen gizle */
+    .ap-hidden-validation {
+        display: none !important;
+    }
+
+    /* Premium kırmızı hata kutusu */
+    .ap-error-box {
+        background: rgba(255, 0, 0, 0.12);
+        border: 1px solid rgba(255, 0, 0, 0.45);
+        color: #ff3b3b;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.45;
+        animation: ap-fade-in 0.25s ease, ap-shake 0.45s ease;
+    }
+
+        .ap-error-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .ap-error-box li {
+            margin-bottom: 4px;
+        }
     /* Ortak Form CSS */
     .ap-page-header {
         display: flex;
@@ -156,6 +183,41 @@
  
 </style>
 
+
+
+
+<style>
+    /* Input altı hataları tamamen gizle */
+    .ap-hidden-validation {
+        display: none !important;
+    }
+
+    /* Premium kırmızı hata kutusu */
+    .ap-error-box {
+        background: rgba(255, 0, 0, 0.12);
+        border: 1px solid rgba(255, 0, 0, 0.45);
+        color: #ff3b3b;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.45;
+        animation: ap-fade-in 0.25s ease, ap-shake 0.45s ease;
+    }
+
+    .ap-error-box ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .ap-error-box li {
+        margin-bottom: 4px;
+    }
+
+   
+</style>
+
+
 <div class="ap-page-header">
     <h2 class="ap-page-title">Deneyimi Düzenle</h2>
     <a class="ap-btn-back" href="/Admin/Experience/Index">
@@ -164,50 +226,80 @@
 </div>
 
 <div class="ap-form-card">
-    <form method="post">
+
+    <!-- 🔥 TÜM VALIDASYON HATALARINI KIRMIZI KUTUDA GÖSTER -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="ap-error-box">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <form asp-area="Admin" asp-controller="Experience" asp-action="Edit"
+          method="post" enctype="multipart/form-data">
 
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="LogoImageUrl" />
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="ap-form-group">
-                    <label class="ap-form-label"><i class="fa-solid fa-building"></i> Şirket Adı</label>
-                    <input class="ap-input" asp-for="Company" required />
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="ap-form-group">
-                    <label class="ap-form-label"><i class="fa-solid fa-user-tie"></i> Pozisyon</label>
-                    <input class="ap-input" asp-for="Position" required />
-                </div>
-            </div>
+        <div class="ap-form-group">
+            <label class="ap-form-label"><i class="fa-solid fa-building"></i> Şirket</label>
+            <input class="ap-input" asp-for="Company" />
+            <span asp-validation-for="Company" class="ap-hidden-validation"></span>
         </div>
 
         <div class="ap-form-group">
-            <label class="ap-form-label"><i class="fa-solid fa-align-left"></i> Sorumluluklar & Açıklama</label>
+            <label class="ap-form-label"><i class="fa-solid fa-briefcase"></i> Pozisyon</label>
+            <input class="ap-input" asp-for="Position" />
+            <span asp-validation-for="Position" class="ap-hidden-validation"></span>
+        </div>
+
+        <div class="ap-form-group">
+            <label class="ap-form-label"><i class="fa-solid fa-align-left"></i> Açıklama</label>
             <textarea class="ap-input" asp-for="Description"></textarea>
+            <span asp-validation-for="Description" class="ap-hidden-validation"></span>
         </div>
 
         <div class="row">
             <div class="col-md-6">
                 <div class="ap-form-group">
-                    <label class="ap-form-label"><i class="fa-regular fa-calendar"></i> Başlangıç Tarihi</label>
-                    <input type="date" class="ap-input" asp-for="StartDate" required />
+                    <label class="ap-form-label"><i class="fa-solid fa-calendar-day"></i> Başlangıç Tarihi</label>
+                    <input class="ap-input" asp-for="StartDate" type="date" />
+                    <span asp-validation-for="StartDate" class="ap-hidden-validation"></span>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="ap-form-group">
-                    <label class="ap-form-label"><i class="fa-regular fa-calendar-check"></i> Bitiş Tarihi</label>
-                    <input type="date" class="ap-input" id="EndDateInputEdit" asp-for="EndDate" />
+                    <label class="ap-form-label"><i class="fa-solid fa-calendar-check"></i> Bitiş Tarihi</label>
+                    <input class="ap-input" asp-for="EndDate" type="date" />
+                    <span asp-validation-for="EndDate" class="ap-hidden-validation"></span>
                 </div>
             </div>
         </div>
 
         <div class="ap-form-group">
             <label class="ap-check-wrapper">
-                <input type="checkbox" class="ap-check-input" id="IsCurrentCheckboxEdit" asp-for="IsCurrent" />
-                <span class="ap-check-label"><i class="fa-solid fa-clock-rotate-left text-accent me-2"></i>Halen bu şirkette çalışıyorum</span>
+                <input type="checkbox" class="ap-check-input" asp-for="IsCurrent" />
+                <span class="ap-check-label">Halen Devam Ediyor</span>
             </label>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.LogoImageUrl))
+        {
+            <div class="ap-form-group">
+                <label class="ap-form-label"><i class="fa-solid fa-image"></i> Mevcut Logo</label>
+                <img src="@Model.LogoImageUrl" style="max-width:160px; border-radius:12px; margin-bottom:10px;" />
+            </div>
+        }
+
+        <div class="ap-form-group">
+            <label class="ap-form-label"><i class="fa-solid fa-upload"></i> Yeni Logo (Opsiyonel)</label>
+            <input type="file" name="LogoImage" class="ap-input" />
         </div>
 
         <button type="submit" class="ap-btn-edit-submit">
@@ -216,6 +308,7 @@
 
     </form>
 </div>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -238,3 +331,4 @@
         });
     });
 </script>
+

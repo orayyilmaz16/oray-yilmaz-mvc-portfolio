@@ -1,6 +1,32 @@
 ﻿@model ProjectCreateDto
 
 <style>
+    /* Input altı hataları tamamen gizle */
+    .ap-hidden-validation {
+        display: none !important;
+    }
+
+    /* Premium kırmızı hata kutusu */
+    .ap-error-box {
+        background: rgba(255, 0, 0, 0.12);
+        border: 1px solid rgba(255, 0, 0, 0.45);
+        color: #ff3b3b;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.45;
+        animation: ap-fade-in 0.25s ease, ap-shake 0.45s ease;
+    }
+
+        .ap-error-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .ap-error-box li {
+            margin-bottom: 4px;
+        }
     /* Sayfa Üst Kısmı */
     .ap-page-header {
         display: flex;
@@ -162,42 +188,71 @@
 </div>
 
 <div class="ap-form-card">
-    <form method="post">
+
+    <!-- 🔥 TÜM VALIDASYON HATALARINI KIRMIZI KUTUDA GÖSTER -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="ap-error-box">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <form asp-area="Admin" asp-controller="Project" asp-action="Create"
+          method="post" enctype="multipart/form-data">
 
         <div class="ap-form-group">
             <label class="ap-form-label"><i class="fa-solid fa-heading"></i> Başlık</label>
-            <input class="ap-input" asp-for="Title" placeholder="Örn: E-Ticaret Yönetim Sistemi" required />
+            <input class="ap-input" asp-for="Title" placeholder="Örn: E-Ticaret Yönetim Sistemi" />
+            <span asp-validation-for="Title" class="ap-hidden-validation"></span>
         </div>
 
         <div class="ap-form-group">
             <label class="ap-form-label"><i class="fa-solid fa-align-left"></i> Açıklama</label>
-            <textarea class="ap-input" asp-for="Description" placeholder="Projenin detaylarını ve amacını buraya yazın..." required></textarea>
+            <textarea class="ap-input" asp-for="Description" placeholder="Projenin detaylarını yazın..."></textarea>
+            <span asp-validation-for="Description" class="ap-hidden-validation"></span>
         </div>
 
         <div class="ap-form-group">
             <label class="ap-form-label"><i class="fa-solid fa-code"></i> Teknolojiler</label>
-            <input class="ap-input" asp-for="Technologies" placeholder="Örn: C#, ASP.NET Core, SQL Server (Virgülle ayırın)" required />
+            <input class="ap-input" asp-for="Technologies" placeholder="Örn: C#, ASP.NET Core" />
+            <span asp-validation-for="Technologies" class="ap-hidden-validation"></span>
         </div>
 
         <div class="row">
             <div class="col-md-6">
                 <div class="ap-form-group">
                     <label class="ap-form-label"><i class="fa-solid fa-link"></i> Proje URL</label>
-                    <input class="ap-input" asp-for="ProjectUrl" placeholder="https://projelinki.com" />
+                    <input class="ap-input" asp-for="ProjectUrl" placeholder="https://proje.com" />
+                    <span asp-validation-for="ProjectUrl" class="ap-hidden-validation"></span>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="ap-form-group">
                     <label class="ap-form-label"><i class="fa-brands fa-github"></i> Github URL</label>
-                    <input class="ap-input" asp-for="GithubUrl" placeholder="https://github.com/kullaniciadi/proje" />
+                    <input class="ap-input" asp-for="GithubUrl" placeholder="https://github.com/..." />
+                    <span asp-validation-for="GithubUrl" class="ap-hidden-validation"></span>
                 </div>
             </div>
+        </div>
+
+        <!-- 🔥 RESİM OPSİYONEL -->
+        <div class="ap-form-group">
+            <label class="ap-form-label"><i class="fa-solid fa-image"></i> Kapak Görseli (Opsiyonel)</label>
+            <input type="file" name="CoverImage" class="ap-input" />
         </div>
 
         <div class="ap-form-group">
             <label class="ap-check-wrapper">
                 <input type="checkbox" class="ap-check-input" asp-for="IsFeatured" />
-                <span class="ap-check-label"><i class="fa-solid fa-star text-warning me-2"></i>Öne Çıkan Proje Olarak İşaretle</span>
+                <span class="ap-check-label">
+                    <i class="fa-solid fa-star text-warning me-2"></i>Öne Çıkan Proje
+                </span>
             </label>
         </div>
 

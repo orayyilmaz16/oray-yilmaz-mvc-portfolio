@@ -1,6 +1,34 @@
 ﻿@model CertificateCreateDto
 
 <style>
+
+    /* Input altı hataları tamamen gizle */
+    .ap-hidden-validation {
+        display: none !important;
+    }
+
+    /* Premium kırmızı hata kutusu */
+    .ap-error-box {
+        background: rgba(255, 0, 0, 0.12);
+        border: 1px solid rgba(255, 0, 0, 0.45);
+        color: #ff3b3b;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.45;
+        animation: ap-fade-in 0.25s ease, ap-shake 0.45s ease;
+    }
+
+        .ap-error-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .ap-error-box li {
+            margin-bottom: 4px;
+        }
+
     /* Ortak Form CSS */
     .ap-page-header {
         display: flex;
@@ -124,34 +152,54 @@
 </div>
 
 <div class="ap-form-card">
-    <form method="post">
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="ap-form-group">
-                    <label class="ap-form-label"><i class="fa-solid fa-certificate"></i> Başlık</label>
-                    <input class="ap-input" asp-for="Title" placeholder="Örn: C# İleri Düzey Eğitimi" required />
-                </div>
-            </div>
+    <!-- 🔥 TÜM VALIDASYON HATALARINI KIRMIZI KUTUDA GÖSTER -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="ap-error-box">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
 
-            <div class="col-md-6">
-                <div class="ap-form-group">
-                    <label class="ap-form-label"><i class="fa-solid fa-building-columns"></i> Veren Kurum</label>
-                    <input class="ap-input" asp-for="Issuer" placeholder="Örn: Udemy, BTK Akademi" required />
-                </div>
-            </div>
+    <form asp-area="Admin" asp-controller="Certificate" asp-action="Create"
+          method="post" enctype="multipart/form-data">
 
-            <div class="col-md-6">
-                <div class="ap-form-group">
-                    <label class="ap-form-label"><i class="fa-regular fa-calendar-check"></i> Tarih</label>
-                    <input type="date" class="ap-input" asp-for="Date" required />
-                </div>
-            </div>
+        <div class="ap-form-group">
+            <label>Başlık</label>
+            <input class="ap-input" asp-for="Title" />
+            <span asp-validation-for="Title" class="ap-hidden-validation"></span>
         </div>
 
-        <button type="submit" class="ap-btn-submit">
-            <i class="fa-solid fa-floppy-disk"></i> Sertifikayı Kaydet
-        </button>
+        <div class="ap-form-group">
+            <label>Veren Kurum</label>
+            <input class="ap-input" asp-for="Issuer" />
+            <span asp-validation-for="Issuer" class="ap-hidden-validation"></span>
+        </div>
+
+        <div class="ap-form-group">
+            <label>Tarih</label>
+            <input class="ap-input" asp-for="Date" type="date" />
+            <span asp-validation-for="Date" class="ap-hidden-validation"></span>
+        </div>
+
+        <div class="ap-form-group">
+            <label>Sertifika URL</label>
+            <input class="ap-input" asp-for="CertificateUrl" />
+            <span asp-validation-for="CertificateUrl" class="ap-hidden-validation"></span>
+        </div>
+
+        <div class="ap-form-group">
+            <label>Sertifika Dosyası (PDF veya Görsel)</label>
+            <input type="file" name="FileUpload" class="ap-input" />
+        </div>
+
+        <button type="submit" class="ap-btn-submit">Kaydet</button>
 
     </form>
+
 </div>

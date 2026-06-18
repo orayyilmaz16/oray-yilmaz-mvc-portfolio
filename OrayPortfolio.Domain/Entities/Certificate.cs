@@ -6,9 +6,11 @@ namespace OrayPortfolio.Domain.Entities
     {
         public string? Title { get; set; }
         public string? Issuer { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
         public string? CertificateUrl { get; set; }
 
-        public ICollection<Media>? MediaFiles { get; set; }
+        public string? FileUrl { get; set; }
+
+
     }
 }

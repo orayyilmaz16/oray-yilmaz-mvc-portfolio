@@ -38,7 +38,18 @@ namespace OrayPortfolio.Application.Services
 
         public async Task<bool> UpdateAsync(CertificateUpdateDto dto)
         {
-            var entity = _mapper.Map<Certificate>(dto);
+            var entity = await _uow.Certificates.GetByIdAsync(dto.Id);
+            if (entity == null) return false;
+
+            entity.Title = dto.Title;
+            entity.Issuer = dto.Issuer;
+            entity.Date = dto.Date;
+            entity.CertificateUrl = dto.CertificateUrl;
+
+            // 🔥 Yeni dosya geldiyse değiştir
+            if (!string.IsNullOrWhiteSpace(dto.FileUrl))
+                entity.FileUrl = dto.FileUrl;
+
             _uow.Certificates.Update(entity);
             return await _uow.SaveAsync() > 0;
         }

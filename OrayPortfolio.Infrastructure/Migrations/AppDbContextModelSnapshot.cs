@@ -36,8 +36,11 @@ namespace OrayPortfolio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("FileUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Issuer")
                         .HasColumnType("nvarchar(max)");
@@ -113,10 +116,13 @@ namespace OrayPortfolio.Infrastructure.Migrations
                     b.Property<bool>("IsCurrent")
                         .HasColumnType("bit");
 
+                    b.Property<string>("LogoImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Position")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -125,60 +131,6 @@ namespace OrayPortfolio.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Experiences");
-                });
-
-            modelBuilder.Entity("OrayPortfolio.Domain.Entities.Media", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Caption")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CertificateId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ExperienceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StoredFileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("VolunteerWorkId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CertificateId");
-
-                    b.HasIndex("ExperienceId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("VolunteerWorkId");
-
-                    b.ToTable("MediaFiles");
                 });
 
             modelBuilder.Entity("OrayPortfolio.Domain.Entities.Profile", b =>
@@ -227,7 +179,7 @@ namespace OrayPortfolio.Infrastructure.Migrations
                     b.ToTable("Profiles");
                 });
 
-            modelBuilder.Entity("OrayPortfolio.Domain.Entities.Project", b =>
+            modelBuilder.Entity("OrayPortfolio.Domain.Entities.Reference", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -235,28 +187,25 @@ namespace OrayPortfolio.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CoverImageUrl")
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Company")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GithubUrl")
+                    b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsFeatured")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ProjectUrl")
+                    b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Technologies")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
+                    b.Property<string>("Position")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -264,7 +213,7 @@ namespace OrayPortfolio.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Projects");
+                    b.ToTable("References");
                 });
 
             modelBuilder.Entity("OrayPortfolio.Domain.Entities.Skill", b =>
@@ -303,9 +252,6 @@ namespace OrayPortfolio.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -315,16 +261,16 @@ namespace OrayPortfolio.Infrastructure.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Organization")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -332,49 +278,44 @@ namespace OrayPortfolio.Infrastructure.Migrations
                     b.ToTable("VolunteerWorks");
                 });
 
-            modelBuilder.Entity("OrayPortfolio.Domain.Entities.Media", b =>
+            modelBuilder.Entity("Project", b =>
                 {
-                    b.HasOne("OrayPortfolio.Domain.Entities.Certificate", "Certificate")
-                        .WithMany("MediaFiles")
-                        .HasForeignKey("CertificateId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.HasOne("OrayPortfolio.Domain.Entities.Experience", "Experience")
-                        .WithMany("MediaFiles")
-                        .HasForeignKey("ExperienceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.HasOne("OrayPortfolio.Domain.Entities.Project", "Project")
-                        .WithMany("MediaFiles")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.Property<string>("CoverImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasOne("OrayPortfolio.Domain.Entities.VolunteerWork", "VolunteerWork")
-                        .WithMany()
-                        .HasForeignKey("VolunteerWorkId");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Navigation("Certificate");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Navigation("Experience");
+                    b.Property<string>("GithubUrl")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Navigation("Project");
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
 
-                    b.Navigation("VolunteerWork");
-                });
+                    b.Property<string>("ProjectUrl")
+                        .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("OrayPortfolio.Domain.Entities.Certificate", b =>
-                {
-                    b.Navigation("MediaFiles");
-                });
+                    b.Property<string>("Technologies")
+                        .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("OrayPortfolio.Domain.Entities.Experience", b =>
-                {
-                    b.Navigation("MediaFiles");
-                });
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("OrayPortfolio.Domain.Entities.Project", b =>
-                {
-                    b.Navigation("MediaFiles");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Projects");
                 });
 #pragma warning restore 612, 618
         }

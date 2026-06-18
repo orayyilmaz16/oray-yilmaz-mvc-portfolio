@@ -38,8 +38,9 @@ namespace OrayPortfolio.Infrastructure.Repositories
 
         public void Update(T entity)
         {
-            _dbSet.Update(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
+
 
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
         {

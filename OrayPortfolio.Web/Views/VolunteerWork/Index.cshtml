@@ -19,7 +19,7 @@
 
                 <!-- Tarih -->
                 <small class="text-muted">
-                    @v.StartDate.ToString("dd MMM yyyy") →
+                    @v.StartDate?.ToString("dd MMM yyyy") →
                     @(v.EndDate?.ToString("dd MMM yyyy") ?? "Devam Ediyor")
                 </small>
 

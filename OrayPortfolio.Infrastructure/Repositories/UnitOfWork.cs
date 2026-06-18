@@ -16,12 +16,12 @@ namespace OrayPortfolio.Infrastructure.UnitOfWork
         public IGenericRepository<Certificate> Certificates { get; }
         public IGenericRepository<Project> Projects { get; }
         public IGenericRepository<VolunteerWork> VolunteerWorks { get; }
-        public IGenericRepository<Media> MediaFiles { get; }
-
+        public IReferenceRepository References { get; }
 
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
+
 
             Profiles = new GenericRepository<Profile>(context);
             Experiences = new GenericRepository<Experience>(context);
@@ -29,9 +29,8 @@ namespace OrayPortfolio.Infrastructure.UnitOfWork
             Educations = new GenericRepository<Education>(context);
             Certificates = new GenericRepository<Certificate>(context);
             Projects = new GenericRepository<Project>(context);
+            References = new ReferenceRepository(context);
             VolunteerWorks = new GenericRepository<VolunteerWork>(context);
-            MediaFiles = new GenericRepository<Media>(context);
-            Profiles = new GenericRepository<Profile>(_context);
         }
 
         public async Task<int> SaveAsync()

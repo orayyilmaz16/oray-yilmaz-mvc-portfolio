@@ -4,6 +4,10 @@
     {
         public string? Title { get; set; }
         public string? Issuer { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
+
+        public string? CertificateUrl { get; set; }
+
+        public string? FileUrl { get; set; }
     }
 }

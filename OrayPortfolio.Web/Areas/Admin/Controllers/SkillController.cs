@@ -22,16 +22,21 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            return View(new SkillCreateDto());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(SkillDto dto)
+        public async Task<IActionResult> Create(SkillCreateDto dto)
         {
             if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Lütfen formdaki hataları düzeltin.";
                 return View(dto);
+            }
 
             await _service.CreateAsync(dto);
+
+            TempData["Success"] = "Yetenek başarıyla eklendi.";
             return RedirectToAction("Index");
         }
 
@@ -42,19 +47,27 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(SkillDto dto)
+        public async Task<IActionResult> Edit(SkillUpdateDto dto)
         {
             if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Lütfen formdaki hataları düzeltin.";
                 return View(dto);
+            }
 
             await _service.UpdateAsync(dto);
+
+            TempData["Success"] = "Yetenek başarıyla güncellendi.";
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
+
+            TempData["Success"] = "Yetenek başarıyla silindi.";
             return RedirectToAction("Index");
         }
     }
 }
+

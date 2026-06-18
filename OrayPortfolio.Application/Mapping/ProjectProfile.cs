@@ -8,8 +8,17 @@ namespace OrayPortfolio.Application.Mapping
     {
         public ProjectProfile()
         {
-            CreateMap<Project, ProjectUpdateDto>().ReverseMap();
+            // CREATE
+            CreateMap<Project, ProjectCreateDto>();
             CreateMap<ProjectCreateDto, Project>();
+
+            // UPDATE
+            CreateMap<Project, ProjectUpdateDto>();
+            CreateMap<ProjectUpdateDto, Project>();
+
+            // LISTING (Index)
+            CreateMap<Project, ProjectDto>();
+            CreateMap<ProjectDto, Project>();
         }
     }
 }
