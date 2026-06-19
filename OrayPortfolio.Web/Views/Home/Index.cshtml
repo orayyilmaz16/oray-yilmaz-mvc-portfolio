@@ -1,75 +1,930 @@
-﻿@{
-    ViewData["Title"] = "Oray Yılmaz - Portfolio";
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = $"{Model.Profile.FullName} - Portfolio";
 }
 
-<!-- HERO SECTION -->
-<section class="py-5 text-center" data-aos="fade-up">
-    <div class="container">
-        <img src="~/img/profile.jpg" class="rounded-circle shadow mb-3" width="150" alt="Oray" />
+<style>
+    /* ----- SAYFA ÖZEL MİKRO-ANİMASYONLAR VE KUSURSUZ TASARIM ----- */
 
-        <h1 class="display-5 fw-bold">Merhaba, Ben Oray Yılmaz 👋</h1>
-        <p class="lead text-muted mt-3">
-            Full-Stack Developer • Web & Mobil Geliştirme • AI-First Development
+   
+    /* 📌 KONTRAST DÜZELTMESİ (Görünmeyen siyah/gri yazılar için) */
+    .text-muted,
+    .port-card-text,
+    .port-timeline-desc {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    /* Boşluklar */
+    .port-spacer {
+        height: 120px;
+    }
+
+    /* Bölüm Başlıkları (Kusursuz Hizalama) */
+    .port-section-header {
+        margin-bottom: 4rem;
+        position: relative;
+    }
+
+    .port-section-title {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: var(--text-main);
+        margin-bottom: 0.8rem;
+        letter-spacing: -0.5px;
+        text-wrap: balance;
+    }
+
+        .port-section-title i {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: clamp(1.8rem, 3vw, 2.2rem);
+        }
+
+    .port-section-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: clamp(1rem, 2vw, 1.15rem);
+        margin-left: calc(clamp(1.8rem, 3vw, 2.2rem) + 16px);
+        max-width: 600px;
+        line-height: 1.7;
+        text-wrap: balance;
+    }
+
+    /* --- Hero (Karşılama) Alanı --- */
+    .port-hero {
+        min-height: 95vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        padding-top: 6rem;
+    }
+
+    .port-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(45, 212, 191, 0.08);
+        border: 1px solid rgba(45, 212, 191, 0.2);
+        color: var(--brand-secondary);
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 2.5rem;
+        backdrop-filter: blur(8px);
+    }
+
+    .port-status-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--brand-secondary);
+        border-radius: 50%;
+        animation: radar-pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+
+    .port-avatar-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 2.5rem;
+        animation: float 6s ease-in-out infinite;
+    }
+
+        .port-avatar-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            z-index: -1;
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+    .port-hero-img {
+        width: clamp(160px, 20vw, 210px);
+        height: clamp(160px, 20vw, 210px);
+        object-fit: cover;
+        border-radius: 50%;
+        border: 6px solid var(--bg-base);
+        filter: contrast(1.05) brightness(1.05);
+    }
+
+    .port-hero-title {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        letter-spacing: -2px;
+        margin-bottom: 1rem;
+        line-height: 1.1;
+        text-wrap: balance;
+        color: var(--text-main);
+    }
+
+        .port-hero-title span {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+    .port-hero-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+        color: rgba(255, 255, 255, 0.7);
+        max-width: 750px;
+        margin: 0 auto 2.5rem;
+        line-height: 1.8;
+        min-height: 40px;
+    }
+
+    .typed-cursor {
+        color: var(--brand-secondary);
+        font-size: 1.5rem;
+    }
+
+    /* Sosyal İkonlar */
+    .port-social-bar {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        margin-bottom: 3.5rem;
+        flex-wrap: wrap;
+    }
+
+    .port-social-link {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text-main);
+        font-size: 1.3rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all var(--transition);
+        backdrop-filter: blur(5px);
+    }
+
+        .port-social-link:hover {
+            background: var(--brand-primary);
+            color: #fff;
+            transform: translateY(-6px) rotate(8deg);
+            border-color: var(--brand-primary);
+            box-shadow: 0 12px 24px rgba(109, 94, 249, 0.4);
+        }
+
+    /* Scroll İndikatörü */
+    .port-scroll-indicator {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 1.8rem;
+        animation: scroll-bounce 2.5s infinite;
+        transition: opacity 0.3s;
+    }
+
+        .port-scroll-indicator:hover {
+            color: var(--brand-secondary);
+        }
+
+    /* Butonlar */
+    .port-btn-primary, .port-btn-outline {
+        padding: 16px 36px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .port-btn-primary {
+        background: linear-gradient(135deg, var(--brand-primary), #8b7bff);
+        color: #fff !important;
+        border: none;
+    }
+
+        .port-btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -5px rgba(109, 94, 249, 0.5);
+        }
+
+    .port-btn-outline {
+        background: rgba(255,255,255,0.02);
+        color: var(--text-main) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+
+        .port-btn-outline:hover {
+            background: var(--surface-hover);
+            border-color: var(--brand-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+    /* --- Hakkımda Kutu --- */
+    .port-about-box {
+        background: linear-gradient(145deg, rgba(23, 28, 40, 0.8), rgba(11, 14, 20, 0.95));
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        padding: clamp(30px, 5vw, 60px);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        backdrop-filter: blur(20px);
+    }
+
+        .port-about-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--brand-primary), var(--brand-secondary));
+        }
+
+    .port-about-icon {
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        font-size: 18rem;
+        color: rgba(255,255,255,0.015);
+        z-index: 0;
+        pointer-events: none;
+        transform: rotate(-10deg);
+    }
+
+    /* --- Proje Kartları --- */
+    .port-card {
+        background: rgba(23, 28, 40, 0.6);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transform-style: preserve-3d;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: border-color 0.3s ease;
+    }
+
+        .port-card:hover {
+            border-color: rgba(109, 94, 249, 0.4);
+        }
+
+    .port-card-img-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        transform: translateZ(20px);
+    }
+
+    .port-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.8s ease;
+    }
+
+    .port-card:hover .port-card-img {
+        transform: scale(1.08) rotate(1deg);
+    }
+
+    .port-card-img-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(23, 28, 40, 0.95) 0%, transparent 70%);
+        z-index: 1;
+    }
+
+    .port-card-body {
+        padding: 0 30px 30px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        position: relative;
+        z-index: 2;
+        margin-top: -20px;
+        transform: translateZ(30px);
+    }
+
+    .port-card-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 12px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    }
+
+    /* --- Zaman Çizelgesi --- */
+    .port-timeline {
+        position: relative;
+        padding-left: 40px;
+        list-style: none;
+        margin: 0;
+    }
+
+        .port-timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 8px;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--brand-primary), var(--border-color) 80%, transparent);
+            border-radius: 4px;
+        }
+
+        .port-timeline.education-timeline::before {
+            background: linear-gradient(to bottom, var(--brand-secondary), var(--border-color) 80%, transparent);
+        }
+
+    .port-timeline-item {
+        position: relative;
+        margin-bottom: 40px;
+        background: rgba(23, 28, 40, 0.5);
+        backdrop-filter: blur(10px);
+        padding: clamp(20px, 4vw, 35px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+        .port-timeline-item:hover {
+            border-color: rgba(45, 212, 191, 0.4);
+            background: rgba(23, 28, 40, 0.8);
+            transform: translateX(8px);
+        }
+
+    .port-timeline-dot {
+        position: absolute;
+        left: -40px;
+        top: 40px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--bg-base);
+        border: 4px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .port-timeline-item.active .port-timeline-dot {
+        border-color: var(--brand-secondary);
+        background: var(--brand-secondary);
+        box-shadow: 0 0 0 6px rgba(45, 212, 191, 0.2);
+    }
+
+    .port-timeline.education-timeline .port-timeline-dot {
+        border-color: var(--brand-secondary);
+    }
+
+    /* --- Yetenek Barları --- */
+    .port-skill-item {
+        background: rgba(23, 28, 40, 0.6);
+        padding: 24px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+        margin-bottom: 24px;
+    }
+
+        .port-skill-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--brand-primary);
+        }
+
+    .port-skill-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-main);
+    }
+
+    .port-progress-bg {
+        height: 12px;
+        background: rgba(0,0,0,0.5);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px inset rgba(255,255,255,0.05);
+    }
+
+    .port-progress-fill {
+        height: 100%;
+        background-image: linear-gradient( 45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent );
+        background-size: 1.5rem 1.5rem;
+        background-color: var(--brand-primary);
+        border-radius: 12px;
+        width: 0;
+        transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 0 15px rgba(109, 94, 249, 0.4);
+        animation: progress-stripes 1.5s linear infinite;
+    }
+
+    /* --- Referans Kartları --- */
+    .port-ref-card {
+        background: rgba(23, 28, 40, 0.6);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        padding: 35px;
+        position: relative;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+        .port-ref-card:hover {
+            border-color: var(--brand-primary);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(109, 94, 249, 0.1);
+        }
+
+    .port-ref-quote-icon {
+        position: absolute;
+        top: -10px;
+        right: 20px;
+        font-size: 6rem;
+        color: rgba(255,255,255,0.02);
+        z-index: 0;
+    }
+
+    .port-ref-content {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        font-size: 1.05rem;
+        font-style: italic;
+        color: var(--text-main);
+        margin-bottom: 20px;
+        line-height: 1.7;
+    }
+
+    .port-ref-author {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        padding-top: 20px;
+    }
+
+    .port-ref-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    /* --- CTA (Call to Action) --- */
+    .port-cta {
+        background: linear-gradient(135deg, rgba(109, 94, 249, 0.1), rgba(45, 212, 191, 0.05));
+        border: 1px solid rgba(109, 94, 249, 0.2);
+        border-radius: 30px;
+        padding: clamp(40px, 8vw, 80px) 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+        .port-cta::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 50%);
+            animation: scroll-bounce 15s linear infinite;
+        }
+
+    /* Mobil Uyumluluk */
+    @@media (max-width: 768px) {
+        .port-section-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .port-section-title {
+            font-size: 2rem;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .port-section-subtitle {
+            margin-left: 0;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .port-hero-title {
+            text-align: center;
+        }
+
+        .port-timeline {
+            padding-left: 20px;
+        }
+
+            .port-timeline::before {
+                left: 0px;
+            }
+
+        .port-timeline-dot {
+            left: -7px;
+            width: 14px;
+            height: 14px;
+            top: 35px;
+        }
+    }
+</style>
+
+<section class="port-hero text-center">
+    <div class="container d-flex flex-column align-items-center">
+        <div class="port-avatar-wrapper" data-aos="zoom-in" data-aos-duration="1000">
+            <img src="@Model.Profile.ProfileImageUrl" class="port-hero-img" alt="@Model.Profile.FullName" loading="eager" />
+        </div>
+        <h1 class="port-hero-title" data-aos="fade-up" data-aos-delay="200">
+            Merhaba, Ben <br /> <span>@Model.Profile.FullName</span>
+        </h1>
+        <p class="port-hero-subtitle mb-3" data-aos="fade-up" data-aos-delay="400">
+            <span id="typed-text" style="color: var(--text-main); font-weight: 600;"></span>
         </p>
-
-        <div class="mt-4">
-            <a asp-controller="Project" asp-action="Index" class="btn btn-primary btn-lg me-2">
-                <i class="fa-solid fa-diagram-project"></i> Projelerimi İncele
+        <div class="port-status-badge" data-aos="fade-up" data-aos-delay="450" style="margin-bottom: 2.5rem;">
+            <span class="port-status-dot"></span> Yeni fikirlere ve projelere açık
+        </div>
+        <div class="port-social-bar w-100" data-aos="fade-up" data-aos-delay="500">
+            @if (!string.IsNullOrEmpty(Model.Profile.GithubUrl))
+            {
+                <a href="@Model.Profile.GithubUrl" target="_blank" class="port-social-link"><i class="fa-brands fa-github"></i></a>
+            }
+            @if (!string.IsNullOrEmpty(Model.Profile.LinkedinUrl))
+            {
+                <a href="@Model.Profile.LinkedinUrl" target="_blank" class="port-social-link"><i class="fa-brands fa-linkedin-in"></i></a>
+            }
+            @if (!string.IsNullOrEmpty(Model.Profile.InstagramUrl))
+            {
+                <a href="@Model.Profile.InstagramUrl" target="_blank" class="port-social-link"><i class="fa-brands fa-instagram"></i></a>
+            }
+            @if (!string.IsNullOrEmpty(Model.Profile.Email))
+            {
+                <a href="mailto:@Model.Profile.Email" class="port-social-link"><i class="fa-solid fa-envelope"></i></a>
+            }
+        </div>
+        <div class="d-flex flex-wrap justify-content-center gap-3" data-aos="fade-up" data-aos-delay="600">
+            <a asp-controller="Project" asp-action="Index" class="port-btn-primary">
+                <i class="fa-solid fa-diagram-project"></i> Çalışmalarımı İncele
             </a>
-            <a asp-controller="Profile" asp-action="Index" class="btn btn-outline-dark btn-lg">
-                <i class="fa-solid fa-user"></i> Hakkımda
+            <a asp-controller="Profile" asp-action="Index" class="port-btn-outline">
+                <i class="fa-regular fa-user"></i> Hakkımda Daha Fazla
+            </a>
+        </div>
+    </div>
+    <a href="#about" class="port-scroll-indicator">
+        <i class="fa-solid fa-angles-down"></i>
+    </a>
+</section>
+
+<div class="port-spacer" id="about"></div>
+
+<section class="container" data-aos="fade-up">
+    <div class="port-about-box shadow-lg">
+        <i class="fa-solid fa-quote-right port-about-icon"></i>
+        <div class="port-section-header">
+            <h2 class="port-section-title"><i class="fa-solid fa-fingerprint"></i> Kısaca Ben</h2>
+        </div>
+        <p style="font-size: clamp(1rem, 2vw, 1.15rem); color: var(--text-main); line-height: 1.8; position: relative; z-index: 1;">
+            @Model.Profile.ShortBio
+        </p>
+        <div class="mt-5 text-end position-relative" style="z-index: 1;">
+            <a asp-controller="Profile" asp-action="Index" class="port-btn-outline" style="padding: 12px 28px; font-size: 0.95rem;">
+                Hikayemin Tamamını Oku <i class="fa-solid fa-arrow-right-long ms-2"></i>
             </a>
         </div>
     </div>
 </section>
 
-<hr class="my-5" />
+<div class="port-spacer"></div>
 
-<!-- HAKKIMDA ÖZET -->
-<section class="container" data-aos="fade-up">
-    <h2 class="fw-bold mb-3">Kısaca Ben</h2>
-    <p class="text-muted fs-5">
-        Modern teknolojilerle çalışan, AI-first yaklaşımını benimseyen bir yazılım geliştiricisiyim.
-        Web, mobil ve yapay zeka destekli uygulamalar geliştiriyorum.
-        Temiz kod, performans ve kullanıcı deneyimi benim için öncelik.
-    </p>
+<section class="container">
+    <div class="port-section-header" data-aos="fade-right">
+        <h2 class="port-section-title"><i class="fa-solid fa-fire-flame-curved"></i> Öne Çıkan Projeler</h2>
+        <p class="port-section-subtitle">Gurur duyduğum, vizyonumu ve teknik uzmanlığımı yansıtan mimariler.</p>
+    </div>
 
-    <a asp-controller="Profile" asp-action="Index" class="btn btn-dark mt-2">
-        Daha Fazlası <i class="fa-solid fa-arrow-right"></i>
-    </a>
+    <div class="row g-4">
+        @{
+            int delay = 100;
+        }
+        @foreach (var project in Model.FeaturedProjects)
+        {
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@delay">
+                <div class="port-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+                    <div class="port-card-img-wrapper">
+                        @if (!string.IsNullOrWhiteSpace(project.CoverImageUrl))
+                        {
+                            <img src="@project.CoverImageUrl" class="port-card-img" alt="@project.Title" loading="lazy" />
+                        }
+                        else
+                        {
+
+                            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop" class="port-card-img" alt="Default Project" loading="lazy" />
+                        }
+                        <div class="port-card-img-overlay"></div>
+                    </div>
+                    <div class="port-card-body">
+                        <h5 class="port-card-title">@project.Title</h5>
+                        <p class="port-card-text">@project.Description</p>
+                        <div class="mt-auto">
+                            <a asp-controller="Project" asp-action="Detail" asp-route-id="@project.Id" class="port-btn-outline w-100 justify-content-center" style="padding: 12px;">
+                                Projeyi İncele <i class="fa-solid fa-arrow-up-right-from-square ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            delay += 100;
+        }
+    </div>
 </section>
 
-<hr class="my-5" />
+<div class="port-spacer"></div>
 
-<!-- PROJE ÖNİZLEMELERİ -->
-<section class="container" data-aos="fade-up">
-    <h2 class="fw-bold mb-4">Öne Çıkan Projeler</h2>
+<!-- PROFESYONEL YOLCULUĞUM (DENEYİMLER) -->
+<section class="container">
+    <div class="port-section-header" data-aos="fade-right">
+        <h2 class="port-section-title"><i class="fa-solid fa-compass"></i> Profesyonel Yolculuğum</h2>
+        <p class="port-section-subtitle">Kariyerimde iz bırakan değerli deneyimlerim.</p>
+    </div>
 
     <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title">Portfolio Projesi</h5>
-                    <p class="text-muted">ASP.NET Core MVC + Clean Architecture</p>
-                    <a asp-controller="Project" asp-action="Index" class="btn btn-primary btn-sm">İncele</a>
+        <div class="col-lg-10 mx-auto">
+            <ul class="port-timeline">
+                @{
+                    int expDelay = 100; bool isFirstExp = true;
+                }
+                @foreach (var exp in Model.LatestExperiences)
+                {
+                    <li class="port-timeline-item @(isFirstExp ? "active" : "")" data-aos="fade-left" data-aos-delay="@expDelay">
+                        <div class="port-timeline-dot"></div>
+                        <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
+                            <span class="badge" style="background: rgba(109, 94, 249, 0.1); color: var(--brand-primary); padding: 6px 12px; border: 1px solid rgba(109, 94, 249, 0.2);">
+                                <!-- 📌 C# TARIH HATASI DÜZELTİLDİ -->
+                                <i class="fa-regular fa-calendar me-1"></i> @(exp.StartDate?.ToString("MMM yyyy") ?? "-") → @(exp.EndDate?.ToString("MMM yyyy") ?? "Devam Ediyor")
+                            </span>
+                            @if (isFirstExp)
+                            {
+                                <span class="badge" style="background: rgba(45,212,191,0.2); color: var(--brand-secondary); padding: 6px 12px;">Şu Anki</span>
+                            }
+                        </div>
+                        <h4 style="font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 800; color: var(--text-main); margin-bottom: 5px;">@exp.Position</h4>
+                        <p style="font-size: 1.05rem; color: var(--text-muted); font-weight: 500;"><i class="fa-regular fa-building me-2 text-primary"></i>@exp.Company</p>
+
+                        <!-- 📌 KONTRAST EKSİKLİĞİ DÜZELTİLDİ -->
+                        <p class="m-0 mt-3" style="line-height: 1.7; color: rgba(255, 255, 255, 0.7);">@exp.Description</p>
+                    </li>
+                    expDelay += 100;
+                    isFirstExp = false;
+                }
+            </ul>
+        </div>
+    </div>
+</section>
+
+<div class="port-spacer"></div>
+
+<!-- EĞİTİM GEÇMİŞİM -->
+@if (Model.Educations != null && Model.Educations.Any())
+{
+    <section class="container">
+        <div class="port-section-header" data-aos="fade-right">
+            <h2 class="port-section-title"><i class="fa-solid fa-graduation-cap"></i> Eğitim Geçmişim</h2>
+            <p class="port-section-subtitle">Akademik başarılarım ve uzmanlık kazandığım disiplinler.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <ul class="port-timeline education-timeline">
+                    @{
+                        int eduDelay = 100;
+                    }
+                    @foreach (var edu in Model.Educations)
+                    {
+                        <li class="port-timeline-item" data-aos="fade-left" data-aos-delay="@eduDelay">
+                            <div class="port-timeline-dot"></div>
+                            <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
+                                <span class="badge" style="background: rgba(45, 212, 191, 0.1); color: var(--brand-secondary); padding: 6px 12px; border: 1px solid rgba(45, 212, 191, 0.2);">
+                                    <i class="fa-solid fa-award me-1"></i> @edu.Degree
+                                </span>
+                                <!-- 📌 EĞİTİM TARİH GÖSTERİMİ DÜZELTİLDİ -->
+                                <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7);">
+                                    @edu.StartDate.ToString("yyyy") → @(edu.EndDate.Year == 1 || edu.EndDate.Year == 0 ? "Devam Ediyor" : edu.EndDate.ToString("yyyy"))
+                                </span>
+                            </div>
+                            <h4 style="font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 800; color: var(--text-main); margin-bottom: 5px;">@edu.Department</h4>
+                            <p style="font-size: 1.05rem; color: var(--text-muted); font-weight: 500;"><i class="fa-solid fa-building-columns me-2 text-primary"></i>@edu.School</p>
+                            @if (!string.IsNullOrWhiteSpace(edu.Description))
+                            {
+                                <p class="m-0 mt-3" style="line-height: 1.7; color: rgba(255, 255, 255, 0.7);">@edu.Description</p>
+                            }
+                        </li>
+                        eduDelay += 100;
+                    }
+                </ul>
+            </div>
+        </div>
+    </section>
+    <div class="port-spacer"></div>
+}
+
+<!-- UZMANLIK ALANLARIM -->
+<section class="container">
+    <div class="port-section-header" data-aos="fade-right">
+        <h2 class="port-section-title"><i class="fa-solid fa-bolt"></i> Uzmanlık Alanlarım</h2>
+        <p class="port-section-subtitle">Sürekli geliştirdiğim ve projelerimde ustalıkla kullandığım teknolojiler.</p>
+    </div>
+
+    <div class="row g-4">
+        @{
+            int skillDelay = 100;
+        }
+        @foreach (var skill in Model.Skills)
+        {
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@skillDelay">
+                <div class="port-skill-item">
+                    <div class="port-skill-header">
+                        <span><i class="fa-solid fa-code text-success me-2"></i> @skill.Name</span>
+                        <span class="port-skill-percent">@skill.Level%</span>
+                    </div>
+                    <div class="port-progress-bg">
+                        <div class="port-progress-fill" data-width="@skill.Level%"></div>
+                    </div>
                 </div>
+            </div>
+            skillDelay += 50;
+        }
+    </div>
+</section>
+
+<div class="port-spacer"></div>
+
+<!-- SERTİFİKALAR VE GÖNÜLLÜ İŞLER -->
+<section class="container">
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="port-section-header" data-aos="fade-right" style="margin-bottom: 2rem;">
+                <h2 class="port-section-title"><i class="fa-solid fa-award"></i> Sertifikalar</h2>
+            </div>
+            <div class="d-flex flex-column gap-4">
+                @foreach (var cert in Model.Certificates.Take(3))
+                {
+                    <div class="port-card" data-tilt data-tilt-max="3" data-tilt-speed="400" style="flex-direction: row; padding: 25px; align-items: center; gap: 20px;" data-aos="fade-up">
+                        <i class="fa-solid fa-certificate" style="font-size: 2.5rem; color: var(--brand-secondary);"></i>
+                        <div class="flex-grow-1">
+                            <h5 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">@cert.Title</h5>
+                            <!-- 📌 SERTİFİKA TARİH VE KONTRAST DÜZELTİLDİ -->
+                            <p class="m-0" style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.7);">
+                                @cert.Issuer @(cert.Date.HasValue ? " • " + cert.Date.Value.ToString("yyyy") : "")
+                            </p>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(cert.CertificateUrl))
+                        {
+                            <a href="@cert.CertificateUrl" target="_blank" class="port-btn-outline" style="padding: 10px 18px; font-size: 0.9rem; border-radius: 12px; flex-shrink: 0;">
+                                İncele
+                            </a>
+                        }
+                    </div>
+                }
             </div>
         </div>
 
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title">AI Destekli Kodlama Aracı</h5>
-                    <p class="text-muted">LLM tabanlı geliştirme deneyimi</p>
-                    <a asp-controller="Project" asp-action="Index" class="btn btn-primary btn-sm">İncele</a>
-                </div>
+        <div class="col-lg-6">
+            <div class="port-section-header" data-aos="fade-left" style="margin-bottom: 2rem;">
+                <h2 class="port-section-title"><i class="fa-solid fa-hand-holding-heart"></i> Gönüllü İşler</h2>
+            </div>
+            <div class="d-flex flex-column gap-4">
+                @foreach (var vw in Model.VolunteerWorks.Take(3))
+                {
+                    <div class="port-card" data-tilt data-tilt-max="3" style="padding: 25px;" data-aos="fade-up">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin: 0;">@vw.Organization</h5>
+                            <span class="badge" style="background: rgba(45,212,191,0.15); color: var(--brand-secondary); padding: 8px 14px; font-size: 0.85rem; border-radius: 8px;">
+                                @vw.Role
+                            </span>
+                        </div>
+                        <!-- 📌 GÖNÜLLÜ İŞLER KONTRAST DÜZELTİLDİ -->
+                        <p class="m-0" style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.7);">@vw.Description</p>
+                    </div>
+                }
             </div>
         </div>
+    </div>
+</section>
 
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title">Mobil Uygulama</h5>
-                    <p class="text-muted">Flutter + Firebase</p>
-                    <a asp-controller="Project" asp-action="Index" class="btn btn-primary btn-sm">İncele</a>
+<div class="port-spacer"></div>
+
+<!-- REFERANSLAR -->
+@if (Model.References != null && Model.References.Any())
+{
+    <section class="container">
+        <div class="port-section-header text-center" data-aos="fade-up">
+            <h2 class="port-section-title justify-content-center"><i class="fa-solid fa-users"></i> Referanslar</h2>
+            <p class="port-section-subtitle mx-auto text-center" style="margin-top: 0.5rem;">Birlikte çalışma fırsatı bulduğum değerli profesyonellerin hakkımdaki düşünceleri.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            @{
+                int refDelay = 100;
+            }
+            @foreach (var refer in Model.References)
+            {
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@refDelay">
+                    <div class="port-ref-card" data-tilt data-tilt-max="5">
+                        <i class="fa-solid fa-quote-right port-ref-quote-icon"></i>
+                        <p class="port-ref-content">"@refer.Comment"</p>
+                        <div class="port-ref-author">
+                            <div class="port-ref-avatar">
+                                @refer.FullName.Substring(0, 1)
+                            </div>
+                            <div>
+                                <h6 style="color: var(--text-main); font-weight: 700; margin: 0; font-size: 1.1rem;">@refer.FullName</h6>
+                                <!-- 📌 REFERANSLAR KONTRAST DÜZELTİLDİ -->
+                                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; margin: 0;">@refer.Position, @refer.Company</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                refDelay += 100;
+            }
+        </div>
+    </section>
+    <div class="port-spacer"></div>
+}
+
+<section class="container" data-aos="zoom-in" data-aos-duration="1000">
+    <div class="port-cta shadow-lg">
+        <h2 style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: var(--text-main); margin-bottom: 20px; letter-spacing: -1px;">Yeni bir proje mi var?</h2>
+        <p style="font-size: clamp(1rem, 2vw, 1.25rem); color: rgba(255, 255, 255, 0.7); max-width: 650px; margin: 0 auto 35px; line-height: 1.7; text-wrap: balance;">
+            Fikirlerinizi dijital dünyada hayata geçirmek, modern ve ölçeklenebilir mimariler kurmak için buradayım. Birlikte harika işler çıkarabiliriz.
+        </p>
+        <a href="mailto:@Model.Profile.Email" class="port-btn-primary" style="padding: 18px 45px;">
+            <i class="fa-regular fa-paper-plane"></i> Hemen İletişime Geç
+        </a>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" integrity="sha512-wC/a55305TuZ600s8fFh0y8t7Hl9y0+IweaPofxRzi8A0n5qI/DxtnQ8rWlZp0R5/yH4vHhNnbkO2oHovgX1QA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        // --- Typed.js Kurulumu (Yazı Yazma Efekti) ---
+        var title = "@Model.Profile.Title";
+        var typed = new Typed('#typed-text', {
+        strings: [title, "AI Researcher", "Technical Consultant"],
+        typeSpeed: 60,
+        backSpeed: 40,
+        backDelay: 2000,
+        loop: true,
+        cursorChar: '|'
+        });
+
+        // --- Progress Bar Dolum Animasyonu ---
+        const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+        if (entry.isIntersecting) {
+        const fill = entry.target;
+        const targetWidth = fill.getAttribute('data-width');
+        fill.style.width = targetWidth;
+        observer.unobserve(fill);
+        }
+        });
+        }, { threshold: 0.1 });
+
+        const progressFills = document.querySelectorAll('.port-progress-fill');
+        progressFills.forEach(fill => {
+        observer.observe(fill);
+        });
+        });
+    </script>
+}

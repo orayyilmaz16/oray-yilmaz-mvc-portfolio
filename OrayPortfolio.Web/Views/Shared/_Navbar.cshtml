@@ -1,39 +1,277 @@
-﻿<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom">
+﻿<style>
+    /* Navbar Özel Tasarımı */
+    .port-navbar {
+        background: var(--surface-glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 0;
+        transition: var(--transition);
+        z-index: 1030;
+    }
+
+        .port-navbar.scrolled {
+            padding: 0.6rem 0;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+            background: rgba(11, 14, 20, 0.85); /* Scroll olunca biraz daha koyu */
+        }
+
+    /* Logo Tasarımı */
+    .port-brand {
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--text-main) !important;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        letter-spacing: -0.5px;
+        transition: transform 0.3s ease;
+    }
+
+        .port-brand:hover {
+            transform: scale(1.02);
+        }
+
+        .port-brand i {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.6rem;
+        }
+
+    /* Link Tasarımları & Hover Efekti */
+    .port-nav-link {
+        position: relative;
+        color: var(--text-muted) !important;
+        font-weight: 500;
+        font-size: 0.95rem;
+        margin: 0 0.3rem;
+        padding: 0.5rem 0 !important;
+        transition: var(--transition);
+    }
+
+        .port-nav-link:hover,
+        .port-nav-link.active {
+            color: var(--text-main) !important;
+        }
+
+        /* Çizgi Animasyonu */
+        .port-nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+            transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border-radius: 2px;
+        }
+
+        .port-nav-link:hover::after,
+        .port-nav-link.active::after {
+            width: 100%;
+        }
+
+    /* Özel Hakkımda Butonu */
+    .port-nav-btn {
+        background: rgba(109, 94, 249, 0.1);
+        color: var(--brand-light) !important;
+        border: 1px solid rgba(109, 94, 249, 0.2);
+        padding: 8px 18px !important;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .port-nav-btn:hover {
+            background: var(--brand-primary);
+            color: #fff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(109, 94, 249, 0.4);
+        }
+
+        .port-nav-btn::after {
+            display: none; /* Çizgi animasyonunu butonda kapat */
+        }
+
+    /* Arama Kutusu (Search Box) */
+    .port-search-form {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-left: 0.8rem;
+    }
+
+    .port-search-icon {
+        position: absolute;
+        left: 14px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+        pointer-events: none;
+    }
+
+    .port-search-input {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 8px 16px 8px 38px;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        width: 160px; /* Varsayılan dar genişlik */
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+        .port-search-input::placeholder {
+            color: rgba(139, 147, 167, 0.6);
+        }
+
+        .port-search-input:focus {
+            outline: none;
+            width: 220px; /* Tıklanınca genişler */
+            background: rgba(0, 0, 0, 0.2);
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 4px rgba(109, 94, 249, 0.15);
+        }
+
+    .port-search-form:focus-within .port-search-icon {
+        color: var(--brand-primary);
+    }
+
+    .port-search-form {
+        height: 40px;
+    }
+
+    .port-nav-btn i {
+        font-size: 1rem;
+    }
+
+
+    /* Mobil Menü İkonu */
+    .navbar-toggler {
+        border: 1px solid var(--border-color);
+        padding: 8px 10px;
+        border-radius: 10px;
+    }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(109, 94, 249, 0.2);
+            outline: none;
+        }
+
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28238, 241, 246, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+
+    /* Mobil Uyumluluk */
+   
+</style>
+
+<nav class="navbar navbar-expand-xl fixed-top port-navbar" id="mainNavbar">
     <div class="container">
-        <a class="navbar-brand fw-bold text-xl" asp-controller="Home" asp-action="Index">
-            <i class="fa-solid fa-code"></i> OrayPortfolio
+
+        <!-- Logo -->
+        <a class="navbar-brand port-brand" asp-controller="Home" asp-action="Index">
+            <i class="fa-solid fa-code"></i> Oray Yılmaz
         </a>
 
+        <!-- Mobile Toggle -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
+        <!-- Navbar Content -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto gap-2">
+            <ul class="navbar-nav ms-auto align-items-xl-center">
 
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Project" asp-action="Index">Projeler</a>
+                    <a class="nav-link port-nav-link" asp-controller="Project" asp-action="Index">Projeler</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Experience" asp-action="Index">Deneyimler</a>
+                    <a class="nav-link port-nav-link" asp-controller="Experience" asp-action="Index">Deneyimler</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Certificate" asp-action="Index">Sertifikalar</a>
+                    <a class="nav-link port-nav-link" asp-controller="Education" asp-action="Index">Eğitim</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="VolunteerWork" asp-action="Index">Gönüllü Çalışmalar</a>
+                    <a class="nav-link port-nav-link" asp-controller="Certificate" asp-action="Index">Sertifikalar</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Profile" asp-action="Index">Hakkımda</a>
+                    <a class="nav-link port-nav-link" asp-controller="Skill" asp-action="Index">Yetenekler</a>
                 </li>
 
-               
+                <li class="nav-item">
+                    <a class="nav-link port-nav-link" asp-controller="Reference" asp-action="Index">Referanslar</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link port-nav-link" asp-controller="VolunteerWork" asp-action="Index">Gönüllü İşler</a>
+                </li>
+
+                <!-- Searchbox -->
+                <li class="nav-item">
+                    <form class="port-search-form" id="navSearchForm" action="/Search" method="get">
+                        <i class="fa-solid fa-magnifying-glass port-search-icon"></i>
+                        <input type="text"
+                               name="q"
+                               id="searchInput"
+                               class="port-search-input"
+                               placeholder="Ara..."
+                               autocomplete="off" />
+                    </form>
+                </li>
+
+                <!-- Hakkımda -->
+                <li class="nav-item ms-xl-3">
+                    <a class="nav-link port-nav-link port-nav-btn" asp-controller="Profile" asp-action="Index">
+                        <i class="fa-regular fa-user"></i> Hakkımda
+                    </a>
+                </li>
+
+                <!-- CV İndir Butonu -->
+                <li class="nav-item ms-xl-2">
+                    <a class="nav-link port-nav-link port-nav-btn" href="~/files/OrayYilmazCV.pdf" download>
+                        <i class="fa-solid fa-file-arrow-down"></i> CV İndir
+                    </a>
+                </li>
 
             </ul>
         </div>
+
     </div>
 </nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        /* --- Scroll Navbar Efekti --- */
+        const navbar = document.getElementById("mainNavbar");
+        window.addEventListener("scroll", () => {
+            navbar.classList.toggle("scrolled", window.scrollY > 50);
+        });
+
+        /* --- Searchbox Kontrolü --- */
+        const searchForm = document.getElementById("navSearchForm");
+        const searchInput = document.getElementById("searchInput");
+
+        searchForm.addEventListener("submit", function (e) {
+            if (searchInput.value.trim() === "") {
+                e.preventDefault();
+                searchInput.focus();
+
+                // Sallanma animasyonu
+                searchInput.style.transform = "translateX(-5px)";
+                setTimeout(() => searchInput.style.transform = "translateX(5px)", 100);
+                setTimeout(() => searchInput.style.transform = "translateX(0)", 200);
+            }
+        });
+    });
+</script>

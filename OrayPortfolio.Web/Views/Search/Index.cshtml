@@ -1,0 +1,659 @@
+﻿@model SearchViewModel
+@{
+    var query = Model?.Query ?? "";
+    ViewData["Title"] = $"Arama Sonuçları - {query}";
+
+    // Toplam sonuç sayısını hesaplayalım
+    int totalResults = (Model?.Projects?.Count() ?? 0) +
+                       (Model?.Experiences?.Count() ?? 0) +
+                       (Model?.Skills?.Count() ?? 0) +
+                       (Model?.Certificates?.Count() ?? 0) +
+                       (Model?.Educations?.Count() ?? 0) +
+                       (Model?.References?.Count() ?? 0) +
+                       (Model?.VolunteerWorks?.Count() ?? 0);
+}
+
+<style>
+    /* ----- ARAMA SONUÇLARI SAYFASI MASTER TASARIMI ----- */
+
+   
+
+    /* 📌 KONTRAST DÜZELTMESİ (Görünmeyen siyah/gri yazılar için) */
+    .text-muted,
+    .port-card-text,
+    .port-timeline-desc {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    /* Boşluklar ve Başlıklar */
+    .port-spacer {
+        height: 80px;
+    }
+
+    .port-spacer-sm {
+        height: 40px;
+    }
+
+    .port-page-header {
+        text-align: center;
+        padding: 5rem 0 2rem;
+        position: relative;
+    }
+
+    .port-page-title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 1rem;
+        text-wrap: balance;
+        color: var(--text-main);
+    }
+
+    .port-page-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: clamp(1.1rem, 2vw, 1.25rem);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.8;
+        text-wrap: balance;
+    }
+
+    .port-page-title i {
+        background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-right: 10px;
+    }
+
+    /* Arama Sonuçları Özet Menüsü (Quick Nav) */
+    .port-search-summary {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 2rem;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .port-summary-badge {
+        background: rgba(23, 28, 40, 0.8);
+        color: var(--text-main);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .port-summary-badge:hover {
+            background: var(--brand-primary);
+            border-color: var(--brand-primary);
+            transform: translateY(-3px);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(109, 94, 249, 0.3);
+        }
+
+        .port-summary-badge span {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+    /* Kategori Başlıkları */
+    .port-category-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 5rem 0 2rem 0;
+        padding-top: 80px; /* Header zıplaması için padding */
+        margin-top: -40px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        padding-bottom: 15px;
+    }
+
+        .port-category-title i {
+            color: var(--brand-secondary);
+            font-size: 1.5rem;
+        }
+
+    /* --- 1. PROJE VE SERTİFİKA KARTLARI --- */
+    .port-card {
+        background: rgba(23, 28, 40, 0.6);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transform-style: preserve-3d;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: all 0.4s ease;
+    }
+
+        .port-card:hover {
+            border-color: rgba(109, 94, 249, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(109, 94, 249, 0.25);
+        }
+
+    .port-card-img-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        transform: translateZ(20px);
+    }
+
+    .port-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.8s ease;
+    }
+
+    .port-card:hover .port-card-img {
+        transform: scale(1.08) rotate(1deg);
+    }
+
+    .port-card-img-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(23, 28, 40, 0.95) 0%, transparent 70%);
+        z-index: 1;
+    }
+
+    .port-card-body {
+        padding: 0 30px 30px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        position: relative;
+        z-index: 2;
+        margin-top: -20px;
+        transform: translateZ(30px);
+    }
+
+    .port-card-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 12px;
+    }
+
+    /* --- 2. ZAMAN ÇİZELGESİ (Deneyim, Eğitim) --- */
+    .port-timeline {
+        position: relative;
+        padding-left: 40px;
+        list-style: none;
+        margin: 0;
+    }
+
+        .port-timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 8px;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--brand-primary), var(--border-color) 80%, transparent);
+            border-radius: 4px;
+        }
+
+        .port-timeline.education-timeline::before {
+            background: linear-gradient(to bottom, var(--brand-secondary), var(--border-color) 80%, transparent);
+        }
+
+    .port-timeline-item {
+        position: relative;
+        margin-bottom: 30px;
+        background: rgba(23, 28, 40, 0.5);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+        .port-timeline-item:hover {
+            border-color: rgba(45, 212, 191, 0.4);
+            transform: translateX(10px);
+        }
+
+    .port-timeline-dot {
+        position: absolute;
+        left: -40px;
+        top: 35px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--bg-base);
+        border: 4px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .port-timeline-item:hover .port-timeline-dot {
+        border-color: var(--brand-secondary);
+        background: var(--brand-secondary);
+    }
+
+    /* Yuvarlak Şirket/Organizasyon Logoları */
+    .port-company-logo {
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        object-fit: contain;
+        background-color: #fff;
+        padding: 6px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        transition: transform 0.4s ease, border-color 0.4s ease;
+    }
+
+    .port-timeline-item:hover .port-company-logo, .port-card:hover .port-company-logo {
+        transform: scale(1.08) rotate(5deg);
+        border-color: var(--brand-secondary);
+    }
+
+    /* --- 3. YETENEKLER --- */
+    .port-skill-item {
+        background: rgba(23, 28, 40, 0.6);
+        backdrop-filter: blur(16px);
+        padding: 25px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transform-style: preserve-3d;
+        transition: all 0.3s ease;
+    }
+
+        .port-skill-item:hover {
+            border-color: rgba(45, 212, 191, 0.4);
+            transform: translateY(-5px);
+        }
+
+    .port-skill-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-weight: 700;
+        color: var(--text-main);
+        transform: translateZ(10px);
+    }
+
+    .port-progress-bg {
+        height: 12px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 12px;
+        overflow: hidden;
+        transform: translateZ(15px);
+    }
+
+    .port-progress-fill {
+        height: 100%;
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+        background-size: 1.5rem 1.5rem;
+        background-color: var(--brand-primary);
+        border-radius: 12px;
+        width: 0;
+        transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        animation: progress-stripes 1.5s linear infinite;
+    }
+
+    /* --- 4. REFERANSLAR --- */
+    .port-ref-card {
+        background: rgba(23, 28, 40, 0.6);
+        backdrop-filter: blur(16px);
+        padding: 35px;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        transition: all 0.3s ease;
+        height: 100%;
+        transform-style: preserve-3d;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+        .port-ref-card:hover {
+            border-color: rgba(109, 94, 249, 0.4);
+            transform: translateY(-8px);
+        }
+
+    .port-ref-quote-icon {
+        position: absolute;
+        top: -10px;
+        right: 15px;
+        font-size: 6rem;
+        color: rgba(255,255,255,0.02);
+        transform: translateZ(10px);
+    }
+
+    /* Butonlar */
+    .port-btn-outline {
+        background: rgba(255,255,255,0.02);
+        color: var(--text-main) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+        .port-btn-outline:hover {
+            background: var(--brand-primary);
+            border-color: var(--brand-primary);
+            color: #fff !important;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(109, 94, 249, 0.3);
+        }
+
+    html {
+        scroll-behavior: smooth;
+    }
+    /* Anchor linklerin yumuşak kayması için */
+</style>
+
+<section class="port-page-header container" data-aos="fade-down">
+    <h1 class="port-page-title">
+        <i class="fa-solid fa-magnifying-glass"></i> "@query" Sonuçları
+    </h1>
+    <p class="port-page-subtitle">Arama kriterlerinize uyan toplam <b>@totalResults</b> içerik bulundu.</p>
+
+    @if (totalResults > 0)
+    {
+        <div class="port-search-summary shadow-lg">
+            @if (Model.Projects.Any())
+            {
+                <a href="#s-projeler" class="port-summary-badge"><i class="fa-solid fa-diagram-project"></i> Projeler <span>@Model.Projects.Count()</span></a>
+            }
+            @if (Model.Experiences.Any())
+            {
+                <a href="#s-deneyimler" class="port-summary-badge"><i class="fa-solid fa-compass"></i> Deneyimler <span>@Model.Experiences.Count()</span></a>
+            }
+            @if (Model.Educations.Any())
+            {
+                <a href="#s-egitimler" class="port-summary-badge"><i class="fa-solid fa-graduation-cap"></i> Eğitimler <span>@Model.Educations.Count()</span></a>
+            }
+            @if (Model.Skills.Any())
+            {
+                <a href="#s-yetenekler" class="port-summary-badge"><i class="fa-solid fa-bolt"></i> Yetenekler <span>@Model.Skills.Count()</span></a>
+            }
+            @if (Model.Certificates.Any())
+            {
+                <a href="#s-sertifikalar" class="port-summary-badge"><i class="fa-solid fa-award"></i> Sertifikalar <span>@Model.Certificates.Count()</span></a>
+            }
+            @if (Model.VolunteerWorks.Any())
+            {
+                <a href="#s-gonullu" class="port-summary-badge"><i class="fa-solid fa-hand-holding-heart"></i> Gönüllü İşler <span>@Model.VolunteerWorks.Count()</span></a>
+            }
+            @if (Model.References.Any())
+            {
+                <a href="#s-referanslar" class="port-summary-badge"><i class="fa-solid fa-users"></i> Referanslar <span>@Model.References.Count()</span></a>
+            }
+        </div>
+    }
+</section>
+
+<section class="container">
+
+    @if (totalResults == 0)
+    {
+        <div class="text-center py-5" data-aos="fade-in">
+            <div class="p-5 rounded-4" style="background: rgba(23, 28, 40, 0.5); border: 1px dashed rgba(255, 255, 255, 0.2); max-width: 600px; margin: 0 auto; backdrop-filter: blur(10px);">
+                <i class="fa-solid fa-ghost mb-3" style="font-size: 4rem; color: rgba(255, 255, 255, 0.5);"></i>
+                <h3 style="color: var(--text-main); font-weight: 700; margin-bottom: 10px;">Sonuç Bulunamadı</h3>
+                <p class="m-0" style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem;">
+                    Farklı anahtar kelimeler deneyerek tekrar arama yapabilirsiniz.
+                </p>
+            </div>
+        </div>
+    }
+
+    @if (Model.Projects.Any())
+    {
+        <h3 id="s-projeler" class="port-category-title" data-aos="fade-right"><i class="fa-solid fa-diagram-project"></i> Projeler</h3>
+        <div class="row g-4">
+            @{
+                int delayProj = 100;
+            }
+            @foreach (var p in Model.Projects)
+            {
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@delayProj">
+                    <div class="port-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+                        <div class="port-card-img-wrapper">
+                            @if (!string.IsNullOrWhiteSpace(p.CoverImageUrl))
+                            {
+                                <img src="@p.CoverImageUrl" class="port-card-img" alt="@p.Title" />
+                            }
+                            else
+                            {
+
+                                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop" class="port-card-img" alt="Default" />
+                            }
+                            <div class="port-card-img-overlay"></div>
+                        </div>
+                        <div class="port-card-body">
+                            <h5 class="port-card-title">@p.Title</h5>
+                            <p class="port-card-text">@(p.Description?.Length > 100 ? p.Description.Substring(0, 100) + "..." : p.Description)</p>
+                            <div class="mt-auto">
+                                <a asp-controller="Project" asp-action="Detail" asp-route-id="@p.Id" class="port-btn-outline w-100 justify-content-center">
+                                    İncele <i class="fa-solid fa-arrow-up-right-from-square ms-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                delayProj += 100;
+            }
+        </div>
+    }
+
+    @if (Model.Experiences.Any())
+    {
+        <h3 id="s-deneyimler" class="port-category-title" data-aos="fade-right"><i class="fa-solid fa-compass"></i> Deneyimler</h3>
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <ul class="port-timeline">
+                    @foreach (var e in Model.Experiences)
+                    {
+                        <li class="port-timeline-item" data-aos="fade-up">
+                            <div class="port-timeline-dot"></div>
+
+                            <div class="d-flex align-items-start gap-3 gap-md-4">
+                                @if (!string.IsNullOrEmpty(e.LogoImageUrl))
+                                {
+                                    <div class="flex-shrink-0 pt-1">
+                                        <img src="@e.LogoImageUrl" class="port-company-logo" alt="@e.Company Logo" loading="lazy" />
+                                    </div>
+                                }
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+                                        <span class="badge" style="background: rgba(109, 94, 249, 0.1); color: var(--brand-primary); padding: 6px 12px; border: 1px solid rgba(109, 94, 249, 0.2); font-size: 0.9rem;">
+                                            <i class="fa-regular fa-calendar me-1"></i> @(e.StartDate?.ToString("MMM yyyy") ?? "-") → @(e.EndDate?.ToString("MMM yyyy") ?? "Devam Ediyor")
+                                        </span>
+                                    </div>
+                                    <h4 style="font-weight: 800; font-size: 1.5rem; color: var(--text-main);">@e.Position</h4>
+                                    <p style="color: var(--brand-secondary); font-weight: 600;"><i class="fa-regular fa-building me-2"></i>@e.Company</p>
+                                    <p class="port-timeline-desc m-0 mt-2">@e.Description</p>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    @if (Model.Educations.Any())
+    {
+        <h3 id="s-egitimler" class="port-category-title" data-aos="fade-right"><i class="fa-solid fa-graduation-cap"></i> Eğitim Geçmişi</h3>
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <ul class="port-timeline education-timeline">
+                    @foreach (var edu in Model.Educations)
+                    {
+                        <li class="port-timeline-item" data-aos="fade-up">
+                            <div class="port-timeline-dot"></div>
+                            <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+                                <span class="badge" style="background: rgba(45, 212, 191, 0.1); color: var(--brand-secondary); padding: 6px 12px; border: 1px solid rgba(45, 212, 191, 0.2); font-size: 0.9rem;">
+                                    <i class="fa-solid fa-award me-1"></i> @edu.Degree
+                                </span>
+                                <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7);">
+                                    @edu.StartDate.ToString("yyyy") → @(edu.EndDate.Year == 1 || edu.EndDate.Year == 0 ? "Devam Ediyor" : edu.EndDate.ToString("yyyy"))
+                                </span>
+                            </div>
+                            <h4 style="font-weight: 800; font-size: 1.5rem; color: var(--text-main);">@edu.Department</h4>
+                            <p style="color: var(--brand-primary); font-weight: 600;"><i class="fa-solid fa-building-columns me-2"></i>@edu.School</p>
+                            @if (!string.IsNullOrWhiteSpace(edu.Description))
+                            {
+                                <p class="port-timeline-desc m-0 mt-2">@edu.Description</p>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    @if (Model.Skills.Any())
+    {
+        <h3 id="s-yetenekler" class="port-category-title" data-aos="fade-right"><i class="fa-solid fa-bolt"></i> Yetenekler</h3>
+        <div class="row g-4">
+            @foreach (var s in Model.Skills)
+            {
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="port-skill-item" data-tilt data-tilt-max="5">
+                        <div class="port-skill-header">
+                            <span><i class="fa-solid fa-code me-2 text-success"></i>@s.Name</span>
+                            <span class="text-info fw-bold">@s.Level%</span>
+                        </div>
+                        <div class="port-progress-bg">
+                            <div class="port-progress-fill" data-width="@s.Level%"></div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.Certificates.Any())
+    {
+        <h3 id="s-sertifikalar" class="port-category-title" data-aos="fade-right"><i class="fa-solid fa-award"></i> Sertifikalar</h3>
+        <div class="row g-4">
+            @foreach (var c in Model.Certificates)
+            {
+                <div class="col-lg-6" data-aos="fade-up">
+                    <div class="port-card" style="padding: 25px; flex-direction: row; align-items: center; gap: 20px;" data-tilt>
+                        <i class="fa-solid fa-certificate" style="font-size: 3rem; color: var(--brand-secondary); transform: translateZ(20px);"></i>
+                        <div class="flex-grow-1" style="transform: translateZ(20px);">
+                            <h5 style="color: var(--text-main); font-weight: 700; margin-bottom: 5px;">@c.Title</h5>
+                            <p class="m-0" style="color: rgba(255, 255, 255, 0.7); font-size: 0.95rem;">@c.Issuer @(c.Date.HasValue ? " • " + c.Date.Value.ToString("yyyy") : "")</p>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(c.CertificateUrl))
+                        {
+                            <a href="@c.CertificateUrl" target="_blank" class="port-btn-outline" style="padding: 10px 18px; font-size: 0.9rem; flex-shrink: 0; transform: translateZ(20px);">
+                                İncele <i class="fa-solid fa-link ms-2"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.VolunteerWorks.Any())
+    {
+        <h3 id="s-gonullu" class="port-category-title" data-aos="fade-right"><i class="fa-solid fa-hand-holding-heart"></i> Gönüllü İşler</h3>
+        <div class="row g-4">
+            @foreach (var v in Model.VolunteerWorks)
+            {
+                <div class="col-lg-6" data-aos="fade-up">
+                    <div class="port-card" style="padding: 30px; flex-direction: row; gap: 20px;" data-tilt>
+                        @if (!string.IsNullOrWhiteSpace(v.ImageUrl))
+                        {
+                            <img src="@v.ImageUrl" class="port-company-logo" alt="@v.Organization" style="width: 60px; height: 60px; transform: translateZ(20px); flex-shrink:0;" loading="lazy" />
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-users-viewfinder" style="font-size: 2.2rem; color: var(--brand-secondary); transform: translateZ(20px); margin-top:5px;"></i>
+                        }
+
+                        <div style="transform: translateZ(20px);">
+                            <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                                <h5 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin: 0;">@v.Organization</h5>
+                                <span class="badge" style="background: rgba(45,212,191,0.15); color: var(--brand-secondary); padding: 6px 12px; font-size: 0.85rem; border-radius: 8px;">
+                                    @v.Role
+                                </span>
+                            </div>
+                            <p class="port-card-text m-0 mt-2">@v.Description</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.References.Any())
+    {
+        <h3 id="s-referanslar" class="port-category-title" data-aos="fade-right"><i class="fa-solid fa-user-tie"></i> Referanslar</h3>
+        <div class="row g-4">
+            @foreach (var r in Model.References)
+            {
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="port-ref-card" data-tilt>
+                        <i class="fa-solid fa-quote-right port-ref-quote-icon"></i>
+                        <p style="color: var(--text-main); font-style: italic; position: relative; z-index: 1; transform: translateZ(20px);">"@r.Comment"</p>
+                        <div class="mt-auto pt-3" style="border-top: 1px solid rgba(255,255,255,0.05); transform: translateZ(20px);">
+                            <h6 style="color: var(--text-main); font-weight: 700; margin-bottom: 2px;">@r.FullName</h6>
+                            <p style="color: var(--brand-secondary); font-size: 0.9rem; margin: 0;">@r.Position - @r.Company</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+</section>
+<div class="port-spacer"></div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" integrity="sha512-wC/a55305TuZ600s8fFh0y8t7Hl9y0+IweaPofxRzi8A0n5qI/DxtnQ8rWlZp0R5/yH4vHhNnbkO2oHovgX1QA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        // İlerleme çubukları için scroll tetiklemeli animasyon
+        const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+        if (entry.isIntersecting) {
+        const fill = entry.target;
+        const targetWidth = fill.getAttribute('data-width');
+        fill.style.width = targetWidth;
+        observer.unobserve(fill);
+        }
+        });
+        }, { threshold: 0.1 });
+
+        const progressFills = document.querySelectorAll('.port-progress-fill');
+        progressFills.forEach(fill => {
+        observer.observe(fill);
+        });
+        });
+    </script>
+}

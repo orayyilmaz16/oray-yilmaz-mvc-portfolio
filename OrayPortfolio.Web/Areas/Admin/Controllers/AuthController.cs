@@ -59,14 +59,14 @@ public class AuthController : Controller
 
         var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
 
-        // 🔥 Rate Limit Kontrolü
+        // Rate Limit Kontrolü
         if (RateLimitService.IsBlocked(ip))
         {
             TempData["Error"] = "Çok fazla deneme yaptın. 5 dakika sonra tekrar dene.";
             return View(model);
         }
 
-        // 🔥 Username + Password Kontrolü
+        // Username + Password Kontrolü
         if (model.Username != adminUser || PasswordHasher.Hash(model.Password) != adminHash)
         {
             RateLimitService.RegisterFail(ip);
@@ -74,7 +74,7 @@ public class AuthController : Controller
             return View(model);
         }
 
-        // 🔥 2FA Kontrolü
+        // 2FA Kontrolü
         if (!TwoFactorService.ValidateCode(twoFactorKey, model.Code))
         {
             RateLimitService.RegisterFail(ip);
@@ -82,7 +82,7 @@ public class AuthController : Controller
             return View(model);
         }
 
-        // 🔥 Başarılı giriş
+        // Başarılı giriş
         RateLimitService.Reset(ip);
         HttpContext.Session.SetString("AdminAuth", "true");
 
@@ -90,7 +90,7 @@ public class AuthController : Controller
         return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
     }
 
-    // 🔥 LOGOUT
+    // Log Out
     [HttpGet]
     public IActionResult Logout()
     {

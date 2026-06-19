@@ -1,67 +1,320 @@
 ﻿@using OrayPortfolio.Domain.Entities
 @model IEnumerable<Certificate>
 
-<h2 class="mb-4">Sertifikalar</h2>
+@{
+    ViewData["Title"] = "Sertifikalarım";
+}
 
-<div class="row">
+<style>
+    /* ----- SERTİFİKALAR SAYFASI ÖZEL TASARIMI ----- */
 
-    @foreach (var c in Model)
-    {
-        <div class="col-md-4 mb-4" data-aos="fade-up">
-
-            <div class="card shadow-sm border-0 h-100">
-
-                <div class="card-body">
-
-                    <!-- Başlık -->
-                    <h5 class="card-title">@c.Title</h5>
-
-                    <!-- Veren Kurum -->
-                    <p class="text-muted">@c.Issuer</p>
-
-                    <!-- Tarih -->
-                    <small class="text-muted">
-                        @c.Date?.ToString("dd MMM yyyy")
-                    </small>
-
-                    <div class="mt-3">
-
-                        <!-- Sertifika URL (isteğe bağlı) -->
-                        @if (!string.IsNullOrEmpty(c.CertificateUrl))
-                        {
-                            <a href="@c.CertificateUrl" target="_blank" class="btn btn-primary btn-sm me-2">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Görüntüle
-                            </a>
-                        }
-
-                    </div>
-
-                    <!-- 📌 Yeni Medya Sistemi: Tek Dosya (PDF veya Görsel) -->
-                    @if (!string.IsNullOrEmpty(c.FileUrl))
-                    {
-                        <hr />
-
-                        <h6>Sertifika Dosyası</h6>
-
-                        @if (c.FileUrl.EndsWith(".pdf"))
-                        {
-                            <!-- PDF ise buton -->
-                            <a href="@c.FileUrl" target="_blank" class="btn btn-outline-primary w-100 mt-2">
-                                <i class="fa-solid fa-file-pdf"></i> PDF Aç
-                            </a>
-                        }
-                        else
-                        {
-                            <!-- Görsel ise thumbnail -->
-                            <img src="@c.FileUrl" class="img-fluid rounded shadow-sm mt-2" />
-                        }
-                    }
-
-                </div>
-
-            </div>
-
-        </div>
+    /* Boşluklar */
+    .port-spacer {
+        height: 100px;
     }
 
-</div>
+    .port-spacer-sm {
+        height: 50px;
+    }
+
+    /* Sayfa Üst Başlığı (Page Header) */
+    .port-page-header {
+        text-align: center;
+        padding: 6rem 0 3rem;
+        position: relative;
+    }
+
+    .port-page-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        margin-bottom: 1rem;
+        text-wrap: balance;
+    }
+
+        .port-page-title i {
+            background: linear-gradient(135deg, var(--brand-secondary), var(--brand-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 10px;
+        }
+
+    .port-page-subtitle {
+        color: var(--text-muted);
+        font-size: clamp(1.1rem, 2vw, 1.25rem);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.8;
+        text-wrap: balance;
+    }
+
+    /* --- Sertifika Kartları (Glassmorphism & 3D) --- */
+    .port-card {
+        background: rgba(23, 28, 40, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transform-style: preserve-3d;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+        .port-card:hover {
+            border-color: rgba(45, 212, 191, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(45, 212, 191, 0.25);
+        }
+
+    /* Eğer Görsel Varsa Kapak Fotoğrafı Olarak Ayarlanır */
+    .port-card-img-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3; /* Sertifikalar için biraz daha kareye yakın ideal oran */
+        overflow: hidden;
+        transform: translateZ(20px);
+        background: rgba(255,255,255,0.02);
+    }
+
+    .port-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .port-card:hover .port-card-img {
+        transform: scale(1.08) rotate(1deg);
+    }
+
+    .port-card-img-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(23, 28, 40, 0.95) 0%, transparent 80%);
+        z-index: 1;
+    }
+
+    /* Kart İçeriği */
+    .port-card-body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        position: relative;
+        z-index: 2;
+        transform: translateZ(30px);
+    }
+
+    /* Eğer resim varsa yazılar resmin üstüne hafifçe binsin */
+    .port-card.has-image .port-card-body {
+        margin-top: -30px;
+        padding-top: 0;
+    }
+
+    /* Resim yoksa gösterilecek parlayan dev ikon */
+    .port-cert-icon {
+        font-size: 3.5rem;
+        background: linear-gradient(135deg, var(--brand-secondary), var(--brand-primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 10px 15px rgba(45, 212, 191, 0.4));
+    }
+
+    .port-card-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+
+    .port-cert-issuer {
+        color: var(--brand-secondary);
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .port-cert-date {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 6px 12px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 25px;
+        align-self: flex-start;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Butonlar */
+    .port-btn-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: auto;
+    }
+
+    .port-btn-primary, .port-btn-outline {
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        flex: 1; /* Butonların eşit genişlikte esnemesini sağlar */
+    }
+
+    .port-btn-primary {
+        background: linear-gradient(135deg, var(--brand-secondary), #1fa895);
+        color: #fff !important;
+        border: none;
+    }
+
+        .port-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(45, 212, 191, 0.4);
+        }
+
+    .port-btn-outline {
+        background: rgba(255,255,255,0.02);
+        color: var(--text-main) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+        .port-btn-outline:hover {
+            background: var(--surface-hover);
+            border-color: var(--brand-primary);
+            transform: translateY(-3px);
+            color: #fff !important;
+        }
+
+</style>
+
+<!-- SAYFA ÜST BAŞLIĞI (PAGE HEADER) -->
+<section class="port-page-header container" data-aos="fade-down" data-aos-duration="800">
+    <h1 class="port-page-title">
+        <i class="fa-solid fa-award"></i> Sertifikalarım
+    </h1>
+    <p class="port-page-subtitle">
+        Kendimi geliştirmek için tamamladığım eğitimler, yetkinlik belgelerim ve başarı sertifikalarım.
+    </p>
+</section>
+
+<div class="port-spacer-sm"></div>
+
+<!-- SERTİFİKALAR LİSTESİ (GRID) -->
+<section class="container">
+    <div class="row g-4 g-xl-5">
+        @{
+            int delay = 100;
+        }
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var c in Model)
+            {
+                // PDF kontrolü yapıyoruz (.pdf içerip içermediğine bakıyoruz)
+                bool isPdf = !string.IsNullOrEmpty(c.FileUrl) && c.FileUrl.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+                bool isImage = !string.IsNullOrEmpty(c.FileUrl) && !isPdf;
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@delay">
+                    <!-- VanillaTilt 3D Efekti -->
+                    <div class="port-card @(isImage ? "has-image" : "")" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+
+                        <!-- Eğer görsel (JPG/PNG vb) ise kapak olarak göster -->
+                        @if (isImage)
+                        {
+                            <div class="port-card-img-wrapper">
+                                <img src="@c.FileUrl" class="port-card-img" alt="@c.Title" loading="lazy" />
+                                <div class="port-card-img-overlay"></div>
+                            </div>
+                        }
+
+                        <div class="port-card-body">
+
+                            <!-- Eğer resim yoksa şık bir ikon göster -->
+                            @if (!isImage)
+                            {
+                                <i class="fa-solid fa-certificate port-cert-icon"></i>
+                            }
+
+                            <!-- Başlık -->
+                            <h5 class="port-card-title">@c.Title</h5>
+
+                            <!-- Veren Kurum -->
+                            <div class="port-cert-issuer">
+                                <i class="fa-solid fa-building-columns"></i> @c.Issuer
+                            </div>
+
+                            <!-- Tarih -->
+                            @if (c.Date.HasValue)
+                            {
+                                <div class="port-cert-date">
+                                    <i class="fa-regular fa-calendar"></i> @c.Date.Value.ToString("dd MMM yyyy")
+                                </div>
+                            }
+
+                            <!-- Butonlar Bölümü -->
+                            <div class="port-btn-group mt-auto">
+
+                                <!-- Eğer Sertifika Linki Varsa -->
+                                @if (!string.IsNullOrEmpty(c.CertificateUrl))
+                                {
+                                    <a href="@c.CertificateUrl" target="_blank" class="port-btn-outline">
+                                        <i class="fa-solid fa-link"></i> Linke Git
+                                    </a>
+                                }
+
+                                <!-- Eğer Dosya PDF İse Buton Çıkar -->
+                                @if (isPdf)
+                                {
+                                    <a href="@c.FileUrl" target="_blank" class="port-btn-primary">
+                                        <i class="fa-solid fa-file-pdf"></i> PDF Aç
+                                    </a>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                delay += 100;
+            }
+        }
+        else
+        {
+            <!-- EĞER HİÇ SERTİFİKA YOKSA GÖSTERİLECEK ŞIK BOŞ DURUM EKRANI -->
+            <div class="col-12 text-center py-5" data-aos="fade-in">
+                <div class="p-5 rounded-4" style="background: rgba(23, 28, 40, 0.5); border: 1px dashed rgba(255, 255, 255, 0.2); max-width: 600px; margin: 0 auto; backdrop-filter: blur(10px);">
+                    <i class="fa-solid fa-medal mb-3" style="font-size: 4rem; color: rgba(255, 255, 255, 0.7);"></i>
+                    <h3 style="color: var(--text-main); font-weight: 700; margin-bottom: 10px;">Henüz Sertifika Eklenmemiş</h3>
+                    <p class="m-0" style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">
+                        Tamamladığım eğitimlere ait belgeler çok yakında burada listelenecek.
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<div class="port-spacer"></div>
+
+@section Scripts {
+    <!-- VanillaTilt.js Kütüphanesi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" integrity="sha512-wC/a55305TuZ600s8fFh0y8t7Hl9y0+IweaPofxRzi8A0n5qI/DxtnQ8rWlZp0R5/yH4vHhNnbkO2oHovgX1QA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+}

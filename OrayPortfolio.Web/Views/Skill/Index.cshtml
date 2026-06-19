@@ -1,0 +1,226 @@
+﻿@using OrayPortfolio.Application.DTOs.Skill
+@model IEnumerable<SkillUpdateDto>
+
+@{
+    ViewData["Title"] = "Yeteneklerim";
+}
+
+<style>
+    /* ----- YETENEKLER SAYFASI ÖZEL TASARIMI ----- */
+
+    
+    
+
+    /* Boşluklar */
+    .port-spacer {
+        height: 100px;
+    }
+
+    .port-spacer-sm {
+        height: 50px;
+    }
+
+    /* Sayfa Üst Başlığı (Page Header) */
+    .port-page-header {
+        text-align: center;
+        padding: 6rem 0 3rem;
+        position: relative;
+    }
+
+    .port-page-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        margin-bottom: 1rem;
+        text-wrap: balance;
+    }
+
+        .port-page-title i {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 10px;
+        }
+
+    .port-page-subtitle {
+        color: var(--text-muted);
+        font-size: clamp(1.1rem, 2vw, 1.25rem);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.8;
+        text-wrap: balance;
+    }
+
+    /* --- Yetenek Kartları (Glassmorphism & 3D Tilt) --- */
+    .port-skill-item {
+        background: rgba(23, 28, 40, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 25px 30px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transform-style: preserve-3d;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        transition: border-color 0.4s ease, transform 0.4s ease;
+    }
+
+        .port-skill-item:hover {
+            border-color: rgba(45, 212, 191, 0.4);
+            box-shadow: 0 20px 40px -10px rgba(45, 212, 191, 0.2);
+        }
+
+    /* Yetenek Başlığı ve Yüzde Değeri */
+    .port-skill-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        transform: translateZ(20px); /* 3D Öne çıkarma */
+    }
+
+    .port-skill-name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .port-skill-name i {
+            color: var(--brand-secondary);
+            font-size: 1.2rem;
+        }
+
+    .port-skill-percent {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--brand-primary);
+        background: rgba(109, 94, 249, 0.1);
+        padding: 4px 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(109, 94, 249, 0.2);
+    }
+
+    /* İlerleme Çubuğu Arka Planı */
+    .port-progress-bg {
+        height: 14px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px inset rgba(255,255,255,0.05);
+        transform: translateZ(10px);
+    }
+
+    /* İlerleme Çubuğu Doldurma Animasyonu */
+    .port-progress-fill {
+        height: 100%;
+        background-image: linear-gradient( 45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent );
+        background-size: 1.5rem 1.5rem;
+        background-color: var(--brand-primary);
+        border-radius: 12px;
+        width: 0; /* Başlangıçta 0, JS ile dolacak */
+        transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 0 15px rgba(109, 94, 249, 0.5);
+        animation: progress-stripes 1.5s linear infinite;
+    }
+
+</style>
+
+<!-- SAYFA ÜST BAŞLIĞI (PAGE HEADER) -->
+<section class="port-page-header container" data-aos="fade-down" data-aos-duration="800">
+    <h1 class="port-page-title">
+        <i class="fa-solid fa-bolt"></i> Uzmanlık Alanlarım
+    </h1>
+    <p class="port-page-subtitle">
+        Proje geliştirirken ustalıkla kullandığım yazılım dilleri, framework'ler ve teknik yetkinliklerim.
+    </p>
+</section>
+
+<div class="port-spacer-sm"></div>
+
+<!-- YETENEKLER LİSTESİ (GRID) -->
+<section class="container">
+    <div class="row g-4">
+        @{
+            int delay = 100;
+        }
+
+        @if (Model != null && Model.Any())
+        {
+            <!-- Yüksek puandan düşük puana doğru sıralıyoruz -->
+            foreach (var skill in Model.OrderByDescending(x => x.Level))
+            {
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@delay">
+                    <!-- VanillaTilt 3D Efekti -->
+                    <div class="port-skill-item" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.1">
+
+                        <div class="port-skill-header">
+                            <span class="port-skill-name">
+                                <i class="fa-solid fa-code"></i> @skill.Name
+                            </span>
+                            <span class="port-skill-percent">@skill.Level%</span>
+                        </div>
+
+                        <div class="port-progress-bg">
+                            <!-- Genişliği data-width üzerinde tutuyoruz. Ekrana girdiğinde JS burayı dolduracak -->
+                            <div class="port-progress-fill" data-width="@skill.Level%"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                delay += 50; // Animasyonların arka arkaya akıcı gelmesi için süreyi kısa tuttum
+            }
+        }
+        else
+        {
+            <!-- EĞER HİÇ YETENEK YOKSA GÖSTERİLECEK ŞIK BOŞ DURUM EKRANI -->
+            <div class="col-12 text-center py-5" data-aos="fade-in">
+                <div class="p-5 rounded-4" style="background: rgba(23, 28, 40, 0.5); border: 1px dashed rgba(255, 255, 255, 0.2); max-width: 600px; margin: 0 auto; backdrop-filter: blur(10px);">
+                    <i class="fa-solid fa-screwdriver-wrench mb-3" style="font-size: 4rem; color: rgba(255, 255, 255, 0.7);"></i>
+                    <h3 style="color: var(--text-main); font-weight: 700; margin-bottom: 10px;">Henüz Yetenek Eklenmemiş</h3>
+                    <p class="m-0" style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">
+                        Sahip olduğum teknik beceriler ve uzmanlık seviyelerim çok yakında burada olacak.
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<div class="port-spacer"></div>
+
+@section Scripts {
+    <!-- VanillaTilt.js Kütüphanesi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" integrity="sha512-wC/a55305TuZ600s8fFh0y8t7Hl9y0+IweaPofxRzi8A0n5qI/DxtnQ8rWlZp0R5/yH4vHhNnbkO2oHovgX1QA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        // --- İlerleme Çubukları (Progress Bar) İçin Intersection Observer ---
+        // Bu kod sayesinde kullanıcı sayfayı aşağı kaydırıp yetenek çubuğunu görene kadar çubuk dolmaz.
+        // Ekranda belirdiği an 0'dan kendi % değerine doğru çok şık bir şekilde dolar.
+        const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+        if (entry.isIntersecting) {
+        const fill = entry.target;
+        const targetWidth = fill.getAttribute('data-width');
+        fill.style.width = targetWidth; // Genişliği CSS'teki transition süresiyle uygula
+        observer.unobserve(fill); // Bir kere dolduktan sonra bir daha takip etme
+        }
+        });
+        }, { threshold: 0.1 }); // Elementin %10'u ekranda göründüğünde tetikle
+
+        // Sayfadaki tüm doldurulacak alanları bul ve gözlemciye ekle
+        const progressFills = document.querySelectorAll('.port-progress-fill');
+        progressFills.forEach(fill => {
+        observer.observe(fill);
+        });
+        });
+    </script>
+}

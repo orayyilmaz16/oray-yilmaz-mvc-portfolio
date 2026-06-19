@@ -1,0 +1,280 @@
+﻿@using OrayPortfolio.Application.DTOs.Reference
+@model IEnumerable<ReferenceDto>
+
+@{
+    ViewData["Title"] = "Referanslarım";
+}
+
+<style>
+    /* ----- REFERANSLAR SAYFASI ÖZEL TASARIMI ----- */
+
+    /* Boşluklar */
+    .port-spacer {
+        height: 100px;
+    }
+
+    .port-spacer-sm {
+        height: 50px;
+    }
+
+    /* Sayfa Üst Başlığı (Page Header) */
+    .port-page-header {
+        text-align: center;
+        padding: 6rem 0 3rem;
+        position: relative;
+    }
+
+    .port-page-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        margin-bottom: 1rem;
+        text-wrap: balance;
+    }
+
+        .port-page-title i {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 10px;
+        }
+
+    .port-page-subtitle {
+        color: var(--text-muted);
+        font-size: clamp(1.1rem, 2vw, 1.25rem);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.8;
+        text-wrap: balance;
+    }
+
+    /* --- Referans Kartları (Glassmorphism & 3D) --- */
+    .port-ref-card {
+        background: rgba(23, 28, 40, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        padding: clamp(30px, 4vw, 40px);
+        position: relative;
+        transition: all 0.4s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transform-style: preserve-3d;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+        .port-ref-card:hover {
+            border-color: rgba(109, 94, 249, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(109, 94, 249, 0.25);
+        }
+
+    /* Arka Plandaki Dev Tırnak İkonu */
+    .port-ref-quote-icon {
+        position: absolute;
+        top: -15px;
+        right: 15px;
+        font-size: 8rem;
+        color: rgba(255,255,255,0.02);
+        z-index: 0;
+        transform: translateZ(10px);
+    }
+
+    /* Yorum Metni */
+    .port-ref-content {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        font-size: 1.1rem;
+        font-style: italic;
+        color: var(--text-main);
+        margin-bottom: 25px;
+        line-height: 1.8;
+        transform: translateZ(30px);
+    }
+
+    /* Yazar Bilgileri (Avatar + İsim + Unvan) */
+    .port-ref-author {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        padding-top: 25px;
+        margin-bottom: 20px;
+        transform: translateZ(20px);
+    }
+
+    .port-ref-avatar {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-weight: 800;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+        box-shadow: 0 5px 15px rgba(109, 94, 249, 0.3);
+    }
+
+    .port-ref-name {
+        color: var(--text-main);
+        font-weight: 800;
+        margin: 0 0 4px 0;
+        font-size: 1.15rem;
+    }
+
+    .port-ref-position {
+        color: var(--brand-secondary);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* İletişim Bilgileri */
+    .port-ref-contact {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transform: translateZ(20px);
+    }
+
+    .port-contact-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 8px 14px;
+        border-radius: 12px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        width: fit-content;
+    }
+
+        .port-contact-badge i {
+            color: var(--brand-primary);
+            font-size: 1rem;
+        }
+
+        .port-contact-badge:hover {
+            background: rgba(109, 94, 249, 0.1);
+            border-color: rgba(109, 94, 249, 0.3);
+            color: var(--text-main);
+            transform: translateX(5px);
+        }
+
+</style>
+
+<!-- SAYFA ÜST BAŞLIĞI (PAGE HEADER) -->
+<section class="port-page-header container" data-aos="fade-down" data-aos-duration="800">
+    <h1 class="port-page-title">
+        <i class="fa-solid fa-user-tie"></i> Referanslarım
+    </h1>
+    <p class="port-page-subtitle">
+        Birlikte çalışma fırsatı bulduğum profesyonellerin, yöneticilerin ve iş arkadaşlarımın hakkımdaki düşünceleri.
+    </p>
+</section>
+
+<div class="port-spacer-sm"></div>
+
+<!-- REFERANSLAR LİSTESİ (GRID) -->
+<section class="container">
+    <div class="row g-4 g-xl-5">
+        @{
+            int delay = 100;
+        }
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var r in Model)
+            {
+                // İsmin ilk harfini güvenli bir şekilde almak için
+                string initial = !string.IsNullOrWhiteSpace(r.FullName) ? r.FullName.Substring(0, 1).ToUpper() : "R";
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@delay">
+                    <!-- VanillaTilt 3D Efekti -->
+                    <div class="port-ref-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.1">
+
+                        <!-- Arka Plan İkonu -->
+                        <i class="fa-solid fa-quote-right port-ref-quote-icon"></i>
+
+                        <!-- Yorum (Yorum yoksa varsayılan metin gösterilmesin diye kontrol ediyoruz) -->
+                        @if (!string.IsNullOrWhiteSpace(r.Comment))
+                        {
+                            <p class="port-ref-content">"@r.Comment"</p>
+                        }
+
+                        <div class="mt-auto">
+                            <!-- Yazar Bilgileri -->
+                            <div class="port-ref-author">
+                                <div class="port-ref-avatar">
+                                    @initial
+                                </div>
+                                <div>
+                                    <h4 class="port-ref-name">@r.FullName</h4>
+                                    <p class="port-ref-position">
+                                        @r.Position
+                                        @if (!string.IsNullOrWhiteSpace(r.Company))
+                                        {
+                                            <span style="color: var(--text-muted); font-weight: 500;">@@ @r.Company</span>
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- İletişim Butonları -->
+                            @if (!string.IsNullOrWhiteSpace(r.Email) || !string.IsNullOrWhiteSpace(r.Phone))
+                            {
+                                <div class="port-ref-contact">
+                                    @if (!string.IsNullOrWhiteSpace(r.Email))
+                                    {
+                                        <a href="mailto:@r.Email" class="port-contact-badge">
+                                            <i class="fa-solid fa-envelope"></i> @r.Email
+                                        </a>
+                                    }
+
+                                    @if (!string.IsNullOrWhiteSpace(r.Phone))
+                                    {
+                                        <a href="tel:@r.Phone.Replace(" ", "")" class="port-contact-badge">
+                                            <i class="fa-solid fa-phone"></i> @r.Phone
+                                        </a>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+
+                delay += 100;
+            }
+        }
+        else
+        {
+            <!-- EĞER HİÇ REFERANS YOKSA GÖSTERİLECEK ŞIK BOŞ DURUM EKRANI -->
+            <div class="col-12 text-center py-5" data-aos="fade-in">
+                <div class="p-5 rounded-4" style="background: rgba(23, 28, 40, 0.5); border: 1px dashed rgba(255, 255, 255, 0.2); max-width: 600px; margin: 0 auto; backdrop-filter: blur(10px);">
+                    <i class="fa-solid fa-address-book mb-3" style="font-size: 4rem; color: rgba(255, 255, 255, 0.7);"></i>
+                    <h3 style="color: var(--text-main); font-weight: 700; margin-bottom: 10px;">Henüz Referans Eklenmemiş</h3>
+                    <p class="m-0" style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">
+                        Çalışma arkadaşlarımdan ve yöneticilerimden aldığım geri bildirimler yakında burada yer alacak.
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<div class="port-spacer"></div>
+
+@section Scripts {
+    <!-- VanillaTilt.js Kütüphanesi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" integrity="sha512-wC/a55305TuZ600s8fFh0y8t7Hl9y0+IweaPofxRzi8A0n5qI/DxtnQ8rWlZp0R5/yH4vHhNnbkO2oHovgX1QA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+}

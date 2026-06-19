@@ -1,10 +1,18 @@
 ﻿<!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" style="scroll-behavior: smooth;">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>@ViewData["Title"] - OrayPortfolio</title>
+    <title>@ViewData["Title"]</title>
+
+    <!-- Favicon Icon -->
+    <link rel="icon" type="image/png" href="~/img/favicon.png" />
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,21 +23,196 @@
     <!-- AOS Animasyon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-</head>
+    <!-- SweetAlert2 CSS (Modern Bildirimler İçin) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-<body class="bg-light">
+    <!-- Custom CSS Link -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+            /* ----- MODERN PORTFOLIO TEMA DEĞİŞKENLERİ ----- */
+            :root {
+                --bg-base: #0b0e14;
+                --surface: #171c28;
+                --surface-hover: #1f2533;
+                --surface-glass: rgba(11, 14, 20, 0.75);
+                --border-color: #242b3a;
+                --text-main: #eef1f6;
+                --text-muted: #8b93a7;
+                --brand-primary: #6d5ef9;
+                --brand-secondary: #2dd4bf;
+                --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+
+            /* ----- GENEL AYARLAR ----- */
+            /* ASP.NET Core'un varsayılan alttan boşluk bırakma huyunu (!important ile) tamamen eziyoruz: */
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 100%; /* HTML'in tam ekran olmasını garantiye alıyoruz */
+            }
+
+            /* ----- GENEL AYARLAR ----- */
+            body {
+                background-color: var(--bg-base);
+                color: var(--text-main);
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                overflow-x: hidden;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                position: relative;
+            }
+
+            ::selection {
+                background: var(--brand-primary);
+                color: #fff;
+            }
+            /* ----- CUSTOM SCROLLBAR (ÖZEL KAYDIRMA ÇUBUĞU) ----- */
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: var(--bg-base);
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: var(--border-color);
+                border-radius: 10px;
+            }
+
+                ::-webkit-scrollbar-thumb:hover {
+                    background: var(--brand-primary);
+                }
+
+            /* ----- ARKA PLAN PARLAMA EFEKTLERİ ----- */
+            body::before {
+                content: "";
+                position: absolute;
+                top: -10%;
+                left: -10%;
+                width: 50vw;
+                height: 50vw;
+                background: radial-gradient(circle, rgba(109, 94, 249, 0.08), transparent 70%);
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            body::after {
+                content: "";
+                position: absolute;
+                bottom: -20%;
+                right: -10%;
+                width: 40vw;
+                height: 40vw;
+                background: radial-gradient(circle, rgba(45, 212, 191, 0.04), transparent 70%);
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            /* ----- İÇERİK ALANI ----- */
+            .port-main-content {
+                flex: 1 0 auto; /* flex: 1 yanına "0 auto" ekledik. Ortadaki alanın kusursuz esnemesini sağlar */
+                padding-top: 100px;
+                padding-bottom: 60px;
+                position: relative;
+                z-index: 1;
+            }
+
+            /* ----- PRELOADER (SAYFA YÜKLEYİCİ) ----- */
+            #port-preloader {
+                position: fixed;
+                inset: 0;
+                background: var(--bg-base);
+                z-index: 9999;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                transition: opacity 0.5s var(--transition), visibility 0.5s;
+            }
+
+            .port-spinner {
+                width: 50px;
+                height: 50px;
+                border: 3px solid rgba(109, 94, 249, 0.2);
+                border-top-color: var(--brand-primary);
+                border-radius: 50%;
+                animation: port-spin 1s linear infinite;
+            }
+            
+
+            /* ----- YUKARI ÇIK BUTONU ----- */
+            .port-back-to-top {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 45px;
+                height: 45px;
+                background: var(--surface-glass);
+                backdrop-filter: blur(10px);
+                border: 1px solid var(--border-color);
+                color: var(--text-main);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+                cursor: pointer;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(20px);
+                transition: all var(--transition);
+                z-index: 1000;
+            }
+
+                .port-back-to-top.show {
+                    opacity: 1;
+                    visibility: visible;
+                    transform: translateY(0);
+                }
+
+                .port-back-to-top:hover {
+                    background: var(--brand-primary);
+                    border-color: var(--brand-primary);
+                    color: #fff;
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 20px rgba(109, 94, 249, 0.4);
+                }
+
+            /* ----- FOOTER ----- */
+            .port-footer {
+                background: linear-gradient(180deg, var(--bg-base) 0%, #080a0f 100%);
+                border-top: 1px solid rgba(255, 255, 255, 0.03);
+                padding: 5rem 0 1.5rem;
+                margin-top: auto;
+                flex-shrink: 0; /* BUNU EKLİYORUZ: Footer'ın daralmasını/büzülmesini kesin olarak engeller */
+                position: relative;
+                overflow: hidden;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- PRELOADER -->
+    <div id="port-preloader">
+        <div class="port-spinner"></div>
+    </div>
 
     <!-- NAVBAR -->
     @await Html.PartialAsync("_Navbar")
 
     <!-- CONTENT -->
-    <div class="container py-4" data-aos="fade-up">
-        <main role="main">
+    <main role="main" class="port-main-content">
+        <div class="container" data-aos="fade-up" data-aos-duration="800">
             @RenderBody()
-        </main>
-    </div>
+        </div>
+    </main>
+
+    <!-- BACK TO TOP BUTTON -->
+    <button class="port-back-to-top" id="backToTopBtn" title="Yukarı Çık">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
 
     <!-- FOOTER -->
     @await Html.PartialAsync("_Footer")
@@ -39,10 +222,55 @@
 
     <!-- AOS Animasyon -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script>AOS.init();</script>
+
+    <!-- SweetAlert2 (Modern Pop-up Bildirimler) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Custom JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- YENİ EKLENEN SCRIPT'LER -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+        // 1. AOS Animasyonlarını Başlat
+        AOS.init({
+        once: true, // Scroll yaparken animasyon sadece 1 kere çalışsın
+        offset: 50, // Animasyonun tetiklenme noktası
+        duration: 800, // Animasyon süresi (ms)
+        easing: 'ease-in-out-cubic',
+        });
+
+        // 2. Preloader'ı Kapat (Sayfa yüklendiğinde)
+        window.addEventListener('load', function() {
+        const preloader = document.getElementById('port-preloader');
+        if (preloader) {
+        preloader.style.opacity = '0';
+        setTimeout(() => {
+        preloader.style.visibility = 'hidden';
+        }, 500);
+        }
+        });
+
+        // 3. Yukarı Çık Butonu Mantığı
+        const backToTopBtn = document.getElementById('backToTopBtn');
+        window.addEventListener('scroll', function () {
+        if (window.scrollY > 300) {
+        backToTopBtn.classList.add('show');
+        } else {
+        backToTopBtn.classList.remove('show');
+        }
+        });
+
+        backToTopBtn.addEventListener('click', function () {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+        });
+        });
+
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
