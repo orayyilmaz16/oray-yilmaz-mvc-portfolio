@@ -16,13 +16,12 @@
 <style>
     /* ----- ARAMA SONUÇLARI SAYFASI MASTER TASARIMI ----- */
 
-   
-
-    /* 📌 KONTRAST DÜZELTMESİ (Görünmeyen siyah/gri yazılar için) */
+    /* 📌 KESİN ÇÖZÜM: Tüm alt metinleri sistemin dinamik temasına bağladık */
     .text-muted,
     .port-card-text,
-    .port-timeline-desc {
-        color: rgba(255, 255, 255, 0.7) !important;
+    .port-timeline-desc,
+    .port-page-subtitle {
+        color: var(--text-muted) !important;
     }
 
     /* Boşluklar ve Başlıklar */
@@ -50,7 +49,6 @@
     }
 
     .port-page-subtitle {
-        color: rgba(255, 255, 255, 0.7);
         font-size: clamp(1.1rem, 2vw, 1.25rem);
         max-width: 700px;
         margin: 0 auto;
@@ -73,16 +71,16 @@
         gap: 12px;
         margin-top: 2rem;
         padding: 20px;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
         border-radius: 20px;
         backdrop-filter: blur(10px);
     }
 
     .port-summary-badge {
-        background: rgba(23, 28, 40, 0.8);
+        background: var(--surface);
         color: var(--text-main);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border-color);
         padding: 8px 16px;
         border-radius: 12px;
         font-weight: 600;
@@ -98,15 +96,21 @@
             background: var(--brand-primary);
             border-color: var(--brand-primary);
             transform: translateY(-3px);
-            color: #fff;
+            color: #fff !important;
             box-shadow: 0 10px 20px rgba(109, 94, 249, 0.3);
         }
 
         .port-summary-badge span {
-            background: rgba(255,255,255,0.2);
+            background: rgba(109, 94, 249, 0.15);
+            color: var(--brand-primary);
             padding: 2px 8px;
             border-radius: 6px;
             font-size: 0.85rem;
+        }
+
+        .port-summary-badge:hover span {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
         }
 
     /* Kategori Başlıkları */
@@ -120,13 +124,28 @@
         margin: 5rem 0 2rem 0;
         padding-top: 80px; /* Header zıplaması için padding */
         margin-top: -40px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid var(--border-color);
         padding-bottom: 15px;
     }
 
         .port-category-title i {
             color: var(--brand-secondary);
             font-size: 1.5rem;
+        }
+
+    /* 📌 BOŞ DURUM (EMPTY STATE) TASARIMI */
+    .port-empty-state {
+        background: var(--surface-glass);
+        border: 1px dashed var(--border-color);
+        max-width: 600px;
+        margin: 0 auto;
+        backdrop-filter: blur(10px);
+        transition: all var(--transition);
+    }
+
+        .port-empty-state i {
+            color: var(--text-muted);
+            opacity: 0.5;
         }
 
     /* --- 1. PROJE VE SERTİFİKA KARTLARI --- */
@@ -175,22 +194,39 @@
         z-index: 1;
     }
 
+    /* Light Mode'da resmin üzerindeki gradienti yumuşatıyoruz */
+    [data-theme="light"] .port-card-img-overlay {
+        background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, transparent 70%);
+    }
+
     .port-card-body {
-        padding: 0 30px 30px;
+        padding: 30px;
         display: flex;
         flex-direction: column;
         flex: 1;
         position: relative;
         z-index: 2;
-        margin-top: -20px;
         transform: translateZ(30px);
     }
 
     .port-card-title {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: 800;
         color: var(--text-main);
         margin-bottom: 12px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+    }
+
+    /* Light mode başlık gölgesini kaldırma */
+    [data-theme="light"] .port-card-title {
+        text-shadow: none !important;
     }
 
     /* --- 2. ZAMAN ÇİZELGESİ (Deneyim, Eğitim) --- */
@@ -257,8 +293,8 @@
         object-fit: contain;
         background-color: #fff;
         padding: 6px;
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        border: 2px solid var(--border-color);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         transition: transform 0.4s ease, border-color 0.4s ease;
     }
 
@@ -342,6 +378,38 @@
         transform: translateZ(10px);
     }
 
+    .port-ref-content {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        font-size: 1.05rem;
+        font-style: italic;
+        color: var(--text-main);
+        margin-bottom: 20px;
+        line-height: 1.7;
+    }
+
+    .port-ref-author {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 20px;
+    }
+
+    .port-ref-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
     /* Butonlar */
     .port-btn-outline {
         background: rgba(255,255,255,0.02);
@@ -367,18 +435,17 @@
     html {
         scroll-behavior: smooth;
     }
-    /* Anchor linklerin yumuşak kayması için */
 </style>
 
 <section class="port-page-header container" data-aos="fade-down">
     <h1 class="port-page-title">
         <i class="fa-solid fa-magnifying-glass"></i> "@query" Sonuçları
     </h1>
-    <p class="port-page-subtitle">Arama kriterlerinize uyan toplam <b>@totalResults</b> içerik bulundu.</p>
+    <p class="port-page-subtitle text-muted">Arama kriterlerinize uyan toplam <b>@totalResults</b> içerik bulundu.</p>
 
     @if (totalResults > 0)
     {
-        <div class="port-search-summary shadow-lg">
+        <div class="port-search-summary shadow-sm">
             @if (Model.Projects.Any())
             {
                 <a href="#s-projeler" class="port-summary-badge"><i class="fa-solid fa-diagram-project"></i> Projeler <span>@Model.Projects.Count()</span></a>
@@ -416,10 +483,10 @@
     @if (totalResults == 0)
     {
         <div class="text-center py-5" data-aos="fade-in">
-            <div class="p-5 rounded-4" style="background: rgba(23, 28, 40, 0.5); border: 1px dashed rgba(255, 255, 255, 0.2); max-width: 600px; margin: 0 auto; backdrop-filter: blur(10px);">
-                <i class="fa-solid fa-ghost mb-3" style="font-size: 4rem; color: rgba(255, 255, 255, 0.5);"></i>
+            <div class="p-5 rounded-4 port-empty-state shadow-sm">
+                <i class="fa-solid fa-ghost mb-3" style="font-size: 4rem;"></i>
                 <h3 style="color: var(--text-main); font-weight: 700; margin-bottom: 10px;">Sonuç Bulunamadı</h3>
-                <p class="m-0" style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem;">
+                <p class="m-0 text-muted" style="font-size: 1.1rem;">
                     Farklı anahtar kelimeler deneyerek tekrar arama yapabilirsiniz.
                 </p>
             </div>
@@ -444,14 +511,13 @@
                             }
                             else
                             {
-
                                 <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop" class="port-card-img" alt="Default" />
                             }
                             <div class="port-card-img-overlay"></div>
                         </div>
                         <div class="port-card-body">
                             <h5 class="port-card-title">@p.Title</h5>
-                            <p class="port-card-text">@(p.Description?.Length > 100 ? p.Description.Substring(0, 100) + "..." : p.Description)</p>
+                            <p class="port-card-text text-muted">@p.Description</p>
                             <div class="mt-auto">
                                 <a asp-controller="Project" asp-action="Detail" asp-route-id="@p.Id" class="port-btn-outline w-100 justify-content-center">
                                     İncele <i class="fa-solid fa-arrow-up-right-from-square ms-2"></i>
@@ -491,7 +557,7 @@
                                     </div>
                                     <h4 style="font-weight: 800; font-size: 1.5rem; color: var(--text-main);">@e.Position</h4>
                                     <p style="color: var(--brand-secondary); font-weight: 600;"><i class="fa-regular fa-building me-2"></i>@e.Company</p>
-                                    <p class="port-timeline-desc m-0 mt-2">@e.Description</p>
+                                    <p class="port-timeline-desc text-muted m-0 mt-2">@e.Description</p>
                                 </div>
                             </div>
                         </li>
@@ -515,7 +581,7 @@
                                 <span class="badge" style="background: rgba(45, 212, 191, 0.1); color: var(--brand-secondary); padding: 6px 12px; border: 1px solid rgba(45, 212, 191, 0.2); font-size: 0.9rem;">
                                     <i class="fa-solid fa-award me-1"></i> @edu.Degree
                                 </span>
-                                <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7);">
+                                <span class="text-muted" style="font-size: 0.9rem;">
                                     @edu.StartDate.ToString("yyyy") → @(edu.EndDate.Year == 1 || edu.EndDate.Year == 0 ? "Devam Ediyor" : edu.EndDate.ToString("yyyy"))
                                 </span>
                             </div>
@@ -523,7 +589,7 @@
                             <p style="color: var(--brand-primary); font-weight: 600;"><i class="fa-solid fa-building-columns me-2"></i>@edu.School</p>
                             @if (!string.IsNullOrWhiteSpace(edu.Description))
                             {
-                                <p class="port-timeline-desc m-0 mt-2">@edu.Description</p>
+                                <p class="port-timeline-desc text-muted m-0 mt-2">@edu.Description</p>
                             }
                         </li>
                     }
@@ -564,7 +630,7 @@
                         <i class="fa-solid fa-certificate" style="font-size: 3rem; color: var(--brand-secondary); transform: translateZ(20px);"></i>
                         <div class="flex-grow-1" style="transform: translateZ(20px);">
                             <h5 style="color: var(--text-main); font-weight: 700; margin-bottom: 5px;">@c.Title</h5>
-                            <p class="m-0" style="color: rgba(255, 255, 255, 0.7); font-size: 0.95rem;">@c.Issuer @(c.Date.HasValue ? " • " + c.Date.Value.ToString("yyyy") : "")</p>
+                            <p class="m-0 text-muted" style="font-size: 0.95rem;">@c.Issuer @(c.Date.HasValue ? " • " + c.Date.Value.ToString("yyyy") : "")</p>
                         </div>
                         @if (!string.IsNullOrWhiteSpace(c.CertificateUrl))
                         {
@@ -602,7 +668,7 @@
                                     @v.Role
                                 </span>
                             </div>
-                            <p class="port-card-text m-0 mt-2">@v.Description</p>
+                            <p class="port-card-text text-muted m-0 mt-2">@v.Description</p>
                         </div>
                     </div>
                 </div>
@@ -620,7 +686,7 @@
                     <div class="port-ref-card" data-tilt>
                         <i class="fa-solid fa-quote-right port-ref-quote-icon"></i>
                         <p style="color: var(--text-main); font-style: italic; position: relative; z-index: 1; transform: translateZ(20px);">"@r.Comment"</p>
-                        <div class="mt-auto pt-3" style="border-top: 1px solid rgba(255,255,255,0.05); transform: translateZ(20px);">
+                        <div class="mt-auto pt-3" style="border-top: 1px solid var(--border-color); transform: translateZ(20px);">
                             <h6 style="color: var(--text-main); font-weight: 700; margin-bottom: 2px;">@r.FullName</h6>
                             <p style="color: var(--brand-secondary); font-size: 0.9rem; margin: 0;">@r.Position - @r.Company</p>
                         </div>

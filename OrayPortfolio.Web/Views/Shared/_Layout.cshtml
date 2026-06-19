@@ -6,31 +6,24 @@
 
     <title>@ViewData["Title"]</title>
 
-    <!-- Favicon Icon -->
     <link rel="icon" type="image/png" href="~/img/favicon.png" />
 
-    <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- AOS Animasyon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
 
-    <!-- SweetAlert2 CSS (Modern Bildirimler İçin) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <!-- Custom CSS Link -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <style>
-            /* ----- MODERN PORTFOLIO TEMA DEĞİŞKENLERİ ----- */
+            /* ----- MODERN PORTFOLIO TEMA DEĞİŞKENLERİ (VARSAYILAN: DARK) ----- */
             :root {
                 --bg-base: #0b0e14;
                 --surface: #171c28;
@@ -44,15 +37,85 @@
                 --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             }
 
+            /* ----- LIGHT MODE RENK DEĞİŞKENLERİ ----- */
+            [data-theme="light"] {
+                --bg-base: #f8fafc; /* Çok açık soft gri */
+                --surface: #ffffff; /* Bembeyaz kartlar */
+                --surface-hover: #f1f5f9;
+                --surface-glass: rgba(255, 255, 255, 0.85);
+                --border-color: #e2e8f0;
+                --text-main: #0f172a; /* Koyu lacivert/siyah yazı */
+                --text-muted: #64748b;
+                --brand-primary: #4f46e5; /* Daha okunaklı bir mor */
+                --brand-secondary: #0d9488; /* Daha koyu bir mint yeşili */
+            }
+
+                /* 📌 Açık Modda Görsel Düzenlemeler (Opacity ve Shadow Ezmeleri) */
+                [data-theme="light"] .port-card,
+                [data-theme="light"] .port-timeline-item,
+                [data-theme="light"] .port-skill-item,
+                [data-theme="light"] .port-ref-card,
+                [data-theme="light"] .port-about-box,
+                [data-theme="light"] .port-profile-card,
+                [data-theme="light"] .port-detail-content-card,
+                [data-theme="light"] .port-search-summary {
+                    background: rgba(255, 255, 255, 0.85) !important;
+                    border-color: rgba(0, 0, 0, 0.08) !important;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03) !important;
+                }
+
+                /* Açık moddaki yazıları Dark moddan gelen zorunlu beyazlıktan kurtarır */
+                [data-theme="light"] .text-muted,
+                [data-theme="light"] .port-card-text,
+                [data-theme="light"] .port-timeline-desc,
+                [data-theme="light"] .port-page-subtitle,
+                [data-theme="light"] .port-hero-subtitle {
+                    color: var(--text-muted) !important;
+                }
+
+                /* Açık mod Buton ve Arka Plan ayarlamaları */
+                [data-theme="light"] .port-progress-bg {
+                    background: rgba(0, 0, 0, 0.05) !important;
+                }
+
+                [data-theme="light"] .port-btn-outline {
+                    background: rgba(0, 0, 0, 0.02) !important;
+                    border-color: rgba(0, 0, 0, 0.1) !important;
+                    color: var(--text-main) !important;
+                }
+
+                    [data-theme="light"] .port-btn-outline:hover {
+                        background: var(--brand-primary) !important;
+                        border-color: var(--brand-primary) !important;
+                        color: #ffffff !important;
+                    }
+
+                [data-theme="light"] .port-ref-quote-icon,
+                [data-theme="light"] .port-about-icon {
+                    color: rgba(0, 0, 0, 0.03) !important;
+                }
+
+                [data-theme="light"] .port-timeline-date,
+                [data-theme="light"] .port-cert-date,
+                [data-theme="light"] .port-tech-badge {
+                    background: rgba(79, 70, 229, 0.08) !important; /* Açık mora çalan arkaplan */
+                    border-color: rgba(79, 70, 229, 0.15) !important;
+                    color: var(--brand-primary) !important;
+                }
+
+                [data-theme="light"] .port-company-logo,
+                [data-theme="light"] .port-volunteer-logo {
+                    border-color: rgba(0,0,0,0.1) !important;
+                }
+
+
             /* ----- GENEL AYARLAR ----- */
-            /* ASP.NET Core'un varsayılan alttan boşluk bırakma huyunu (!important ile) tamamen eziyoruz: */
             html, body {
                 margin: 0 !important;
                 padding: 0 !important;
-                height: 100%; /* HTML'in tam ekran olmasını garantiye alıyoruz */
+                height: 100%;
             }
 
-            /* ----- GENEL AYARLAR ----- */
             body {
                 background-color: var(--bg-base);
                 color: var(--text-main);
@@ -62,13 +125,15 @@
                 flex-direction: column;
                 min-height: 100vh;
                 position: relative;
+                transition: background-color 0.4s ease, color 0.4s ease; /* Temalar arası yumuşak geçiş */
             }
 
             ::selection {
                 background: var(--brand-primary);
                 color: #fff;
             }
-            /* ----- CUSTOM SCROLLBAR (ÖZEL KAYDIRMA ÇUBUĞU) ----- */
+
+            /* ----- CUSTOM SCROLLBAR ----- */
             ::-webkit-scrollbar {
                 width: 8px;
             }
@@ -113,14 +178,14 @@
 
             /* ----- İÇERİK ALANI ----- */
             .port-main-content {
-                flex: 1 0 auto; /* flex: 1 yanına "0 auto" ekledik. Ortadaki alanın kusursuz esnemesini sağlar */
+                flex: 1 0 auto;
                 padding-top: 100px;
                 padding-bottom: 60px;
                 position: relative;
                 z-index: 1;
             }
 
-            /* ----- PRELOADER (SAYFA YÜKLEYİCİ) ----- */
+            /* ----- PRELOADER ----- */
             #port-preloader {
                 position: fixed;
                 inset: 0;
@@ -182,93 +247,121 @@
 
             /* ----- FOOTER ----- */
             .port-footer {
-                background: linear-gradient(180deg, var(--bg-base) 0%, #080a0f 100%);
+                background: linear-gradient(180deg, var(--bg-base) 0%, rgba(0,0,0,0.2) 100%);
                 border-top: 1px solid rgba(255, 255, 255, 0.03);
                 padding: 5rem 0 1.5rem;
                 margin-top: auto;
-                flex-shrink: 0; /* BUNU EKLİYORUZ: Footer'ın daralmasını/büzülmesini kesin olarak engeller */
+                flex-shrink: 0;
                 position: relative;
                 overflow: hidden;
             }
     </style>
+
+    <script>
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            // Eğer kayıtlı tema yoksa koyu temayı varsayalım
+            const currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'dark');
+            document.documentElement.setAttribute('data-theme', currentTheme);
+    </script>
 </head>
 <body>
 
-    <!-- PRELOADER -->
     <div id="port-preloader">
         <div class="port-spinner"></div>
     </div>
 
-    <!-- NAVBAR -->
     @await Html.PartialAsync("_Navbar")
 
-    <!-- CONTENT -->
     <main role="main" class="port-main-content">
         <div class="container" data-aos="fade-up" data-aos-duration="800">
             @RenderBody()
         </div>
     </main>
 
-    <!-- BACK TO TOP BUTTON -->
     <button class="port-back-to-top" id="backToTopBtn" title="Yukarı Çık">
         <i class="fa-solid fa-arrow-up"></i>
     </button>
 
-    <!-- FOOTER -->
     @await Html.PartialAsync("_Footer")
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- AOS Animasyon -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
-    <!-- SweetAlert2 (Modern Pop-up Bildirimler) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Custom JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <!-- YENİ EKLENEN SCRIPT'LER -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-
         // 1. AOS Animasyonlarını Başlat
         AOS.init({
-        once: true, // Scroll yaparken animasyon sadece 1 kere çalışsın
-        offset: 50, // Animasyonun tetiklenme noktası
-        duration: 800, // Animasyon süresi (ms)
+        once: true,
+        offset: 50,
+        duration: 800,
         easing: 'ease-in-out-cubic',
         });
 
-        // 2. Preloader'ı Kapat (Sayfa yüklendiğinde)
+        // 2. Preloader'ı Kapat
         window.addEventListener('load', function() {
         const preloader = document.getElementById('port-preloader');
         if (preloader) {
         preloader.style.opacity = '0';
-        setTimeout(() => {
-        preloader.style.visibility = 'hidden';
-        }, 500);
+        setTimeout(() => { preloader.style.visibility = 'hidden'; }, 500);
         }
         });
 
         // 3. Yukarı Çık Butonu Mantığı
         const backToTopBtn = document.getElementById('backToTopBtn');
+        if (backToTopBtn) {
         window.addEventListener('scroll', function () {
-        if (window.scrollY > 300) {
-        backToTopBtn.classList.add('show');
-        } else {
-        backToTopBtn.classList.remove('show');
-        }
+        if (window.scrollY > 300) { backToTopBtn.classList.add('show'); }
+        else { backToTopBtn.classList.remove('show'); }
         });
 
         backToTopBtn.addEventListener('click', function () {
-        window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+        }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleIcon = document.getElementById('theme-toggle-icon');
+
+        // Eğer navbar içine Butonu henüz eklemediysen bu kontrol hatayı önler
+        if(themeToggleBtn && themeToggleIcon) {
+
+        // Head içindeki script'in belirlediği temayı oku
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        updateToggleIcon(currentTheme);
+
+        // Tıklama olayını dinle
+        themeToggleBtn.addEventListener('click', () => {
+        let theme = document.documentElement.getAttribute('data-theme');
+        let newTheme = theme === 'dark' ? 'light' : 'dark';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateToggleIcon(newTheme);
         });
 
+        // İkonu ve Buton Rengini Güncelleyen Fonksiyon
+        function updateToggleIcon(theme) {
+        if (theme === 'dark') {
+        themeToggleIcon.className = 'fa-solid fa-sun'; // Koyu moddayken güneş (ışık) aç ikonu
+        themeToggleBtn.style.color = 'var(--brand-secondary)'; // Mint yeşili ikon
+        themeToggleBtn.style.borderColor = 'rgba(45, 212, 191, 0.3)';
+        } else {
+        themeToggleIcon.className = 'fa-solid fa-moon'; // Açık moddayken ay (karanlık) ikonu
+        themeToggleBtn.style.color = 'var(--brand-primary)'; // Lacivert/Mor ikon
+        themeToggleBtn.style.borderColor = 'rgba(79, 70, 229, 0.3)';
+        }
+        }
+        }
         });
     </script>
 

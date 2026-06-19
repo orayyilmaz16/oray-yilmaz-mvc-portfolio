@@ -47,6 +47,10 @@
         text-wrap: balance;
     }
 
+    [data-theme="light"] .port-card-title {
+        text-shadow: none !important;
+    }
+
     /* --- Proje Kartları (3D Tilt, Cam Efekti ve Kusursuz Oranlar) --- */
     .port-card {
         background: rgba(23, 28, 40, 0.6);
@@ -96,13 +100,13 @@
     }
 
     .port-card-body {
-        padding: 0 30px 30px;
+        padding: 30px;
         display: flex;
         flex-direction: column;
         flex: 1;
         position: relative;
         z-index: 2;
-        margin-top: -20px; /* Yazıları resmin üzerine bindirir */
+        /* Yazıları resmin üzerine bindirir */
         transform: translateZ(30px); /* Yazıları 3D olarak en öne çıkarır */
     }
 
