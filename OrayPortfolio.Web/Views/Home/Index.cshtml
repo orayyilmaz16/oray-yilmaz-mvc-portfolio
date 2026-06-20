@@ -306,6 +306,7 @@
         position: absolute;
         inset: 0;
         background: linear-gradient(to top, rgba(23, 28, 40, 0.95) 0%, transparent 70%);
+
         z-index: 1;
     }
 
@@ -555,6 +556,7 @@
             height: 200%;
             background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 50%);
             animation: scroll-bounce 15s linear infinite;
+            pointer-events: none; /* 📌 ÇÖZÜM 1: Mouse engellemesini kaldırır */
         }
 
     /* Mobil Uyumluluk */
@@ -1020,13 +1022,15 @@
 
 <section class="container" data-aos="zoom-in" data-aos-duration="1000">
     <div class="port-cta shadow-lg">
-        <h2 style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: var(--text-main); margin-bottom: 20px; letter-spacing: -1px;">Yeni bir proje mi var?</h2>
-        <p class="text-muted" style="font-size: clamp(1rem, 2vw, 1.25rem); max-width: 650px; margin: 0 auto 35px; line-height: 1.7; text-wrap: balance;">
-            Fikirlerinizi dijital dünyada hayata geçirmek, modern ve ölçeklenebilir mimariler kurmak için buradayım. Birlikte harika işler çıkarabiliriz.
-        </p>
-        <a href="mailto:@Model.Profile.Email" class="port-btn-primary" style="padding: 18px 45px;">
-            <i class="fa-regular fa-paper-plane"></i> Hemen İletişime Geç
-        </a>
+        <div style="position: relative; z-index: 1;">
+            <h2 style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: var(--text-main); margin-bottom: 20px; letter-spacing: -1px;">Yeni bir proje mi var?</h2>
+            <p class="text-muted" style="font-size: clamp(1rem, 2vw, 1.25rem); max-width: 650px; margin: 0 auto 35px; line-height: 1.7; text-wrap: balance;">
+                Fikirlerinizi dijital dünyada hayata geçirmek, modern ve ölçeklenebilir mimariler kurmak için buradayım. Birlikte harika işler çıkarabiliriz.
+            </p>
+            <a href="mailto:@Model.Profile.Email" class="port-btn-primary" style="padding: 18px 45px;">
+                <i class="fa-regular fa-paper-plane"></i> Hemen İletişime Geç
+            </a>
+        </div>
     </div>
 </section>
 
