@@ -68,12 +68,16 @@ namespace OrayPortfolio.Web.Controllers
         [HttpPost]
         public IActionResult SendMessage([FromBody] ContactViewModel ContactForm)
         {
+            // 📌 SPAM KONTROLÜ (Honeypot) - Bot tuzağa düşerse "başarılı" dönüp kandırıyoruz
+            if (!string.IsNullOrEmpty(ContactForm.WebsiteUrl))
+                return Json(new { success = true, message = "Mesajınız başarıyla gönderildi!" });
+
             if (!ModelState.IsValid)
                 return Json(new { success = false, message = "Lütfen tüm alanları doğru şekilde doldurun." });
 
             try
             {
-                // 📌 SMTP bilgilerini appsettings.json'dan alıyoruz
+                // SMTP bilgilerini appsettings.json'dan alıyoruz
                 var smtpEmail = _config["Smtp:Email"];
                 var smtpPassword = _config["Smtp:Password"];
 
@@ -99,7 +103,7 @@ namespace OrayPortfolio.Web.Controllers
             }
             catch
             {
-                return Json(new { success = false, message = "Mesaj gönderilirken bir hata oluştu." });
+                return Json(new { success = false, message = "Mesaj gönderilirken sunucu tarafında bir hata oluştu." });
             }
         }
     }

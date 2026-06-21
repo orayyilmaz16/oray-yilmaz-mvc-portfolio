@@ -13,6 +13,8 @@
                        (Model?.VolunteerWorks?.Count() ?? 0);
 }
 
+
+
 <style>
     /* ----- ARAMA SONUÇLARI SAYFASI MASTER TASARIMI ----- */
 
@@ -434,6 +436,15 @@
 
     html {
         scroll-behavior: smooth;
+    }
+
+    /* Arama kelimesini vurgula */
+    .search-highlight {
+        background-color: rgba(45, 212, 191, 0.3);
+        color: var(--text-main);
+        padding: 0 4px;
+        border-radius: 4px;
+        font-weight: 700;
     }
 </style>
 

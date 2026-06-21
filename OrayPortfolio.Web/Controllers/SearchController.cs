@@ -34,15 +34,12 @@ namespace OrayPortfolio.Web.Controllers
 
         public async Task<IActionResult> Index(string q)
         {
-            var vm = new SearchViewModel
-            {
-                Query = q ?? ""
-            };
+            var vm = new SearchViewModel { Query = q ?? "" };
 
             if (string.IsNullOrWhiteSpace(q))
                 return View(vm);
 
-            // Tüm verileri çek
+            // Verileri çek (Zaten yapıyordun)
             var projects = await _projectService.GetAllAsync();
             var experiences = await _experienceService.GetAllAsync();
             var skills = await _skillService.GetAllAsync();
@@ -51,36 +48,38 @@ namespace OrayPortfolio.Web.Controllers
             var references = await _referenceService.GetAllAsync();
             var volunteerWorks = await _volunteerWorkService.GetAllAsync();
 
-            // Filtreleme
-            vm.Projects = projects
-                .Where(x => x.Title.Contains(q, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            // 📌 GÜÇLENDİRİLMİŞ FİLTRELEME
+            vm.Projects = projects.Where(x =>
+                (x.Title?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Description?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)).ToList();
 
-            vm.Experiences = experiences
-                .Where(x => x.Position.Contains(q, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            vm.Experiences = experiences.Where(x =>
+                (x.Position?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Company?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Description?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)).ToList();
 
-            vm.Skills = skills
-                .Where(x => x.Name.Contains(q, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            vm.Skills = skills.Where(x =>
+                (x.Name?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)).ToList();
 
-            vm.Certificates = certificates
-                .Where(x => x.Title.Contains(q, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            vm.Certificates = certificates.Where(x =>
+                (x.Title?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Issuer?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)).ToList();
 
-            vm.Educations = educations
-                .Where(x => x.School.Contains(q, StringComparison.OrdinalIgnoreCase)
-                         || x.Department.Contains(q, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            vm.Educations = educations.Where(x =>
+                (x.School?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Department?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Description?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)).ToList();
 
-            vm.References = references
-                .Where(x => x.FullName.Contains(q, StringComparison.OrdinalIgnoreCase)
-                         || x.Position.Contains(q, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            vm.References = references.Where(x =>
+                (x.FullName?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Position?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Company?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Comment?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)).ToList();
 
-            vm.VolunteerWorks = volunteerWorks
-                .Where(x => x.Role.Contains(q, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            vm.VolunteerWorks = volunteerWorks.Where(x =>
+                (x.Role?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Organization?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.Description?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)).ToList();
 
             return View(vm);
         }

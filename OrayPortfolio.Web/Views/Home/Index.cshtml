@@ -795,6 +795,36 @@
         margin-left: 15px;
         font-weight: 600;
     }
+
+    /* Hatalı Input'un Çerçevesi, Arka Planı ve Gölgesi */
+    .input-validation-error {
+        border-color: #fb4570 !important;
+        background: rgba(251, 69, 112, 0.03) !important;
+        box-shadow: 0 0 0 4px rgba(251, 69, 112, 0.15) !important;
+    }
+
+    [data-theme="light"] .input-validation-error {
+        background: rgba(251, 69, 112, 0.05) !important;
+    }
+
+    /* Hatalı Input'un İkonu da Kırmızı Olsun */
+    .input-validation-error ~ .port-input-icon {
+        color: #fb4570 !important;
+        opacity: 1 !important;
+    }
+
+    /* Alt Kısımdaki Kırmızı Uyarı Metni */
+    .field-validation-error {
+        color: #fb4570;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 6px;
+        display: block; /* Alta geçmesi için block yapıldı */
+        margin-left: 15px;
+        text-align: left;
+        animation: form-shake 0.4s ease-in-out;
+    }
+
 </style>
 
 <!-- HERO (KARŞILAMA) ALANI -->
@@ -1232,51 +1262,43 @@
 
     <div class="port-contact-wrapper">
 
-        @if (TempData["Success"] != null)
-        {
-            <div class="port-alert port-alert-success" data-aos="fade-down">
-                <i class="fa-solid fa-circle-check fs-4"></i>
-                <div>@TempData["Success"]</div>
-            </div>
-        }
-
-        @if (TempData["Error"] != null)
-        {
-            <div class="port-alert port-alert-danger" data-aos="fade-down">
-                <i class="fa-solid fa-triangle-exclamation fs-4"></i>
-                <div>@TempData["Error"]</div>
-            </div>
-        }
-
         <form id="contactForm">
+            <div style="display: none; opacity: 0; position: absolute; top: -9999px; left: -9999px;" aria-hidden="true">
+                <input asp-for="ContactForm.WebsiteUrl" tabindex="-1" autocomplete="off" />
+            </div>
+
             <div class="row g-4">
 
                 <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="port-input-group">
-                        <input name="FullName" class="port-contact-input" placeholder="Adınız Soyadınız" autocomplete="off" />
+                        <input asp-for="ContactForm.FullName" class="port-contact-input" placeholder="Adınız Soyadınız" autocomplete="off" />
                         <i class="fa-solid fa-user port-input-icon"></i>
                     </div>
+                    <span asp-validation-for="ContactForm.FullName"></span>
                 </div>
 
                 <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="port-input-group">
-                        <input name="Email" type="email" class="port-contact-input" placeholder="E-posta Adresiniz" autocomplete="off" />
+                        <input asp-for="ContactForm.Email" class="port-contact-input" placeholder="E-posta Adresiniz" autocomplete="off" />
                         <i class="fa-solid fa-envelope port-input-icon"></i>
                     </div>
+                    <span asp-validation-for="ContactForm.Email"></span>
                 </div>
 
                 <div class="col-12" data-aos="fade-up" data-aos-delay="300">
                     <div class="port-input-group">
-                        <input name="Subject" class="port-contact-input" placeholder="Konu (Örn: Web Projesi, Danışmanlık)" autocomplete="off" />
+                        <input asp-for="ContactForm.Subject" class="port-contact-input" placeholder="Konu (Örn: Web Projesi, Danışmanlık)" autocomplete="off" />
                         <i class="fa-solid fa-tag port-input-icon"></i>
                     </div>
+                    <span asp-validation-for="ContactForm.Subject"></span>
                 </div>
 
                 <div class="col-12" data-aos="fade-up" data-aos-delay="400">
                     <div class="port-input-group">
-                        <textarea name="Message" class="port-contact-input" rows="5" placeholder="Projenizden veya fikrinizden detaylıca bahsedin..."></textarea>
+                        <textarea asp-for="ContactForm.Message" class="port-contact-input" rows="5" placeholder="Projenizden veya fikrinizden detaylıca bahsedin..."></textarea>
                         <i class="fa-solid fa-comment-dots port-input-icon"></i>
                     </div>
+                    <span asp-validation-for="ContactForm.Message"></span>
                 </div>
 
                 <div class="col-12 text-center mt-4" data-aos="zoom-in" data-aos-delay="500">
@@ -1291,39 +1313,37 @@
     </div>
 </section>
 
-
-
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" integrity="sha512-wC/a55305TuZ600s8fFh0y8t7Hl9y0+IweaPofxRzi8A0n5qI/DxtnQ8rWlZp0R5/yH4vHhNnbkO2oHovgX1QA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-        var title = "@Model.Profile.Title";
-        var typed = new Typed('#typed-text', {
-        strings: [title, "AI Researcher", "Technical Consultant"],
-        typeSpeed: 60,
-        backSpeed: 40,
-        backDelay: 2000,
-        loop: true,
-        cursorChar: '|'
-        });
+            var title = "@Model.Profile.Title";
+            var typed = new Typed('#typed-text', {
+                strings: [title, "AI Researcher", "Technical Consultant"],
+                typeSpeed: 60,
+                backSpeed: 40,
+                backDelay: 2000,
+                loop: true,
+                cursorChar: '|'
+            });
 
-        const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-        if (entry.isIntersecting) {
-        const fill = entry.target;
-        const targetWidth = fill.getAttribute('data-width');
-        fill.style.width = targetWidth;
-        observer.unobserve(fill);
-        }
-        });
-        }, { threshold: 0.1 });
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const fill = entry.target;
+                        const targetWidth = fill.getAttribute('data-width');
+                        fill.style.width = targetWidth;
+                        observer.unobserve(fill);
+                    }
+                });
+            }, { threshold: 0.1 });
 
-        const progressFills = document.querySelectorAll('.port-progress-fill');
-        progressFills.forEach(fill => {
-        observer.observe(fill);
-        });
+            const progressFills = document.querySelectorAll('.port-progress-fill');
+            progressFills.forEach(fill => {
+                observer.observe(fill);
+            });
         });
     </script>
 }
