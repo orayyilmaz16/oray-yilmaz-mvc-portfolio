@@ -1,4 +1,6 @@
 ﻿@model HomeViewModel
+
+
 @{
     ViewData["Title"] = $"{Model.Profile.FullName} - Portfolio";
 }
@@ -596,6 +598,203 @@
             top: 35px;
         }
     }
+
+    /* --- YENİ NESİL İLETİŞİM FORMU (UI/UX) --- */
+    .port-contact-wrapper {
+        background: linear-gradient(145deg, rgba(23, 28, 40, 0.7), rgba(11, 14, 20, 0.9));
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 32px;
+        padding: clamp(30px, 6vw, 60px);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(20px);
+        margin-top: 20px;
+    }
+
+    /* 📌 LİGHT MODE OVERRİDES (Açık Tema Form Ayarları) */
+    [data-theme="light"] .port-contact-wrapper {
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        border-color: rgba(0, 0, 0, 0.06);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Dekoratif Arka Plan Işık Hüzmeleri (Animasyonlu) */
+    .port-contact-wrapper::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, var(--brand-primary) 0%, transparent 70%);
+        opacity: 0.15;
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    .port-contact-wrapper::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        left: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, var(--brand-secondary) 0%, transparent 70%);
+        opacity: 0.15;
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite reverse;
+        pointer-events: none;
+    }
+
+    /* Input Grubu ve İkonlar */
+    .port-input-group {
+        position: relative;
+        margin-bottom: 0.5rem;
+    }
+
+    .port-input-icon {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        pointer-events: none;
+        opacity: 0.6;
+        z-index: 2;
+    }
+
+    textarea ~ .port-input-icon {
+        top: 22px; /* Textarea için ikonu biraz aşağı hizala */
+    }
+
+    /* Input Alanı (Kusursuz Cam Hissi) */
+    .port-contact-input {
+        background: rgba(255, 255, 255, 0.02);
+        border: 2px solid rgba(255, 255, 255, 0.04);
+        color: var(--text-main);
+        border-radius: 18px;
+        padding: 18px 20px 18px 55px; /* Soldan ikon için boşluk */
+        font-size: 1.05rem;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    [data-theme="light"] .port-contact-input {
+        background: rgba(0, 0, 0, 0.02);
+        border-color: rgba(0, 0, 0, 0.06);
+    }
+
+    .port-contact-input::placeholder {
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+
+    /* Focus (Odaklanma) Animasyonları */
+    .port-contact-input:focus {
+        background: rgba(0, 0, 0, 0.2);
+        border-color: var(--brand-primary);
+        box-shadow: 0 10px 25px rgba(109, 94, 249, 0.15);
+        outline: none;
+        transform: translateY(-3px); /* Odaklanınca input hafif havaya kalkar */
+    }
+
+    [data-theme="light"] .port-contact-input:focus {
+        background: #ffffff;
+        box-shadow: 0 10px 25px rgba(109, 94, 249, 0.15);
+    }
+
+    /* Input'a odaklanınca İkonun Parlaması */
+    .port-input-group:focus-within .port-input-icon {
+        color: var(--brand-primary);
+        opacity: 1;
+        transform: scale(1.15);
+    }
+
+    /* Gönder Butonu Animasyonları */
+    .port-btn-submit {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+        color: #fff !important;
+        border: none;
+        border-radius: 18px;
+        font-weight: 700;
+        font-size: 1.15rem;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        box-shadow: 0 8px 20px rgba(109, 94, 249, 0.3);
+    }
+
+        .port-btn-submit::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s ease;
+            z-index: -1;
+        }
+
+        .port-btn-submit:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(109, 94, 249, 0.5);
+        }
+
+            .port-btn-submit:hover::after {
+                left: 100%; /* Üzerine gelince parlayan beyaz çizgi geçer */
+            }
+
+        .port-btn-submit i {
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .port-btn-submit:hover i {
+            transform: translate(6px, -6px) scale(1.1); /* Kağıt uçak uçar efekti */
+        }
+
+    /* Özel Uyarı/Mesaj Tasarımları */
+    .port-alert {
+        border-radius: 16px;
+        padding: 16px 20px;
+        margin-bottom: 25px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+    }
+
+    .port-alert-success {
+        background: rgba(45, 212, 191, 0.15);
+        border: 1px solid rgba(45, 212, 191, 0.3);
+        color: var(--brand-secondary);
+    }
+
+    .port-alert-danger {
+        background: rgba(251, 69, 112, 0.15);
+        border: 1px solid rgba(251, 69, 112, 0.3);
+        color: #fb4570;
+    }
+
+    .form-validation-error {
+        font-size: 0.85rem;
+        color: #fb4570;
+        margin-top: 6px;
+        display: inline-block;
+        margin-left: 15px;
+        font-weight: 600;
+    }
 </style>
 
 <!-- HERO (KARŞILAMA) ALANI -->
@@ -1020,19 +1219,79 @@
     <div class="port-spacer"></div>
 }
 
-<section class="container" data-aos="zoom-in" data-aos-duration="1000">
-    <div class="port-cta shadow-lg">
-        <div style="position: relative; z-index: 1;">
-            <h2 style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: var(--text-main); margin-bottom: 20px; letter-spacing: -1px;">Yeni bir proje mi var?</h2>
-            <p class="text-muted" style="font-size: clamp(1rem, 2vw, 1.25rem); max-width: 650px; margin: 0 auto 35px; line-height: 1.7; text-wrap: balance;">
-                Fikirlerinizi dijital dünyada hayata geçirmek, modern ve ölçeklenebilir mimariler kurmak için buradayım. Birlikte harika işler çıkarabiliriz.
-            </p>
-            <a href="mailto:@Model.Profile.Email" class="port-btn-primary" style="padding: 18px 45px;">
-                <i class="fa-regular fa-paper-plane"></i> Hemen İletişime Geç
-            </a>
-        </div>
+<section class="container" data-aos="zoom-in" data-aos-duration="1000" style="margin-bottom: 40px;">
+
+    <div class="text-center mb-4">
+        <h2 style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: var(--text-main); margin-bottom: 15px; letter-spacing: -1px;">
+            Yeni bir proje mi var?
+        </h2>
+        <p class="text-muted" style="font-size: clamp(1.05rem, 2vw, 1.25rem); max-width: 680px; margin: 0 auto; line-height: 1.8;">
+            Fikirlerinizi dijital dünyada hayata geçirmek, modern ve ölçeklenebilir mimariler kurmak için buradayım. Hemen bir mesaj bırakın.
+        </p>
+    </div>
+
+    <div class="port-contact-wrapper">
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="port-alert port-alert-success" data-aos="fade-down">
+                <i class="fa-solid fa-circle-check fs-4"></i>
+                <div>@TempData["Success"]</div>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="port-alert port-alert-danger" data-aos="fade-down">
+                <i class="fa-solid fa-triangle-exclamation fs-4"></i>
+                <div>@TempData["Error"]</div>
+            </div>
+        }
+
+        <form id="contactForm">
+            <div class="row g-4">
+
+                <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="port-input-group">
+                        <input name="FullName" class="port-contact-input" placeholder="Adınız Soyadınız" autocomplete="off" />
+                        <i class="fa-solid fa-user port-input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="port-input-group">
+                        <input name="Email" type="email" class="port-contact-input" placeholder="E-posta Adresiniz" autocomplete="off" />
+                        <i class="fa-solid fa-envelope port-input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="col-12" data-aos="fade-up" data-aos-delay="300">
+                    <div class="port-input-group">
+                        <input name="Subject" class="port-contact-input" placeholder="Konu (Örn: Web Projesi, Danışmanlık)" autocomplete="off" />
+                        <i class="fa-solid fa-tag port-input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="col-12" data-aos="fade-up" data-aos-delay="400">
+                    <div class="port-input-group">
+                        <textarea name="Message" class="port-contact-input" rows="5" placeholder="Projenizden veya fikrinizden detaylıca bahsedin..."></textarea>
+                        <i class="fa-solid fa-comment-dots port-input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="col-12 text-center mt-4" data-aos="zoom-in" data-aos-delay="500">
+                    <button type="submit" id="submitBtn" class="port-btn-submit w-100" style="padding: 18px 45px; max-width: 320px;">
+                        Mesajı Gönder <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+
+            </div>
+        </form>
+
     </div>
 </section>
+
+
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" integrity="sha512-wC/a55305TuZ600s8fFh0y8t7Hl9y0+IweaPofxRzi8A0n5qI/DxtnQ8rWlZp0R5/yH4vHhNnbkO2oHovgX1QA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

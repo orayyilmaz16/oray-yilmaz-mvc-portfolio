@@ -37,6 +37,10 @@
                 --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             }
 
+            html {
+                scroll-behavior: smooth;
+            }
+
             /* ----- LIGHT MODE RENK DEĞİŞKENLERİ ----- */
             [data-theme="light"] {
                 --bg-base: #f8fafc; /* Çok açık soft gri */
@@ -364,6 +368,74 @@
         }
         });
     </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $("#contactForm").submit(function (e) {
+        e.preventDefault();
+
+        // Loading animasyonu
+        Swal.fire({
+        title: "Gönderiliyor...",
+        text: "Lütfen bekleyin",
+        allowOutsideClick: false,
+        didOpen: () => {
+        Swal.showLoading();
+        }
+        });
+
+        const formData = {
+        FullName: $("input[name='FullName']").val(),
+        Email: $("input[name='Email']").val(),
+        Subject: $("input[name='Subject']").val(),
+        Message: $("textarea[name='Message']").val()
+        };
+
+        $.ajax({
+        url: "/Home/SendMessage",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(formData),
+        success: function (res) {
+
+        if (res.success) {
+        Swal.fire({
+        icon: "success",
+        title: "Mesaj Gönderildi!",
+        text: res.message,
+        confirmButtonColor: "#4CAF50",
+        showClass: {
+        popup: "animate__animated animate__fadeInDown"
+        },
+        hideClass: {
+        popup: "animate__animated animate__fadeOutUp"
+        }
+        });
+
+        $("#contactForm")[0].reset();
+        }
+        else {
+        Swal.fire({
+        icon: "error",
+        title: "Hata!",
+        text: res.message,
+        confirmButtonColor: "#d33",
+        showClass: {
+        popup: "animate__animated animate__shakeX"
+        }
+        });
+        }
+        }
+        });
+        });
+    </script>
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
