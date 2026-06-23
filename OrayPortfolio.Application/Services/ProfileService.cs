@@ -33,7 +33,8 @@ namespace OrayPortfolio.Application.Services
                     GithubUrl = "",
                     LinkedinUrl = "",
                     InstagramUrl = "",
-                    ProfileImageUrl = ""
+                    ProfileImageUrl = "",
+                    CvFilePath = "" // 📌 EKLENDİ: İlk oluşturulmada hata vermemesi için
                 };
 
                 await _uow.Profiles.AddAsync(entity);
@@ -56,9 +57,8 @@ namespace OrayPortfolio.Application.Services
             entity.GithubUrl = dto.GithubUrl;
             entity.LinkedinUrl = dto.LinkedinUrl;
             entity.InstagramUrl = dto.InstagramUrl;
-
-            if (!string.IsNullOrWhiteSpace(dto.ProfileImageUrl))
-                entity.ProfileImageUrl = dto.ProfileImageUrl;
+            entity.ProfileImageUrl = dto.ProfileImageUrl;
+            entity.CvFilePath = dto.CvFilePath;
 
             _uow.Profiles.Update(entity);
             return await _uow.SaveAsync() > 0;

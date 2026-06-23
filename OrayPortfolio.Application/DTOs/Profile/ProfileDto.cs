@@ -14,6 +14,8 @@
         public string? InstagramUrl { get; set; }
         public string? Email { get; set; }
 
+        public string? CvFilePath { get; set; }
+
         public string? ProfileImageUrl { get; set; }
     }
 }

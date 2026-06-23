@@ -16,6 +16,8 @@ namespace OrayPortfolio.Domain.Entities
         public string? GithubUrl { get; set; }
         public string? LinkedinUrl { get; set; }
         public string? InstagramUrl { get; set; }
+
+        public string? CvFilePath { get; set; }
         public string? Email { get; set; }
     }
     

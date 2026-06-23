@@ -1,4 +1,11 @@
-﻿<style>
+﻿@using OrayPortfolio.Application.Interfaces.Services
+@inject IProfileService ProfileService
+
+@{
+    var profile = await ProfileService.GetAsync();
+}
+
+<style>
     /* ----- NAVBAR (MENÜ) ÖZEL TASARIMI ----- */
     .port-navbar {
         background: var(--surface-glass);
@@ -296,11 +303,14 @@
                     </a>
                 </li>
 
-                <li class="nav-item ms-xl-2">
-                    <a class="nav-link port-nav-link port-nav-btn" href="~/files/OrayYilmazCV.pdf" download>
-                        <i class="fa-solid fa-file-arrow-down"></i> CV
-                    </a>
-                </li>
+                @if (!string.IsNullOrEmpty(profile.CvFilePath))
+                {
+                    <li class="nav-item ms-xl-2">
+                        <a class="nav-link port-nav-link port-nav-btn" href="@Url.Content(profile.CvFilePath)" target="_blank" download="OrayYilmaz_CV.pdf">
+                            <i class="fa-solid fa-file-arrow-down"></i> CV
+                        </a>
+                    </li>
+                }
 
                 <li class="nav-item ms-xl-2 theme-toggle-wrapper d-flex align-items-center">
                     <button id="theme-toggle" class="port-btn-outline d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 12px; padding: 0;" title="Görünümü Değiştir">

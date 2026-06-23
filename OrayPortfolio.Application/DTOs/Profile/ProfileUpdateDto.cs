@@ -16,6 +16,7 @@ namespace OrayPortfolio.Application.DTOs.Profile
         public string? InstagramUrl { get; set; }
         public string? Email { get; set; }
 
+        public string? CvFilePath { get; set; }
         public string? ProfileImageUrl { get; set; } // Admin panelde gösterim için
     }
 }
