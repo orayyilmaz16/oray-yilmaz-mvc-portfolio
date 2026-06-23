@@ -12,5 +12,7 @@ namespace OrayPortfolio.Domain.Entities
         public DateTime EndDate { get; set; }
 
         public string? Description { get; set; }
+
+        public string? LogoImageUrl { get; set; } // İsteğe bağlı kurum logosu
     }
 }

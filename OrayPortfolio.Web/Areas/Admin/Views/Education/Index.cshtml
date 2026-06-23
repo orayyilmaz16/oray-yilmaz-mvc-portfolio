@@ -165,7 +165,27 @@
             margin: 0;
         }
 
-    
+    /* 📌 KÜÇÜK LOGO VE YER TUTUCU TASARIMI */
+    .ap-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--line);
+    }
+
+    .ap-avatar-placeholder {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--brand-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        border: 2px solid var(--line);
+    }
 </style>
 
 <div class="ap-page-header">
@@ -179,7 +199,7 @@
     <table class="ap-table">
         <thead>
             <tr>
-                <th>Okul</th>
+                <th>Okul / Kurum</th>
                 <th>Bölüm</th>
                 <th>Derece</th>
                 <th>Başlangıç</th>
@@ -194,14 +214,29 @@
                 {
                     <tr>
                         <td class="ap-table-title">
-                            <i class="fa-solid fa-building-columns me-2" style="color: var(--text-faint);"></i> @item.School
+                            <!-- 📌 LOGO VE OKUL İSMİ -->
+                            <div class="d-flex align-items-center gap-3">
+                                @if (!string.IsNullOrEmpty(item.LogoImageUrl))
+                                {
+                                    <img src="@item.LogoImageUrl" class="ap-avatar" alt="Logo" />
+                                }
+                                else
+                                {
+                                    <div class="ap-avatar-placeholder">
+                                        <i class="fa-solid fa-building-columns"></i>
+                                    </div>
+                                }
+                                <span>@item.School</span>
+                            </div>
                         </td>
                         <td>@item.Department</td>
                         <td>
                             <span class="ap-degree-badge">@item.Degree</span>
                         </td>
                         <td class="ap-date-text">@item.StartDate.ToString("dd.MM.yyyy")</td>
-                        <td class="ap-date-text">@item.EndDate.ToString("dd.MM.yyyy")</td>
+                        <td class="ap-date-text">
+                            @(item.EndDate.Year <= 1 ? "Devam Ediyor" : item.EndDate.ToString("dd.MM.yyyy"))
+                        </td>
                         <td>
                             <div class="ap-action-btns">
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="ap-btn-icon ap-btn-edit" title="Düzenle">

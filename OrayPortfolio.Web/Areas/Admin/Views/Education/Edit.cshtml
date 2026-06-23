@@ -2,7 +2,6 @@
 @model EducationDto
 
 <style>
-
     /* Input altı hataları tamamen gizle */
     .ap-hidden-validation {
         display: none !important;
@@ -146,11 +145,7 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 24px -6px rgba(245, 158, 11, 0.6);
         }
-
-   
 </style>
-
-
 
 <div class="ap-page-header">
     <h2 class="ap-page-title">Eğitimi Düzenle</h2>
@@ -174,14 +169,35 @@
         </div>
     }
 
-    <form method="post">
+    <!-- 📌 FOTOĞRAF YÜKLEYEBİLMEK İÇİN ENCTYPE EKLENDİ -->
+    <form method="post" enctype="multipart/form-data">
 
         <input type="hidden" asp-for="Id" />
 
-        <div class="ap-form-group">
-            <label class="ap-form-label"><i class="fa-solid fa-building-columns"></i> Okul / Üniversite</label>
-            <input asp-for="School" class="ap-input" />
-            <span asp-validation-for="School" class="ap-hidden-validation"></span>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-building-columns"></i> Okul / Üniversite</label>
+                    <input asp-for="School" class="ap-input" />
+                    <span asp-validation-for="School" class="ap-hidden-validation"></span>
+                </div>
+            </div>
+
+            <!-- 📌 LOGO YÜKLEME ALANI -->
+            <div class="col-md-4">
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-image"></i> Kurum Logosu (İsteğe Bağlı)</label>
+                    @if (!string.IsNullOrEmpty(Model.LogoImageUrl))
+                    {
+                        <div class="mb-2 d-flex align-items-center gap-3">
+                            <img src="@Model.LogoImageUrl" alt="Mevcut Logo" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line);" />
+                            <!-- 📌 text-muted yerine var(--text-dim) kullanıldı -->
+                            <span style="color: var(--text-dim); font-size: 0.85rem; font-weight: 500;">Mevcut Logo</span>
+                        </div>
+                    }
+                    <input type="file" name="LogoImage" class="ap-input" accept="image/*" style="padding: 10px;" />
+                </div>
+            </div>
         </div>
 
         <div class="row">

@@ -13,5 +13,8 @@ namespace OrayPortfolio.Application.DTOs.Reference
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? Comment { get; set; }
+
+        public string? ProfileImageUrl { get; set; } // İsteğe bağlı profil fotosu
+        public string? LinkedinUrl { get; set; }     // İsteğe bağlı LinkedIn linki
     }
 }

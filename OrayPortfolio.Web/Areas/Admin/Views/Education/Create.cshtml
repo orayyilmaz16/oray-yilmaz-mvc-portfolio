@@ -2,7 +2,6 @@
 @model EducationCreateDto
 
 <style>
-
     /* Input altı hataları tamamen gizle */
     .ap-hidden-validation {
         display: none !important;
@@ -29,6 +28,7 @@
         .ap-error-box li {
             margin-bottom: 4px;
         }
+
     /* Ortak Form CSS */
     .ap-page-header {
         display: flex;
@@ -145,8 +145,6 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 24px -6px rgba(109, 94, 249, 0.6);
         }
-
-    
 </style>
 
 <div class="ap-page-header">
@@ -171,12 +169,25 @@
         </div>
     }
 
-    <form method="post">
+    <!-- 📌 FOTOĞRAF YÜKLEYEBİLMEK İÇİN ENCTYPE EKLENDİ -->
+    <form method="post" enctype="multipart/form-data">
 
-        <div class="ap-form-group">
-            <label class="ap-form-label"><i class="fa-solid fa-building-columns"></i> Okul / Üniversite</label>
-            <input asp-for="School" class="ap-input" placeholder="Örn: Boğaziçi Üniversitesi" />
-            <span asp-validation-for="School" class="ap-hidden-validation"></span>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-building-columns"></i> Okul / Üniversite</label>
+                    <input asp-for="School" class="ap-input" placeholder="Örn: Boğaziçi Üniversitesi" />
+                    <span asp-validation-for="School" class="ap-hidden-validation"></span>
+                </div>
+            </div>
+
+            <!-- 📌 LOGO YÜKLEME ALANI -->
+            <div class="col-md-4">
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-image"></i> Kurum Logosu (İsteğe Bağlı)</label>
+                    <input type="file" name="LogoImage" class="ap-input" accept="image/*" style="padding: 10px;" />
+                </div>
+            </div>
         </div>
 
         <div class="row">

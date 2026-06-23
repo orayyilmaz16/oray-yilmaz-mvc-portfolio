@@ -145,8 +145,6 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 24px -6px rgba(109, 94, 249, 0.6);
         }
-
-    
 </style>
 
 <div class="ap-page-header">
@@ -171,12 +169,25 @@
         </div>
     }
 
-    <form method="post">
+    <!-- 📌 FOTOĞRAF YÜKLEYEBİLMEK İÇİN ENCTYPE EKLENDİ -->
+    <form method="post" enctype="multipart/form-data">
 
-        <div class="ap-form-group">
-            <label class="ap-form-label"><i class="fa-solid fa-user"></i> Ad Soyad</label>
-            <input asp-for="FullName" class="ap-input" placeholder="Örn: Ahmet Yılmaz" />
-            <span asp-validation-for="FullName" class="ap-hidden-validation"></span>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-user"></i> Ad Soyad</label>
+                    <input asp-for="FullName" class="ap-input" placeholder="Örn: Ahmet Yılmaz" />
+                    <span asp-validation-for="FullName" class="ap-hidden-validation"></span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- 📌 FOTOĞRAF ALANI -->
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-solid fa-image"></i> Profil Fotoğrafı (İsteğe Bağlı)</label>
+                    <input type="file" name="ProfileImage" class="ap-input" accept="image/*" style="padding: 10px;" />
+                </div>
+            </div>
         </div>
 
         <div class="row">
@@ -198,7 +209,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="ap-form-group">
                     <label class="ap-form-label"><i class="fa-solid fa-envelope"></i> Email</label>
                     <input asp-for="Email" type="email" class="ap-input" placeholder="Örn: ahmet@xteknoloji.com" />
@@ -206,11 +217,20 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="ap-form-group">
                     <label class="ap-form-label"><i class="fa-solid fa-phone"></i> Telefon</label>
                     <input asp-for="Phone" type="tel" class="ap-input" placeholder="Örn: +90 555 123 45 67" />
                     <span asp-validation-for="Phone" class="ap-hidden-validation"></span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- 📌 LINKEDIN ALANI -->
+                <div class="ap-form-group">
+                    <label class="ap-form-label"><i class="fa-brands fa-linkedin"></i> LinkedIn (İsteğe Bağlı)</label>
+                    <input asp-for="LinkedinUrl" type="url" class="ap-input" placeholder="https://linkedin.com/in/..." />
+                    <span asp-validation-for="LinkedinUrl" class="ap-hidden-validation"></span>
                 </div>
             </div>
         </div>

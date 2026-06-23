@@ -648,6 +648,8 @@
         margin-top: 20px;
     }
 
+
+
     /* 📌 LİGHT MODE OVERRİDES (Açık Tema Form Ayarları) */
     [data-theme="light"] .port-contact-wrapper {
         background: linear-gradient(145deg, #ffffff, #f8fafc);
@@ -861,6 +863,30 @@
         animation: form-shake 0.4s ease-in-out;
     }
 
+    /* --- Referans İletişim Butonları (Hap Tasarım) --- */
+    .port-contact-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 6px 14px;
+        border-radius: 50px; /* Tam yuvarlak hap görünümü */
+        color: var(--text-muted) !important;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .port-contact-badge:hover {
+        background: rgba(109, 94, 249, 0.1);
+        border-color: rgba(109, 94, 249, 0.3);
+        color: var(--text-main) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
     
 </style>
 
@@ -1047,7 +1073,7 @@
 
 <div class="port-spacer"></div>
 
-<!-- EĞİTİM GEÇMİŞİM -->
+
 @if (Model.Educations != null && Model.Educations.Any())
 {
     <section class="container">
@@ -1066,20 +1092,41 @@
                     {
                         <li class="port-timeline-item" data-aos="fade-left" data-aos-delay="@eduDelay">
                             <div class="port-timeline-dot"></div>
-                            <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
-                                <span class="badge" style="background: rgba(45, 212, 191, 0.1); color: var(--brand-secondary); padding: 6px 12px; border: 1px solid rgba(45, 212, 191, 0.2);">
-                                    <i class="fa-solid fa-award me-1"></i> @edu.Degree
-                                </span>
-                                <span class="text-muted" style="font-size: 0.9rem;">
-                                    @edu.StartDate.ToString("yyyy") → @(edu.EndDate.Year == 1 || edu.EndDate.Year == 0 ? "Devam Ediyor" : edu.EndDate.ToString("yyyy"))
-                                </span>
+
+                            <div class="d-flex align-items-start gap-3 gap-md-4">
+
+                                <div class="flex-shrink-0 pt-1">
+                                    @if (!string.IsNullOrEmpty(edu.LogoImageUrl))
+                                    {
+                                        <img src="@edu.LogoImageUrl" class="port-company-logo" alt="@edu.School Logo" loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        <div class="port-company-logo d-flex justify-content-center align-items-center" style="background: rgba(255,255,255,0.03); color: var(--brand-secondary); font-size: 1.3rem;">
+                                            <i class="fa-solid fa-building-columns"></i>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
+                                        <span class="badge" style="background: rgba(45, 212, 191, 0.1); color: var(--brand-secondary); padding: 6px 12px; border: 1px solid rgba(45, 212, 191, 0.2);">
+                                            <i class="fa-solid fa-award me-1"></i> @edu.Degree
+                                        </span>
+                                        <span class="text-muted" style="font-size: 0.9rem;">
+                                            @edu.StartDate.ToString("yyyy") → @(edu.EndDate.Year <= 1 ? "Devam Ediyor" : edu.EndDate.ToString("yyyy"))
+                                        </span>
+                                    </div>
+                                    <h4 style="font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 800; color: var(--text-main); margin-bottom: 5px;">@edu.Department</h4>
+                                    <p style="font-size: 1.05rem; font-weight: 500;" class="text-muted"><i class="fa-solid fa-building-columns me-2 text-primary"></i>@edu.School</p>
+
+                                    @if (!string.IsNullOrWhiteSpace(edu.Description))
+                                    {
+                                        <p class="m-0 mt-3 text-muted" style="line-height: 1.7;">@edu.Description</p>
+                                    }
+                                </div>
+
                             </div>
-                            <h4 style="font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 800; color: var(--text-main); margin-bottom: 5px;">@edu.Department</h4>
-                            <p style="font-size: 1.05rem; font-weight: 500;" class="text-muted"><i class="fa-solid fa-building-columns me-2 text-primary"></i>@edu.School</p>
-                            @if (!string.IsNullOrWhiteSpace(edu.Description))
-                            {
-                                <p class="m-0 mt-3 text-muted" style="line-height: 1.7;">@edu.Description</p>
-                            }
                         </li>
                         eduDelay += 100;
                     }
@@ -1298,26 +1345,49 @@
                         <i class="fa-solid fa-quote-right port-ref-quote-icon"></i>
                         <p class="port-ref-content">"@refer.Comment"</p>
 
-                        <!-- 📌 REFERANS ALT KISMI: İSİM, ŞİRKET VE İLETİŞİM (EMAIL/TELEFON) EKLENDİ -->
-                        <div class="mt-auto pt-3" style="border-top: 1px solid var(--border-color); transform: translateZ(20px);">
-                            <h6 style="color: var(--text-main); font-weight: 700; margin-bottom: 2px;">@refer.FullName</h6>
-                            <p class="text-muted" style="font-size: 0.85rem; margin: 0; margin-bottom: 8px;">@refer.Position, @refer.Company</p>
+                        <!-- 📌 REFERANS ALT KISMI: İSİM, ŞİRKET, FOTOĞRAF VE İLETİŞİM -->
+                        <div class="mt-auto pt-3 d-flex align-items-center gap-3" style="border-top: 1px solid var(--border-color); transform: translateZ(20px);">
 
-                            <div class="d-flex flex-wrap gap-3 mt-1">
-                                @if (!string.IsNullOrEmpty(refer.Email))
-                                {
-                                    <a href="mailto:@refer.Email" class="text-muted text-decoration-none" style="font-size: 0.8rem; transition: color 0.3s ease;">
-                                        <i class="fa-solid fa-envelope me-1" style="color: var(--brand-primary);"></i>@refer.Email
-                                    </a>
-                                }
-                                @if (!string.IsNullOrEmpty(refer.Phone))
-                                {
-                                    <a href="tel:@refer.Phone" class="text-muted text-decoration-none" style="font-size: 0.8rem; transition: color 0.3s ease;">
-                                        <i class="fa-solid fa-phone me-1" style="color: var(--brand-secondary);"></i>@refer.Phone
-                                    </a>
-                                }
+                            <!-- 📌 FOTOĞRAF VEYA BAŞ HARF -->
+                            @if (!string.IsNullOrEmpty(refer.ProfileImageUrl))
+                            {
+                                <img src="@refer.ProfileImageUrl" class="port-ref-avatar" alt="@refer.FullName" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.05);" />
+                            }
+                            else
+                            {
+                                <div class="port-ref-avatar" style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary)); display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                                    @(string.IsNullOrWhiteSpace(refer.FullName) ? "R" : refer.FullName.Substring(0, 1).ToUpper())
+                                </div>
+                            }
+
+                            <!-- 📌 KİŞİ BİLGİLERİ VE KUTULU LİNKLER -->
+                            <div class="flex-grow-1">
+                                <h6 style="color: var(--text-main); font-weight: 700; margin-bottom: 2px;">@refer.FullName</h6>
+                                <p class="text-muted" style="font-size: 0.85rem; margin: 0; margin-bottom: 12px;">@refer.Position, @refer.Company</p>
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    @if (!string.IsNullOrEmpty(refer.LinkedinUrl))
+                                    {
+                                        <a href="@refer.LinkedinUrl" target="_blank" class="port-contact-badge" title="LinkedIn Profili">
+                                            <i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i> LinkedIn
+                                        </a>
+                                    }
+                                    @if (!string.IsNullOrEmpty(refer.Email))
+                                    {
+                                        <a href="mailto:@refer.Email" class="port-contact-badge" title="E-posta Gönder">
+                                            <i class="fa-solid fa-envelope" style="color: var(--brand-primary);"></i> @refer.Email
+                                        </a>
+                                    }
+                                    @if (!string.IsNullOrEmpty(refer.Phone))
+                                    {
+                                        <a href="tel:@refer.Phone.Replace(" ", "")" class="port-contact-badge" title="Ara">
+                                            <i class="fa-solid fa-phone" style="color: var(--brand-secondary);"></i> @refer.Phone
+                                        </a>
+                                    }
+                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 refDelay += 100;
@@ -1335,7 +1405,6 @@
     </section>
     <div class="port-spacer"></div>
 }
-
 <section class="container" data-aos="zoom-in" data-aos-duration="1000" style="margin-bottom: 40px;">
 
     <div class="text-center mb-4">

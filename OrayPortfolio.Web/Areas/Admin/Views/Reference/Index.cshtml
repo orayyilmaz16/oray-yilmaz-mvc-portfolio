@@ -31,6 +31,7 @@
         gap: 8px;
         border: none;
         transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        text-decoration: none;
     }
 
         .ap-btn-primary:hover {
@@ -140,7 +141,7 @@
     }
 
         .ap-contact-text i {
-            width: 14px;
+            width: 16px;
             color: var(--text-faint);
         }
 
@@ -161,7 +162,27 @@
             margin: 0;
         }
 
-    
+    /* 📌 KİŞİ AVATAR CSS */
+    .ap-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--line);
+    }
+
+    .ap-avatar-placeholder {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--brand-light), var(--brand));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+    }
 </style>
 
 <div class="ap-page-header">
@@ -175,7 +196,7 @@
     <table class="ap-table">
         <thead>
             <tr>
-                <th>Ad Soyad</th>
+                <th>Kişi Bilgileri</th>
                 <th>Şirket</th>
                 <th>Pozisyon</th>
                 <th>İletişim Bilgileri</th>
@@ -189,16 +210,39 @@
                 {
                     <tr>
                         <td class="ap-table-title">
-                            <i class="fa-solid fa-user-check me-2" style="color: var(--brand-light);"></i> @item.FullName
+                            <!-- 📌 AVATAR VE İSİM BÖLÜMÜ -->
+                            <div class="d-flex align-items-center gap-3">
+                                @if (!string.IsNullOrEmpty(item.ProfileImageUrl))
+                                {
+                                    <img src="@item.ProfileImageUrl" class="ap-avatar" alt="Avatar" />
+                                }
+                                else
+                                {
+                                    <div class="ap-avatar-placeholder">
+                                        @(string.IsNullOrWhiteSpace(item.FullName) ? "R" : item.FullName.Substring(0, 1).ToUpper())
+                                    </div>
+                                }
+                                <span>@item.FullName</span>
+                            </div>
                         </td>
                         <td>@item.Company</td>
                         <td>@item.Position</td>
                         <td>
                             <div class="ap-contact-text">
-                                <span><i class="fa-solid fa-envelope"></i> @item.Email</span>
+                                @if (!string.IsNullOrEmpty(item.Email))
+                                {
+                                    <span><i class="fa-solid fa-envelope"></i> @item.Email</span>
+                                }
                                 @if (!string.IsNullOrEmpty(item.Phone))
                                 {
                                     <span><i class="fa-solid fa-phone"></i> @item.Phone</span>
+                                }
+                                @if (!string.IsNullOrEmpty(item.LinkedinUrl))
+                                {
+                                    <span>
+                                        <i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i>
+                                        <a href="@item.LinkedinUrl" target="_blank" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='inherit'">Profil Linki</a>
+                                    </span>
                                 }
                             </div>
                         </td>

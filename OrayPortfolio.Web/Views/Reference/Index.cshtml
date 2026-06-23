@@ -106,6 +106,7 @@
         transform: translateZ(20px);
     }
 
+    /* 📌 AVATAR DÜZENLEMESİ (Resimler için cover) */
     .port-ref-avatar {
         width: 55px;
         height: 55px;
@@ -119,6 +120,7 @@
         font-size: 1.3rem;
         flex-shrink: 0;
         box-shadow: 0 5px 15px rgba(109, 94, 249, 0.3);
+        object-fit: cover;
     }
 
     .port-ref-name {
@@ -138,7 +140,7 @@
     /* İletişim Bilgileri */
     .port-ref-contact {
         display: flex;
-        flex-direction: column;
+        flex-wrap: wrap; /* Sığmayanlar alta geçsin */
         gap: 10px;
         transform: translateZ(20px);
     }
@@ -169,7 +171,6 @@
             color: var(--text-main);
             transform: translateX(5px);
         }
-
 </style>
 
 <!-- SAYFA ÜST BAŞLIĞI (PAGE HEADER) -->
@@ -195,9 +196,6 @@
         {
             foreach (var r in Model)
             {
-                // İsmin ilk harfini güvenli bir şekilde almak için
-                string initial = !string.IsNullOrWhiteSpace(r.FullName) ? r.FullName.Substring(0, 1).ToUpper() : "R";
-
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@delay">
                     <!-- VanillaTilt 3D Efekti -->
                     <div class="port-ref-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.1">
@@ -205,7 +203,7 @@
                         <!-- Arka Plan İkonu -->
                         <i class="fa-solid fa-quote-right port-ref-quote-icon"></i>
 
-                        <!-- Yorum (Yorum yoksa varsayılan metin gösterilmesin diye kontrol ediyoruz) -->
+                        <!-- Yorum -->
                         @if (!string.IsNullOrWhiteSpace(r.Comment))
                         {
                             <p class="port-ref-content">"@r.Comment"</p>
@@ -214,9 +212,18 @@
                         <div class="mt-auto">
                             <!-- Yazar Bilgileri -->
                             <div class="port-ref-author">
-                                <div class="port-ref-avatar">
-                                    @initial
-                                </div>
+                                <!-- 📌 FOTOĞRAF VEYA BAŞ HARF -->
+                                @if (!string.IsNullOrEmpty(r.ProfileImageUrl))
+                                {
+                                    <img src="@r.ProfileImageUrl" class="port-ref-avatar" alt="@r.FullName" style="border: 2px solid rgba(255,255,255,0.05);" />
+                                }
+                                else
+                                {
+                                    <div class="port-ref-avatar">
+                                        @(!string.IsNullOrWhiteSpace(r.FullName) ? r.FullName.Substring(0, 1).ToUpper() : "R")
+                                    </div>
+                                }
+
                                 <div>
                                     <h4 class="port-ref-name">@r.FullName</h4>
                                     <p class="port-ref-position">
@@ -229,10 +236,17 @@
                                 </div>
                             </div>
 
-                            <!-- İletişim Butonları -->
-                            @if (!string.IsNullOrWhiteSpace(r.Email) || !string.IsNullOrWhiteSpace(r.Phone))
+                            <!-- 📌 İLETİŞİM VE LINKEDIN BUTONLARI -->
+                            @if (!string.IsNullOrWhiteSpace(r.Email) || !string.IsNullOrWhiteSpace(r.Phone) || !string.IsNullOrWhiteSpace(r.LinkedinUrl))
                             {
                                 <div class="port-ref-contact">
+                                    @if (!string.IsNullOrWhiteSpace(r.LinkedinUrl))
+                                    {
+                                        <a href="@r.LinkedinUrl" target="_blank" class="port-contact-badge" style="border-color: rgba(10, 102, 194, 0.2);">
+                                            <i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i> LinkedIn
+                                        </a>
+                                    }
+
                                     @if (!string.IsNullOrWhiteSpace(r.Email))
                                     {
                                         <a href="mailto:@r.Email" class="port-contact-badge">

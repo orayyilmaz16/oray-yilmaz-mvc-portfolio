@@ -2,16 +2,18 @@
 @model IEnumerable<EducationDto>
 
 @{
-    ViewData["Title"] = "Eğitim Hayatım";
+    ViewData["Title"] = "Eğitim Geçmişim";
 }
 
 <style>
-    /* ----- EĞİTİM SAYFASI ÖZEL TASARIMI ----- */
+    /* ----- EĞİTİM GEÇMİŞİ SAYFASI ÖZEL TASARIMI ----- */
 
-    /* Animasyonlar */
-   
+    /* 📌 KESİN ÇÖZÜM: Tüm alt metinleri sistemin dinamik temasına bağladık */
+    .text-muted,
+    .port-page-subtitle {
+        color: var(--text-muted) !important;
+    }
 
-    /* Boşluklar */
     .port-spacer {
         height: 100px;
     }
@@ -20,7 +22,6 @@
         height: 50px;
     }
 
-    /* Sayfa Üst Başlığı (Page Header) */
     .port-page-header {
         text-align: center;
         padding: 6rem 0 3rem;
@@ -33,17 +34,17 @@
         letter-spacing: -1.5px;
         margin-bottom: 1rem;
         text-wrap: balance;
+        color: var(--text-main);
     }
 
         .port-page-title i {
-            background: linear-gradient(135deg, var(--brand-secondary), var(--brand-primary));
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-right: 10px;
         }
 
     .port-page-subtitle {
-        color: var(--text-muted);
         font-size: clamp(1.1rem, 2vw, 1.25rem);
         max-width: 700px;
         margin: 0 auto;
@@ -51,7 +52,7 @@
         text-wrap: balance;
     }
 
-    /* --- Gelişmiş Timeline (Zaman Çizelgesi) Tasarımı --- */
+    /* --- Zaman Çizelgesi (Timeline) --- */
     .port-timeline {
         position: relative;
         padding-left: 40px;
@@ -59,194 +60,181 @@
         margin: 0;
     }
 
-        /* Ana Dikey Çizgi (Eğitime Özel Secondary Renk) */
         .port-timeline::before {
             content: '';
             position: absolute;
             top: 0;
             bottom: 0;
-            left: 8px; /* Çizgi tam ortaya gelsin */
+            left: 8px;
             width: 4px;
             background: linear-gradient(to bottom, var(--brand-secondary), var(--border-color) 80%, transparent);
             border-radius: 4px;
         }
 
-    /* Kartların Kendisi (Glassmorphism) */
     .port-timeline-item {
         position: relative;
-        margin-bottom: 50px;
-        background: rgba(23, 28, 40, 0.5);
+        margin-bottom: 40px;
+        background: rgba(23, 28, 40, 0.6); /* Dark Mode Kutu Rengi */
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        padding: clamp(25px, 4vw, 40px);
+        padding: clamp(20px, 4vw, 35px);
         border-radius: 24px;
         border: 1px solid rgba(255, 255, 255, 0.05);
-        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition: all 0.3s ease;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
         .port-timeline-item:hover {
-            border-color: rgba(45, 212, 191, 0.5);
+            border-color: rgba(45, 212, 191, 0.4);
             background: rgba(23, 28, 40, 0.8);
-            transform: translateX(10px);
-            box-shadow: 0 15px 40px rgba(45, 212, 191, 0.15);
+            transform: translateX(8px);
         }
 
-    /* Noktalar */
     .port-timeline-dot {
         position: absolute;
         left: -40px;
-        top: 45px;
-        width: 18px;
-        height: 18px;
+        top: 40px;
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
         background: var(--bg-base);
-        border: 4px solid var(--border-color);
+        border: 4px solid var(--brand-secondary);
         transition: all 0.3s ease;
     }
 
-    .port-timeline-item:hover .port-timeline-dot {
+    .port-company-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        background-color: var(--surface);
+        padding: 4px;
+        border: 2px solid var(--border-color);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        transition: transform 0.4s ease, border-color 0.4s ease;
+    }
+
+    .port-timeline-item:hover .port-company-logo {
+        transform: scale(1.08) rotate(5deg);
         border-color: var(--brand-secondary);
     }
 
-    /* Aktif (Devam Eden) Eğitim Animasyonu */
-    .port-timeline-item.active .port-timeline-dot {
-        border-color: var(--brand-secondary);
-        background: var(--brand-secondary);
-        animation: radar-pulse-secondary 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    .port-empty-state-box {
+        background: rgba(23, 28, 40, 0.5);
+        border: 1px dashed rgba(255, 255, 255, 0.2);
+        max-width: 600px;
+        margin: 0 auto;
+        backdrop-filter: blur(10px);
     }
 
-    /* İçerik Tipografisi */
-    .port-timeline-date {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.95rem;
-        color: var(--brand-secondary);
-        background: rgba(45, 212, 191, 0.1);
-        padding: 8px 16px;
-        border-radius: 12px;
-        border: 1px solid rgba(45, 212, 191, 0.2);
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
+    /* 📌 LIGHT MODE (AÇIK TEMA) KESİN ÇÖZÜMLERİ */
+    [data-theme="light"] .port-timeline-item {
+        background: #ffffff;
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     }
 
-    .port-timeline-title {
-        font-size: clamp(1.3rem, 3vw, 1.7rem);
-        font-weight: 800;
-        color: var(--text-main);
-        margin-top: 1.2rem;
-        margin-bottom: 5px;
-        letter-spacing: -0.5px;
+        [data-theme="light"] .port-timeline-item:hover {
+            background: #f8fafc;
+            border-color: var(--brand-secondary);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+    [data-theme="light"] .port-company-logo {
+        background-color: #ffffff;
+        border-color: rgba(0,0,0,0.1);
     }
 
-    .port-timeline-school {
-        font-size: 1.1rem;
-        color: var(--brand-primary); /* Şirket için kullandığımız primary rengi burada okullar için kullanıyoruz */
-        font-weight: 600;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    [data-theme="light"] .port-empty-state-box {
+        background: #ffffff !important;
+        border: 1px dashed rgba(0,0,0,0.15) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     }
 
-    .port-timeline-desc {
-        color: var(--text-muted);
-        font-size: 1.05rem;
-        line-height: 1.8;
-        margin-bottom: 0;
-    }
-
-    /* Mobil Uyumluluk */
-   
+  
 </style>
 
-<!-- SAYFA ÜST BAŞLIĞI (PAGE HEADER) -->
+<!-- SAYFA ÜST BAŞLIĞI -->
 <section class="port-page-header container" data-aos="fade-down" data-aos-duration="800">
     <h1 class="port-page-title">
-        <i class="fa-solid fa-graduation-cap"></i> Eğitim Hayatım
+        <i class="fa-solid fa-graduation-cap"></i> Eğitim Geçmişim
     </h1>
     <p class="port-page-subtitle">
-        Akademik yolculuğum, uzmanlık kazandığım disiplinler ve edindiğim temel yetkinlikler.
+        Akademik yolculuğum, aldığım eğitimler ve uzmanlaştığım disiplinler.
     </p>
 </section>
 
-<div class="port-spacer-sm"></div>
-
-<!-- EĞİTİM ZAMAN ÇİZELGESİ (TIMELINE) -->
-<section class="container">
+<!-- TÜM EĞİTİMLER LİSTESİ -->
+<section class="container" style="margin-bottom: 80px;">
     <div class="row">
         <div class="col-lg-10 mx-auto">
-
             @if (Model != null && Model.Any())
             {
                 <ul class="port-timeline">
                     @{
-                        int delay = 100;
+                        int eduDelay = 100;
                     }
 
-                    @foreach (var edu in Model.OrderByDescending(x => x.StartDate))
+                    @foreach (var edu in Model)
                     {
-                        bool isOngoing = edu.EndDate.Year == 1;
-
-                        <!-- Eğer eğitim aktifse "active" sınıfı verilir, bu radar efekti tetikler -->
-                        <li class="port-timeline-item @(isOngoing ? "active" : "")" data-aos="fade-left" data-aos-delay="@delay">
-
-                            <!-- Nokta -->
+                        <li class="port-timeline-item" data-aos="fade-up" data-aos-delay="@eduDelay">
                             <div class="port-timeline-dot"></div>
 
-                            <!-- Tarih Etiketi -->
-                            <div class="d-flex align-items-center flex-wrap gap-3">
-                                <span class="port-timeline-date">
-                                    <i class="fa-regular fa-calendar"></i>
-                                    @edu.StartDate.ToString("yyyy") →
-                                    @(isOngoing ? "Devam Ediyor" : edu.EndDate.ToString("yyyy"))
-                                </span>
+                            <!-- LOGO VE METİNLER YAN YANA -->
+                            <div class="d-flex align-items-start gap-3 gap-md-4">
 
-                                @if (isOngoing)
-                                {
-                                    <span class="badge" style="background: rgba(109,94,249,0.2); color: var(--brand-primary); padding: 8px 14px; border-radius: 12px; font-size: 0.85rem; border: 1px solid rgba(109,94,249,0.3);">
-                                        <i class="fa-solid fa-book-open-reader me-1"></i> Eğitim Sürüyor
-                                    </span>
-                                }
+                                <!-- 📌 KURUM LOGOSU -->
+                                <div class="flex-shrink-0 pt-1">
+                                    @if (!string.IsNullOrEmpty(edu.LogoImageUrl))
+                                    {
+                                        <img src="@edu.LogoImageUrl" class="port-company-logo" alt="@edu.School Logo" loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        <!-- Varsayılan İkon -->
+                                        <div class="port-company-logo d-flex justify-content-center align-items-center" style="background: rgba(255,255,255,0.03); color: var(--brand-secondary); font-size: 1.3rem;">
+                                            <i class="fa-solid fa-building-columns"></i>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- 📌 EĞİTİM DETAYLARI -->
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
+                                        <span class="badge" style="background: rgba(45, 212, 191, 0.1); color: var(--brand-secondary); padding: 6px 12px; border: 1px solid rgba(45, 212, 191, 0.2);">
+                                            <i class="fa-solid fa-award me-1"></i> @edu.Degree
+                                        </span>
+                                        <span class="text-muted" style="font-size: 0.9rem; font-weight: 500;">
+                                            @edu.StartDate.ToString("yyyy") → @(edu.EndDate.Year <= 1 ? "Devam Ediyor" : edu.EndDate.ToString("yyyy"))
+                                        </span>
+                                    </div>
+                                    <h4 style="font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 800; color: var(--text-main); margin-bottom: 5px;">@edu.Department</h4>
+                                    <p style="font-size: 1.05rem; font-weight: 600;" class="text-muted"><i class="fa-solid fa-building-columns me-2 text-primary"></i>@edu.School</p>
+
+                                    @if (!string.IsNullOrWhiteSpace(edu.Description))
+                                    {
+                                        <p class="m-0 mt-3 text-muted" style="line-height: 1.7; font-weight: 400;">@edu.Description</p>
+                                    }
+                                </div>
                             </div>
-
-                            <!-- Bölüm (Büyük Başlık) & Okul -->
-                            <h4 class="port-timeline-title">@edu.Department</h4>
-                            <p class="port-timeline-school">
-                                <i class="fa-solid fa-building-columns"></i> @edu.School
-                            </p>
-
-                            <!-- Açıklama (Enter boşluklarını korumak için Html.Raw kullanıldı) -->
-                            @if (!string.IsNullOrWhiteSpace(edu.Description))
-                            {
-                                <p class="port-timeline-desc">
-                                    @Html.Raw(edu.Description.Replace("\n", "<br/>"))
-                                </p>
-                            }
-
                         </li>
-
-                        delay += 100;
+                        eduDelay += 100;
                     }
                 </ul>
             }
             else
             {
-                <!-- BOŞ DURUM (EMPTY STATE) -->
+                <!-- BOŞ DURUM EKRANI -->
                 <div class="text-center py-5" data-aos="fade-in">
-                    <div class="p-5 rounded-4" style="background: rgba(23, 28, 40, 0.5); border: 1px dashed rgba(255, 255, 255, 0.2); max-width: 600px; margin: 0 auto; backdrop-filter: blur(10px);">
-                        <i class="fa-solid fa-school-flag mb-3" style="font-size: 4rem; color: rgba(255, 255, 255, 0.7);"></i>
+                    <div class="p-5 rounded-4 port-empty-state-box">
+                        <i class="fa-solid fa-user-graduate mb-3" style="font-size: 4rem; color: var(--brand-light);"></i>
                         <h3 style="color: var(--text-main); font-weight: 700; margin-bottom: 10px;">Henüz Eğitim Eklenmemiş</h3>
-                        <p class="m-0" style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">
-                            Akademik geçmişime ve mezuniyetlerime ait bilgiler çok yakında burada olacak.
+                        <p class="m-0 text-muted" style="font-size: 1.1rem; line-height: 1.6;">
+                            Akademik geçmişim çok yakında burada listelenecek.
                         </p>
                     </div>
                 </div>
             }
-
         </div>
     </div>
 </section>
-
-<div class="port-spacer"></div>
