@@ -57,6 +57,7 @@
         gap: 8px;
         border: 1px solid var(--line);
         transition: all 0.2s var(--ease);
+        text-decoration: none;
     }
 
         .ap-btn-back:hover {
@@ -95,7 +96,8 @@
             font-size: 1rem;
         }
 
-    .ap-input {
+    /* Kategori Select Kutusunu da Bu Sınıfa Dahil Ediyoruz */
+    .ap-input, .ap-select {
         width: 100%;
         background: rgba(0, 0, 0, 0.2);
         border: 1px solid var(--line);
@@ -106,18 +108,40 @@
         font-family: inherit;
         transition: all 0.3s var(--ease);
         color-scheme: dark;
+        appearance: none;
     }
 
         .ap-input::placeholder {
             color: rgba(139, 147, 167, 0.4);
         }
 
-        .ap-input:focus {
+        .ap-input:focus, .ap-select:focus {
             outline: none;
             border-color: var(--brand);
             background: rgba(0, 0, 0, 0.35);
             box-shadow: 0 0 0 4px rgba(109, 94, 249, 0.15);
         }
+
+    .ap-select-wrapper {
+        position: relative;
+    }
+
+        .ap-select-wrapper::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            pointer-events: none;
+        }
+
+    .ap-select option {
+        background: var(--surface);
+        color: var(--text);
+    }
 
     .ap-btn-submit {
         background: linear-gradient(135deg, var(--brand), var(--brand-light));
@@ -139,8 +163,6 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 24px -6px rgba(109, 94, 249, 0.6);
         }
-
-    
 </style>
 
 <div class="ap-page-header">
@@ -152,7 +174,6 @@
 
 <div class="ap-form-card">
 
-    <!-- 🔥 TÜM VALIDASYON HATALARINI KIRMIZI KUTUDA GÖSTER -->
     @if (!ViewData.ModelState.IsValid)
     {
         <div class="ap-error-box">
@@ -167,14 +188,42 @@
 
     <form method="post">
 
-        <div class="ap-form-group">
-            <label class="ap-form-label">Yetenek Adı</label>
-            <input class="ap-input" asp-for="Name" placeholder="Örn: C#, SQL, React" />
-            <span asp-validation-for="Name" class="ap-hidden-validation"></span>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="ap-form-group">
+                    <label class="ap-form-label">
+                        <i class="fa-solid fa-bolt"></i> Yetenek Adı
+                    </label>
+                    <input class="ap-input" asp-for="Name" placeholder="Örn: C#, SQL, React" />
+                    <span asp-validation-for="Name" class="ap-hidden-validation"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="ap-form-group">
+                    <label class="ap-form-label">
+                        <i class="fa-solid fa-layer-group"></i> Kategori
+                    </label>
+                    <div class="ap-select-wrapper">
+                        <select asp-for="Category" class="ap-select">
+                            <option value="">Seçiniz...</option>
+                            <option value="Web Geliştirme">Web Geliştirme (Frontend/Backend)</option>
+                            <option value="Mobil Geliştirme">Mobil Geliştirme</option>
+                            <option value="Veritabanı Sistemleri">Veritabanı Sistemleri</option>
+                            <option value="Yapay Zeka & Veri Bilimi">Yapay Zeka & Veri Bilimi</option>
+                            <option value="Programlama Dilleri">Programlama Dilleri</option>
+                            <option value="Araçlar & DevOps">Araçlar & DevOps (Git, Docker vb.)</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Category" class="ap-hidden-validation"></span>
+                </div>
+            </div>
         </div>
 
         <div class="ap-form-group">
-            <label class="ap-form-label">Seviye (1-100)</label>
+            <label class="ap-form-label">
+                <i class="fa-solid fa-chart-line"></i> Seviye (1-100)
+            </label>
             <input class="ap-input" asp-for="Level" type="number" min="1" max="100" />
             <span asp-validation-for="Level" class="ap-hidden-validation"></span>
         </div>

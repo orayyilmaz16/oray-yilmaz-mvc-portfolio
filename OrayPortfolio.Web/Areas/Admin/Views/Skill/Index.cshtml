@@ -227,7 +227,18 @@
                         </td>
 
                         <td>
-                            <!-- Kategori alanı henüz DTO'da yok -->
+                            @if (string.IsNullOrWhiteSpace(s.Category))
+                            {
+                                <span class="text-muted" style="font-size: 0.85rem; font-style: italic;">
+                                    Belirtilmemiş
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="ap-category-badge">
+                                    @s.Category
+                                </span>
+                            }
                         </td>
 
                         <td>

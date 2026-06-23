@@ -426,52 +426,88 @@
         border-color: rgba(0,0,0,0.1);
     }
 
-    /* --- Yetenek Barları --- */
+    /* --- YENİ NESİL KUTULU YETENEK KARTLARI --- */
+    .port-skill-category-title {
+        color: var(--text-main);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-top: 2rem;
+        margin-bottom: 0.8rem;
+        margin-left: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .port-skill-category-title i {
+            font-size: 1.3rem;
+        }
+
+    /* Kategori Kartlarını Kaplayan Dış Kutu */
+    .port-skill-group-box {
+        background: rgba(255, 255, 255, 0.015);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        border-radius: 24px;
+        padding: 30px;
+        margin-bottom: 3.5rem;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+        /* Kutunun sol tarafındaki renkli dinamik çizgi/parlama */
+        .port-skill-group-box::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            bottom: 25px;
+            left: -1px;
+            width: 3px;
+            border-radius: 0 4px 4px 0;
+            background-color: var(--cat-color);
+            box-shadow: 0 0 15px var(--cat-color);
+            opacity: 0.8;
+        }
+
     .port-skill-item {
-        background: rgba(23, 28, 40, 0.6);
-        padding: 24px;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        transition: transform 0.3s ease, border-color 0.3s ease;
-        margin-bottom: 24px;
-        transform-style: preserve-3d;
+        background: rgba(15, 18, 25, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        padding: 18px 20px;
+        border-radius: 14px;
+        transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
         .port-skill-item:hover {
-            transform: translateY(-5px);
-            border-color: var(--brand-primary);
+            transform: translateY(-3px);
+            border-color: rgba(109, 94, 249, 0.4);
+            box-shadow: 0 5px 15px rgba(109, 94, 249, 0.1);
         }
 
     .port-skill-header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 15px;
-        font-weight: 700;
-        font-size: 1.1rem;
+        align-items: center;
+        margin-bottom: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
         color: var(--text-main);
-        transform: translateZ(10px);
     }
 
     .port-progress-bg {
-        height: 12px;
-        background: rgba(0,0,0,0.5);
-        border-radius: 12px;
+        height: 6px;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 6px;
         overflow: hidden;
-        border: 1px inset rgba(255,255,255,0.05);
-        transform: translateZ(15px);
     }
 
     .port-progress-fill {
         height: 100%;
-        background-image: linear-gradient( 45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent );
-        background-size: 1.5rem 1.5rem;
-        background-color: var(--brand-primary);
-        border-radius: 12px;
+        background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+        border-radius: 6px;
         width: 0;
         transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-        box-shadow: 0 0 15px rgba(109, 94, 249, 0.4);
-        animation: progress-stripes 1.5s linear infinite;
     }
+
+   
 
     /* --- Referans Kartları --- */
     .port-ref-card {
@@ -825,6 +861,7 @@
         animation: form-shake 0.4s ease-in-out;
     }
 
+    
 </style>
 
 <!-- HERO (KARŞILAMA) ALANI -->
@@ -1063,41 +1100,91 @@
 }
 
 <!-- UZMANLIK ALANLARIM -->
-<section class="container">
-    <div class="port-section-header" data-aos="fade-right">
-        <h2 class="port-section-title"><i class="fa-solid fa-bolt"></i> Uzmanlık Alanlarım</h2>
-        <p class="port-section-subtitle">Sürekli geliştirdiğim ve projelerimde ustalıkla kullandığım teknolojiler.</p>
+<section class="container" style="margin-bottom: 80px;">
+
+    <div class="port-section-header text-center mb-5" data-aos="fade-down">
+        <h2 class="port-section-title justify-content-center"><i class="fa-solid fa-bolt text-warning"></i> Uzmanlık Alanlarım</h2>
+        <p class="port-section-subtitle mx-auto text-muted" style="max-width: 600px; margin: 0 auto; margin-top: 0.5rem;">
+            Sürekli geliştirdiğim, modern projelerimde ustalıkla kullandığım teknoloji ve araçlar.
+        </p>
     </div>
 
-    <div class="row g-4">
-        @{
-            int skillDelay = 100;
-        }
-        @foreach (var skill in Model.Skills.Take(3))
+    @{
+        var groupedSkills = Model.Skills
+            .GroupBy(s => string.IsNullOrWhiteSpace(s.Category) ? "Diğer Yetenekler" : s.Category)
+            .OrderByDescending(g => g.Count())
+            .ToList();
+
+        bool hasMoreSkills = false;
+    }
+
+    @if (groupedSkills.Any())
+    {
+        foreach (var group in groupedSkills.Take(4))
         {
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@skillDelay">
-                <div class="port-skill-item" data-tilt data-tilt-max="5">
-                    <div class="port-skill-header">
-                        <span style="transform: translateZ(20px);"><i class="fa-solid fa-code text-success me-2"></i> @skill.Name</span>
-                        <span class="port-skill-percent" style="transform: translateZ(20px); color: var(--brand-primary);">@skill.Level%</span>
-                    </div>
-                    <div class="port-progress-bg">
-                        <div class="port-progress-fill" data-width="@skill.Level%"></div>
-                    </div>
+            // 📌 DİNAMİK İKON VE RENK ATAMASI
+            string iconClass = "fa-layer-group";
+            string iconColor = "#94a3b8";
+
+            if (group.Key.Contains("Web")) { iconClass = "fa-globe"; iconColor = "#60a5fa"; }
+            else if (group.Key.Contains("Mobil")) { iconClass = "fa-mobile-screen"; iconColor = "#34d399"; }
+            else if (group.Key.Contains("Veritabanı")) { iconClass = "fa-database"; iconColor = "#38bdf8"; }
+            else if (group.Key.Contains("Yapay Zeka")) { iconClass = "fa-robot"; iconColor = "#a78bfa"; }
+            else if (group.Key.Contains("Programlama")) { iconClass = "fa-code"; iconColor = "#f472b6"; }
+            else if (group.Key.Contains("DevOps") || group.Key.Contains("Araçlar")) { iconClass = "fa-terminal"; iconColor = "#fb923c"; }
+
+            <!-- BAŞLIK (KUTU DIŞINDA) -->
+            <h4 class="port-skill-category-title" data-aos="fade-right">
+                <i class="fa-solid @iconClass" style="color: @iconColor;"></i> @group.Key
+            </h4>
+
+            <!-- 📌 KATEGORİ KUTUSU (İçinde 3 yetenek barındırır) -->
+            <div class="port-skill-group-box" style="--cat-color: @iconColor;" data-aos="fade-up">
+                <div class="row g-3">
+                    @{
+                        int skillDelay = 100;
+                        var skillsToShow = group.OrderByDescending(x => x.Level).ToList();
+                        if (skillsToShow.Count > 3) hasMoreSkills = true;
+                    }
+
+                    @foreach (var skill in skillsToShow.Take(3))
+                    {
+                        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="@skillDelay">
+                            <div class="port-skill-item">
+                                <div class="port-skill-header">
+                                    <span><i class="fa-solid fa-check me-2" style="color: #2dd4bf;"></i> @skill.Name</span>
+                                    <span style="color: var(--brand-primary);">%@skill.Level</span>
+                                </div>
+                                <div class="port-progress-bg">
+                                    <div class="port-progress-fill" data-width="@skill.Level%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        skillDelay += 50;
+                    }
                 </div>
             </div>
-            skillDelay += 50;
         }
-    </div>
 
-    @if (Model.Skills.Count() > 3)
+        if (groupedSkills.Count > 4) { hasMoreSkills = true; }
+
+        @if (hasMoreSkills)
+        {
+            <div class="text-center mt-3" data-aos="fade-up">
+                <a asp-controller="Skill" asp-action="Index" class="port-btn-outline" style="border-color: transparent;">
+                    Tümünü Keşfet <i class="fa-solid fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        }
+    }
+    else
     {
-        <div class="text-center mt-5" data-aos="fade-up">
-            <a asp-controller="Skill" asp-action="Index" class="port-btn-outline" style="border-color: transparent;">
-                Tümünü Keşfet <i class="fa-solid fa-arrow-right ms-2"></i>
-            </a>
+        <div class="text-center text-muted py-5" data-aos="fade-in">
+            <i class="fa-solid fa-code mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+            <p>Henüz bir yetenek eklenmemiş.</p>
         </div>
     }
+
 </section>
 
 <div class="port-spacer"></div>

@@ -43,7 +43,13 @@ namespace OrayPortfolio.Application.Services
 
         public async Task<bool> UpdateAsync(SkillUpdateDto dto)
         {
-            var entity = _mapper.Map<Skill>(dto);
+            var entity = await _uow.Skills.GetByIdAsync(dto.Id);
+            if (entity == null) return false;
+
+            entity.Name = dto.Name;
+            entity.Level = dto.Level;
+            entity.Category = dto.Category; // 📌 İŞTE BU SATIR ŞART
+
             _uow.Skills.Update(entity);
             return await _uow.SaveAsync() > 0;
         }
