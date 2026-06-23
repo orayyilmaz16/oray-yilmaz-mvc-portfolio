@@ -17,6 +17,9 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         private readonly IEducationService _educationService;
         private readonly IReferenceService _referenceService;
 
+        // 📌 Ziyaretçi Servisi Eklendi
+        private readonly IVisitorService _visitorService;
+
         public DashboardController(
             IProjectService projectService,
             IReferenceService referenceService,
@@ -25,7 +28,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             ISkillService skillService,
             IVolunteerWorkService volunteerService,
             IProfileService profileService,
-            IEducationService educationService)
+            IEducationService educationService,
+            IVisitorService visitorService) // 📌 Parametrelere dâhil edildi
         {
             _projectService = projectService;
             _experienceService = experienceService;
@@ -35,6 +39,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             _volunteerService = volunteerService;
             _profileService = profileService;
             _educationService = educationService;
+
+            _visitorService = visitorService; // 📌 Ataması yapıldı
         }
 
         public async Task<IActionResult> Index()
@@ -47,6 +53,9 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             var references = await _referenceService.GetAllAsync();
             var educations = await _educationService.GetAllAsync();
             var profile = await _profileService.GetAsync();
+
+            // 📌 GERÇEK ZİYARETÇİ İSTATİSTİKLERİNİ VERİTABANINDAN ÇEKİYORUZ!
+            var visitorStats = await _visitorService.GetVisitorStatsAsync();
 
             var model = new DashboardViewModel
             {
@@ -64,7 +73,13 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 LastCertificates = certificates.OrderByDescending(c => c.Id).Take(5).ToList(),
                 LastVolunteerWorks = volunteers.OrderByDescending(v => v.Id).Take(5).ToList(),
                 LastEducations = educations.OrderByDescending(e => e.Id).Take(5).ToList(),
-                LastReferences = references.OrderByDescending(r => r.Id).Take(5).ToList()
+                LastReferences = references.OrderByDescending(r => r.Id).Take(5).ToList(),
+
+                // 📌 ARTIK SAHTE VERİ YOK! DOĞRUDAN IP LOGLARINDAN GELEN GERÇEK VERİLER:
+                TodayVisitors = visitorStats.TodayVisitors,
+                TotalVisitors = visitorStats.TotalVisitors,
+                WeeklyVisitorDates = visitorStats.WeeklyVisitorDates,
+                WeeklyVisitorCounts = visitorStats.WeeklyVisitorCounts
             };
 
             return View(model);
@@ -72,19 +87,13 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
 
         private int CalculateProfileCompletion(ProfileDto profile)
         {
-            if (profile == null)
-                return 0;
+            if (profile == null) return 0;
 
             var fields = new[]
             {
-                profile.FullName,
-                profile.Title,
-                profile.ShortBio,
-                profile.LongBio,
-                profile.Email,
-                profile.GithubUrl,
-                profile.LinkedinUrl,
-                profile.ProfileImageUrl
+                profile.FullName, profile.Title, profile.ShortBio,
+                profile.LongBio, profile.Email, profile.GithubUrl,
+                profile.LinkedinUrl, profile.ProfileImageUrl
             };
 
             int filled = fields.Count(f => !string.IsNullOrWhiteSpace(f));

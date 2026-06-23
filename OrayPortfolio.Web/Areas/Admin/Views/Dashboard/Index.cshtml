@@ -47,24 +47,45 @@
         flex-shrink: 0;
     }
 
-        .ap-stat-icon.project {
+        /* İkon Renkleri */
+        .ap-stat-icon.visitor-today {
+            background: rgba(45, 212, 191, 0.15);
+            color: #2dd4bf;
+        }
+
+        .ap-stat-icon.visitor-total {
             background: rgba(109, 94, 249, 0.15);
-            color: var(--brand-light);
+            color: #6d5ef9;
+        }
+
+        .ap-stat-icon.project {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
         }
 
         .ap-stat-icon.experience {
-            background: rgba(45, 212, 191, 0.15);
-            color: var(--accent);
+            background: rgba(251, 69, 112, 0.15);
+            color: #fb4570;
         }
 
         .ap-stat-icon.certificate {
-            background: rgba(251, 69, 112, 0.15);
-            color: var(--danger);
+            background: rgba(13, 110, 253, 0.15);
+            color: #0d6efd;
         }
 
         .ap-stat-icon.skill {
-            background: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
+            background: rgba(255, 136, 0, 0.15);
+            color: #ff8800;
+        }
+
+        .ap-stat-icon.volunteer {
+            background: rgba(32, 201, 151, 0.15);
+            color: #20c997;
+        }
+
+        .ap-stat-icon.reference {
+            background: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
         }
 
     .ap-stat-info h3 {
@@ -75,15 +96,10 @@
         font-family: 'JetBrains Mono', monospace;
     }
 
-    .ap-stat-icon.volunteer {
-        background: #ff7f50;
-        color: #fff;
-    }
-
     .ap-stat-info p {
         color: var(--text-dim);
-        font-size: 0.875rem;
-        font-weight: 500;
+        font-size: 0.85rem;
+        font-weight: 600;
         margin: 0;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -95,7 +111,14 @@
         font-size: 1.1rem;
         font-weight: 600;
         margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
+
+        .ap-card-title i {
+            color: var(--brand-light);
+        }
 
     .ap-list-group {
         border-radius: 12px;
@@ -143,11 +166,6 @@
         height: 100%;
         border-radius: 99px;
         box-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        padding-right: 8px;
-        font-size: 0; /* Gizli text, sadece hover/tooltipte kullanılabilir */
         transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
@@ -157,16 +175,6 @@
         font-size: 0.9rem;
         margin-top: 8px;
         text-align: right;
-    }
-
-    .ap-stat-icon.reference {
-        background: #6f42c1;
-        color: #fff;
-    }
-
-    .ap-stat-icon.education {
-        background: #0d6efd;
-        color: #fff;
     }
 
     /* Gecikmeli Animasyonlar (Stagger Effect) */
@@ -181,27 +189,47 @@
     .delay-3 {
         animation-delay: 0.3s;
     }
-
-    .delay-4 {
-        animation-delay: 0.4s;
-    }
-
-    .delay-5 {
-        animation-delay: 0.5s;
-    }
 </style>
 
 <h2 class="ap-dashboard-header">Genel Bakış</h2>
 
-<div class="row g-4">
+<!-- 1. SATIR: ÖNEMLİ İSTATİSTİKLER (ZİYARETÇİLER VE TEMEL VERİLER) -->
+<div class="row g-4 mb-4">
+    <!-- Bugün Ziyaretçi -->
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-1" style="border-color: rgba(45, 212, 191, 0.3); background: linear-gradient(145deg, var(--surface), rgba(45, 212, 191, 0.03));">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon visitor-today">
+                    <i class="fa-solid fa-eye"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.TodayVisitors</h3>
+                    <p>Bugün Ziyaret</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toplam Ziyaretçi -->
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-1" style="border-color: rgba(109, 94, 249, 0.3); background: linear-gradient(145deg, var(--surface), rgba(109, 94, 249, 0.03));">
+            <div class="ap-stat-card">
+                <div class="ap-stat-icon visitor-total">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div class="ap-stat-info">
+                    <h3>@Model.TotalVisitors</h3>
+                    <p>Toplam Ziyaret</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Projeler -->
     <div class="col-xl-3 col-md-6">
         <div class="ap-card delay-1">
             <div class="ap-stat-card">
-                <div class="ap-stat-icon project">
-                    <i class="fa-solid fa-diagram-project"></i>
-                </div>
+                <div class="ap-stat-icon project"><i class="fa-solid fa-diagram-project"></i></div>
                 <div class="ap-stat-info">
                     <h3>@Model.ProjectCount</h3>
                     <p>Projeler</p>
@@ -210,43 +238,11 @@
         </div>
     </div>
 
-    <!-- Deneyimler -->
-    <div class="col-xl-3 col-md-6">
-        <div class="ap-card delay-2">
-            <div class="ap-stat-card">
-                <div class="ap-stat-icon experience">
-                    <i class="fa-solid fa-briefcase"></i>
-                </div>
-                <div class="ap-stat-info">
-                    <h3>@Model.ExperienceCount</h3>
-                    <p>Deneyimler</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sertifikalar -->
-    <div class="col-xl-3 col-md-6">
-        <div class="ap-card delay-3">
-            <div class="ap-stat-card">
-                <div class="ap-stat-icon certificate">
-                    <i class="fa-solid fa-certificate"></i>
-                </div>
-                <div class="ap-stat-info">
-                    <h3>@Model.CertificateCount</h3>
-                    <p>Sertifikalar</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Yetenekler -->
     <div class="col-xl-3 col-md-6">
-        <div class="ap-card delay-4">
+        <div class="ap-card delay-1">
             <div class="ap-stat-card">
-                <div class="ap-stat-icon skill">
-                    <i class="fa-solid fa-code"></i>
-                </div>
+                <div class="ap-stat-icon skill"><i class="fa-solid fa-code"></i></div>
                 <div class="ap-stat-info">
                     <h3>@Model.SkillCount</h3>
                     <p>Yetenekler</p>
@@ -254,204 +250,125 @@
             </div>
         </div>
     </div>
-
-    <!-- Gönüllü Çalışmalar -->
-    <div class="col-xl-3 col-md-6">
-        <div class="ap-card delay-5">
-            <div class="ap-stat-card">
-                <div class="ap-stat-icon volunteer">
-                    <i class="fa-solid fa-handshake-angle"></i>
-                </div>
-                <div class="ap-stat-info">
-                    <h3>@Model.VolunteerWorkCount</h3>
-                    <p>Gönüllü Çalışmalar</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Eğitimler -->
-    <div class="col-xl-3 col-md-6">
-        <div class="ap-card delay-6">
-            <div class="ap-stat-card">
-                <div class="ap-stat-icon education">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-                <div class="ap-stat-info">
-                    <h3>@Model.EducationCount</h3>
-                    <p>Eğitimler</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Referanslar -->
-    <div class="col-xl-3 col-md-6">
-        <div class="ap-card delay-7">
-            <div class="ap-stat-card">
-                <div class="ap-stat-icon reference">
-                    <i class="fa-solid fa-user-tie"></i>
-                </div>
-                <div class="ap-stat-info">
-                    <h3>@Model.ReferenceCount</h3>
-                    <p>Referanslar</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 
-
-<!-- PROFİL TAMAMLANMA -->
-<div class="row g-4 mt-1">
-    <div class="col-12">
-        <div class="ap-card delay-5">
-            <h5 class="ap-card-title">Profil Tamamlanma Oranı</h5>
-            <div class="ap-progress-wrapper mt-3">
-                <div class="ap-progress-bar" style="width:0%" data-target="@Model.ProfileCompletion"></div>
-            </div>
-            <div class="ap-progress-text">@Model.ProfileCompletion% Tamamlandı</div>
-        </div>
+<!-- 2. SATIR: DİĞER İSTATİSTİKLER -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon experience"><i class="fa-solid fa-briefcase"></i></div><div class="ap-stat-info"><h3>@Model.ExperienceCount</h3><p>Deneyimler</p></div></div></div>
     </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon education"><i class="fa-solid fa-graduation-cap"></i></div><div class="ap-stat-info"><h3>@Model.EducationCount</h3><p>Eğitimler</p></div></div></div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon certificate"><i class="fa-solid fa-certificate"></i></div><div class="ap-stat-info"><h3>@Model.CertificateCount</h3><p>Sertifikalar</p></div></div></div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon reference"><i class="fa-solid fa-user-tie"></i></div><div class="ap-stat-info"><h3>@Model.ReferenceCount</h3><p>Referanslar</p></div></div></div>
+    </div>
+</div>
 
-    <!-- GENEL İSTATİSTİK GRAFİĞİ -->
-    <div class="col-12">
-        <div class="ap-card delay-5">
-            <h5 class="ap-card-title">Genel İstatistik Dağılımı</h5>
+<!-- 3. SATIR: GRAFİKLER VE PROFİL -->
+<div class="row g-4 mb-4">
+    <!-- GRAFİK 1: ZİYARETÇİ TRAFİĞİ (AREA CHART) -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="ap-card delay-3">
+            <h5 class="ap-card-title"><i class="fa-solid fa-chart-area"></i> Son 7 Günlük Ziyaretçi Trafiği</h5>
             <div style="position: relative; height:300px; width:100%">
-                <canvas id="statsChart"></canvas>
+                <canvas id="trafficChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRAFİK 2: PORTFOLYO DAĞILIMI (BAR CHART) VE PROFİL DURUMU -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="ap-card delay-3">
+                    <h5 class="ap-card-title"><i class="fa-solid fa-chart-bar"></i> İçerik Dağılımı</h5>
+                    <div style="position: relative; height:200px; width:100%">
+                        <canvas id="statsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="ap-card delay-3">
+                    <h5 class="ap-card-title"><i class="fa-solid fa-user-check"></i> Profil Durumu</h5>
+                    <div class="ap-progress-wrapper mt-4">
+                        <div class="ap-progress-bar" style="width:0%" data-target="@Model.ProfileCompletion"></div>
+                    </div>
+                    <div class="ap-progress-text">@Model.ProfileCompletion% Tamamlandı</div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- SON EKLENENLER -->
-<div class="row g-4 mt-1">
-
+<!-- 4. SATIR: SON EKLENENLER LİSTELERİ -->
+<div class="row g-4">
     <!-- Son Projeler -->
     <div class="col-md-4">
-        <div class="ap-card delay-5">
-            <h5 class="ap-card-title">Son Eklenen Projeler</h5>
+        <div class="ap-card delay-3">
+            <h5 class="ap-card-title"><i class="fa-solid fa-diagram-project"></i> Son Projeler</h5>
             <div class="ap-list-group">
                 @if (Model.LastProjects?.Any() == true)
                 {
                     foreach (var p in Model.LastProjects)
                     {
-                        <div class="ap-list-item">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <span>@p.Title</span>
-                        </div>
+                        <div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>@p.Title</span></div>
                     }
                 }
                 else
                 {
-                    <div class="ap-list-item" style="justify-content:center;">Henüz proje eklenmemiş.</div>
+
+                    <div class="ap-list-item" style="justify-content:center;">Henüz eklenmemiş.</div>
                 }
             </div>
         </div>
     </div>
-
-    <!-- Son Sertifikalar -->
-    <div class="col-md-4">
-        <div class="ap-card delay-5">
-            <h5 class="ap-card-title">Son Eklenen Sertifikalar</h5>
-            <div class="ap-list-group">
-                @if (Model.LastCertificates?.Any() == true)
-                {
-                    foreach (var c in Model.LastCertificates)
-                    {
-                        <div class="ap-list-item">
-                            <i class="fa-solid fa-award"></i>
-                            <span>@c.Title</span>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <div class="ap-list-item" style="justify-content:center;">Henüz sertifika eklenmemiş.</div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <!-- Son Gönüllü Çalışmalar -->
-    <div class="col-md-4">
-        <div class="ap-card delay-5">
-            <h5 class="ap-card-title">Son Eklenen Gönüllü Çalışmalar</h5>
-            <div class="ap-list-group">
-                @if (Model.LastVolunteerWorks?.Any() == true)
-                {
-                    foreach (var v in Model.LastVolunteerWorks)
-                    {
-                        <div class="ap-list-item">
-                            <i class="fa-solid fa-handshake-angle"></i>
-                            <span>@v.Organization</span>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <div class="ap-list-item" style="justify-content:center;">Henüz gönüllü çalışma eklenmemiş.</div>
-                }
-            </div>
-        </div>
-    </div>
-
-</div>
-
-
-<div class="row g-4 mt-1">
 
     <!-- Son Eğitimler -->
-    <div class="col-md-6">
-        <div class="ap-card delay-5">
-            <h5 class="ap-card-title">Son Eklenen Eğitimler</h5>
+    <div class="col-md-4">
+        <div class="ap-card delay-3">
+            <h5 class="ap-card-title"><i class="fa-solid fa-graduation-cap"></i> Son Eğitimler</h5>
             <div class="ap-list-group">
                 @if (Model.LastEducations?.Any() == true)
                 {
                     foreach (var e in Model.LastEducations)
                     {
-                        <div class="ap-list-item">
-                            <i class="fa-solid fa-graduation-cap"></i>
-                            <span>@e.School</span>
-                        </div>
+                        <div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>@e.School</span></div>
                     }
                 }
                 else
                 {
-                    <div class="ap-list-item" style="justify-content:center;">Henüz eğitim eklenmemiş.</div>
+
+                    <div class="ap-list-item" style="justify-content:center;">Henüz eklenmemiş.</div>
                 }
             </div>
         </div>
     </div>
 
     <!-- Son Referanslar -->
-    <div class="col-md-6">
-        <div class="ap-card delay-5">
-            <h5 class="ap-card-title">Son Eklenen Referanslar</h5>
+    <div class="col-md-4">
+        <div class="ap-card delay-3">
+            <h5 class="ap-card-title"><i class="fa-solid fa-user-tie"></i> Son Referanslar</h5>
             <div class="ap-list-group">
                 @if (Model.LastReferences?.Any() == true)
                 {
                     foreach (var r in Model.LastReferences)
                     {
-                        <div class="ap-list-item">
-                            <i class="fa-solid fa-user-tie"></i>
-                            <span>@r.FullName</span>
-                        </div>
+                        <div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>@r.FullName</span></div>
                     }
                 }
                 else
                 {
-                    <div class="ap-list-item" style="justify-content:center;">Henüz referans eklenmemiş.</div>
+
+                    <div class="ap-list-item" style="justify-content:center;">Henüz eklenmemiş.</div>
                 }
             </div>
         </div>
     </div>
-
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -465,10 +382,7 @@
     }
     }, 100);
 
-    // --- 2. Karanlık Temaya Uygun Chart.js Yapılandırması ---
-    const ctx = document.getElementById('statsChart');
-
-    // CSS root değişkenlerinden renkleri çekmek
+    // --- CSS Değişkenlerinden Renk Çekimi ---
     const style = getComputedStyle(document.body);
     const colorBrand = style.getPropertyValue('--brand').trim() || '#6d5ef9';
     const colorAccent = style.getPropertyValue('--accent').trim() || '#2dd4bf';
@@ -476,74 +390,81 @@
     const colorTextDim = style.getPropertyValue('--text-dim').trim() || '#8b93a7';
     const colorLine = style.getPropertyValue('--line').trim() || '#242b3a';
 
-    new Chart(ctx, {
-    type: 'bar',
-    data: {
-    labels: ['Projeler', 'Deneyimler', 'Sertifikalar', 'Yetenekler', 'Gönüllü İşler'],
-    datasets: [{
-    label: 'Toplam Adet',
-    data: [
-    @Model.ProjectCount,
-    @Model.ExperienceCount,
-    @Model.CertificateCount,
-    @Model.SkillCount,
-    @Model.VolunteerWorkCount
-    ],
-    backgroundColor: [
-    colorBrand,
-    colorAccent,
-    colorDanger,
-    '#ffc107',
-    '#0dcaf0'
-    ],
-    borderRadius: 6, // Çubuk kenarlarını yumuşat
-    borderWidth: 0,
-    barPercentage: 0.6
-    }]
-    },
-    options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-    legend: {
-    display: false // Grafiğin üstündeki labelı gizledik, daha temiz görünür
-    },
-    tooltip: {
+    // Ortak Tooltip Ayarları
+    const commonTooltip = {
     backgroundColor: '#171c28',
     titleColor: '#eef1f6',
     bodyColor: '#8b93a7',
     borderColor: '#242b3a',
     borderWidth: 1,
     padding: 10,
-    displayColors: true,
     cornerRadius: 8
-    }
+    };
+
+    // --- 2. TRAFİK GRAFİĞİ (LINE/AREA CHART) ---
+    const trafficCtx = document.getElementById('trafficChart');
+    if(trafficCtx) {
+    const ctx = trafficCtx.getContext('2d');
+    let gradientFill = ctx.createLinearGradient(0, 0, 0, 300);
+    gradientFill.addColorStop(0, 'rgba(45, 212, 191, 0.4)');
+    gradientFill.addColorStop(1, 'rgba(45, 212, 191, 0.0)');
+
+    new Chart(ctx, {
+    type: 'line',
+    data: {
+    labels: @Html.Raw(Json.Serialize(Model.WeeklyVisitorDates)),
+    datasets: [{
+    label: 'Ziyaretçi',
+    data: @Html.Raw(Json.Serialize(Model.WeeklyVisitorCounts)),
+    borderColor: colorAccent,
+    backgroundColor: gradientFill,
+    borderWidth: 3,
+    pointBackgroundColor: '#fff',
+    pointBorderColor: colorAccent,
+    pointBorderWidth: 2,
+    pointRadius: 4,
+    pointHoverRadius: 6,
+    fill: true,
+    tension: 0.4 // Çizgileri yumuşatır (Dalga efekti)
+    }]
     },
+    options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: commonTooltip },
     scales: {
-    y: {
-    beginAtZero: true,
-    grid: {
-    color: colorLine,
-    drawBorder: false
-    },
-    ticks: {
-    color: colorTextDim,
-    font: { family: "'Plus Jakarta Sans', sans-serif" },
-    stepSize: 1
-    }
-    },
-    x: {
-    grid: {
-    display: false,
-    drawBorder: false
-    },
-    ticks: {
-    color: colorTextDim,
-    font: { family: "'Plus Jakarta Sans', sans-serif" }
-    }
-    }
+    y: { beginAtZero: true, grid: { color: colorLine, drawBorder: false }, ticks: { color: colorTextDim, stepSize: 1 } },
+    x: { grid: { display: false, drawBorder: false }, ticks: { color: colorTextDim } }
     }
     }
     });
+    }
+
+    // --- 3. İÇERİK DAĞILIMI (BAR CHART) ---
+    const statsCtx = document.getElementById('statsChart');
+    if(statsCtx) {
+    new Chart(statsCtx.getContext('2d'), {
+    type: 'bar',
+    data: {
+    labels: ['Proje', 'Deneyim', 'Eğitim', 'Yetenek'],
+    datasets: [{
+    data: [@Model.ProjectCount, @Model.ExperienceCount, @Model.EducationCount, @Model.SkillCount],
+    backgroundColor: [colorBrand, colorAccent, colorDanger, '#ffc107'],
+    borderRadius: 6,
+    borderWidth: 0,
+    barPercentage: 0.5
+    }]
+    },
+    options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: commonTooltip },
+    scales: {
+    y: { beginAtZero: true, grid: { color: colorLine, drawBorder: false }, ticks: { color: colorTextDim, stepSize: 1 } },
+    x: { grid: { display: false, drawBorder: false }, ticks: { color: colorTextDim } }
+    }
+    }
+    });
+    }
     });
 </script>

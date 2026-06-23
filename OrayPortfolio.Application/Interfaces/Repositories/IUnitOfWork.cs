@@ -10,6 +10,8 @@ public interface IUnitOfWork
     IGenericRepository<Certificate> Certificates { get; }
     IGenericRepository<Project> Projects { get; }
     IGenericRepository<VolunteerWork> VolunteerWorks { get; }
+
+    IGenericRepository<VisitorLog> VisitorLogs { get; }
     IReferenceRepository References { get; }
     Task<int> SaveAsync();
 }

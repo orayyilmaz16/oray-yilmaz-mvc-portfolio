@@ -16,7 +16,9 @@ namespace OrayPortfolio.Infrastructure.Context
         public DbSet<Skill> Skills { get; set; }
         public DbSet<Education> Educations { get; set; }
         public DbSet<Certificate> Certificates { get; set; }
-        public DbSet<Project> Projects { get; set; }    
+        public DbSet<Project> Projects { get; set; }
+
+        public DbSet<VisitorLog> VisitorLogs { get; set; }
         public DbSet<VolunteerWork> VolunteerWorks { get; set; }
         public IEnumerable<object> Media { get; internal set; }
 

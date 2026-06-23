@@ -18,6 +18,8 @@ namespace OrayPortfolio.Infrastructure.UnitOfWork
         public IGenericRepository<VolunteerWork> VolunteerWorks { get; }
         public IReferenceRepository References { get; }
 
+        public IGenericRepository<VisitorLog> VisitorLogs => new GenericRepository<VisitorLog>(_context);
+
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
