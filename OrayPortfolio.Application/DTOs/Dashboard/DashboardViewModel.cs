@@ -4,6 +4,8 @@ using OrayPortfolio.Application.DTOs.Profile;
 using OrayPortfolio.Application.DTOs.Project;
 using OrayPortfolio.Application.DTOs.Reference;
 using OrayPortfolio.Application.DTOs.VolunteerWork;
+using OrayPortfolio.Application.DTOs.Experience; // 📌 YENİ EKLENDİ
+using OrayPortfolio.Application.DTOs.Skill;      // 📌 YENİ EKLENDİ
 
 namespace OrayPortfolio.Application.DTOs.Dashboard
 {
@@ -21,6 +23,7 @@ namespace OrayPortfolio.Application.DTOs.Dashboard
         // Profil tamamlanma
         public int ProfileCompletion { get; set; }
 
+        // Ziyaretçi İstatistikleri
         public int TodayVisitors { get; set; }
         public int TotalVisitors { get; set; }
         public List<string> WeeklyVisitorDates { get; set; } = new();
@@ -32,5 +35,9 @@ namespace OrayPortfolio.Application.DTOs.Dashboard
         public List<VolunteerWorkUpdateDto>? LastVolunteerWorks { get; set; }
         public List<EducationDto>? LastEducations { get; set; }
         public List<ReferenceDto>? LastReferences { get; set; }
+
+        // 📌 HATANIN SEBEBİ BURASIYDI: EKSİK OLAN LİSTELER EKLENDİ
+        public List<ExperienceUpdateDto>? LastExperiences { get; set; }
+        public List<SkillUpdateDto>? LastSkills { get; set; }
     }
 }
