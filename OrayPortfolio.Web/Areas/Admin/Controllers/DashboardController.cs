@@ -70,6 +70,10 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 LastEducations = educations.OrderByDescending(e => e.Id).Take(5).ToList(),
                 LastReferences = references.OrderByDescending(r => r.Id).Take(5).ToList(),
 
+                // 📌 SORUN BURADAYDI: Deneyim ve Yetenek listelerini Modele aktarmayı atlamıştık, eklendi!
+                LastExperiences = experiences.OrderByDescending(x => x.Id).Take(5).ToList(),
+                LastSkills = skills.OrderByDescending(s => s.Id).Take(5).ToList(),
+
                 TodayVisitors = visitorStats.TodayVisitors,
                 TotalVisitors = visitorStats.TotalVisitors,
                 WeeklyVisitorDates = visitorStats.WeeklyVisitorDates,
@@ -79,7 +83,6 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        // 📌 KESİN ÇÖZÜM: Rota tamamen sabitlendi. 404 hatası alma ihtimalini sıfıra indirdik.
         [HttpGet("/Admin/Dashboard/GetDashboardDataJson")]
         public async Task<IActionResult> GetDashboardDataJson()
         {
@@ -106,7 +109,19 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 todayVisitors = visitorStats.TodayVisitors,
                 totalVisitors = visitorStats.TotalVisitors,
                 weeklyVisitorDates = visitorStats.WeeklyVisitorDates,
-                weeklyVisitorCounts = visitorStats.WeeklyVisitorCounts
+                weeklyVisitorCounts = visitorStats.WeeklyVisitorCounts,
+
+                // 📌 YENİLE BUTONU İÇİN LİSTELER (AJAX için JSON formatında)
+                lastProjects = projects.OrderByDescending(p => p.Id).Take(5).Select(p => new { text = p.Title }).ToList(),
+                lastEducations = educations.OrderByDescending(e => e.Id).Take(5).Select(e => new { text = e.School }).ToList(),
+                lastReferences = references.OrderByDescending(r => r.Id).Take(5).Select(r => new { text = r.FullName }).ToList(),
+                lastCertificates = certificates.OrderByDescending(c => c.Id).Take(5).Select(c => new { text = c.Title }).ToList(),
+
+                // Deneyim ve Yeteneklerin JSON karşılıkları eklendi
+                lastExperiences = experiences.OrderByDescending(x => x.Id).Take(5).Select(x => new { text = x.Position }).ToList(),
+                lastSkills = skills.OrderByDescending(s => s.Id).Take(5).Select(s => new { text = s.Name }).ToList(),
+
+                lastVolunteerWorks = volunteers.OrderByDescending(v => v.Id).Take(5).Select(v => new { text = v.Organization }).ToList()
             };
 
             return Json(data);

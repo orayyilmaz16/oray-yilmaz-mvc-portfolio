@@ -376,92 +376,86 @@
 
     <script>
         $(document).ready(function () {
-            
-            if ($("#contactForm").length > 0) {
-                
-                $("#contactForm").on("submit", function (e) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation(); 
+        if ($("#contactForm").length > 0) {
+        $("#contactForm").on("submit", function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
-                    const form = $(this);
+        const form = $(this);
 
-                    if (!form.valid()) {
-                        return false;
-                    }
+        if (!form.valid()) {
+        return false;
+        }
 
-                    // 1. Yükleniyor Ekranı
-                    Swal.fire({
-                        title: "Gönderiliyor...",
-                        text: "Lütfen bekleyin",
-                        allowOutsideClick: false,
-                        background: 'var(--bg-base)', 
-                        color: 'var(--text-main)',
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
+        Swal.fire({
+        title: "Gönderiliyor...",
+        text: "Lütfen bekleyin",
+        allowOutsideClick: false,
+        background: 'var(--bg-base)',
+        color: 'var(--text-main)',
+        didOpen: () => {
+        Swal.showLoading();
+        }
+        });
 
-                    // 📌 KESİN ÇÖZÜM: this[0] değil, direkt this kullanıyoruz.
-                    const formData = new FormData(this);
-                    const data = Object.fromEntries(formData.entries());
+        // 📌 KESİN ÇÖZÜM: Veri anahtarlarındaki "ContactForm." önekini siliyoruz
+        const formData = new FormData(this);
+        const data = {};
 
-                    $.ajax({
-                        url: "/Home/SendMessage",
-                        type: "POST",
-                        contentType: "application/json",
-                        data: JSON.stringify(data),
-                        success: function (res) {
-                            if (res.success) {
-                                // 2. Başarılı Popup
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Mesaj Gönderildi!",
-                                    text: res.message,
-                                    confirmButtonColor: "#6d5ef9",
-                                    background: 'var(--bg-base)', 
-                                    color: 'var(--text-main)',
-                                    showClass: {
-                                        popup: "animate__animated animate__fadeInDown"
-                                    },
-                                    hideClass: {
-                                        popup: "animate__animated animate__fadeOutUp"
-                                    }
-                                });
+        formData.forEach((value, key) => {
+        let cleanKey = key.includes(".") ? key.split(".")[1] : key;
+        data[cleanKey] = value;
+        });
 
-                                form[0].reset(); 
-                            } else {
-                                // 3. Hata Popup
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Hata!",
-                                    text: res.message,
-                                    confirmButtonColor: "#fb4570",
-                                    background: 'var(--bg-base)',
-                                    color: 'var(--text-main)',
-                                    showClass: {
-                                        popup: "animate__animated animate__shakeX"
-                                    }
-                                });
-                            }
-                        },
-                        error: function () {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Sunucu Hatası",
-                                text: "Sistemde geçici bir arıza oluştu, lütfen daha sonra tekrar deneyin.",
-                                confirmButtonColor: "#fb4570",
-                                background: 'var(--bg-base)',
-                                color: 'var(--text-main)',
-                                showClass: {
-                                    popup: "animate__animated animate__shakeX"
-                                }
-                            });
-                        }
-                    });
-                });
-            }
+        $.ajax({
+        url: "/Home/SendMessage",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (res) {
+        if (res.success) {
+        Swal.fire({
+        icon: "success",
+        title: "Mesaj Gönderildi!",
+        text: res.message,
+        confirmButtonColor: "#6d5ef9",
+        background: 'var(--bg-base)',
+        color: 'var(--text-main)',
+        showClass: { popup: "animate__animated animate__fadeInDown" },
+        hideClass: { popup: "animate__animated animate__fadeOutUp" }
+        });
+
+        form[0].reset();
+        } else {
+        Swal.fire({
+        icon: "error",
+        title: "Hata!",
+        text: res.message,
+        confirmButtonColor: "#fb4570",
+        background: 'var(--bg-base)',
+        color: 'var(--text-main)',
+        showClass: { popup: "animate__animated animate__shakeX" }
+        });
+        }
+        },
+        error: function () {
+        Swal.fire({
+        icon: "error",
+        title: "Sunucu Hatası",
+        text: "Sistemde geçici bir arıza oluştu, lütfen daha sonra tekrar deneyin.",
+        confirmButtonColor: "#fb4570",
+        background: 'var(--bg-base)',
+        color: 'var(--text-main)',
+        showClass: { popup: "animate__animated animate__shakeX" }
+        });
+        }
+        });
+        });
+        }
         });
     </script>
+
+   
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

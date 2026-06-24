@@ -82,8 +82,8 @@
     .spin-anim {
         animation: spin 0.8s linear infinite;
     }
-    
 
+    
     .ap-live-clock {
         text-align: right;
     }
@@ -153,8 +153,6 @@
         animation: pulseText 1.5s infinite;
     }
 
-  
-    
 
     /* Kart Tasarımları */
     .ap-card {
@@ -166,6 +164,8 @@
         height: 100%;
         opacity: 0;
         animation: ap-fade-up 0.5s var(--ease) forwards;
+        display: flex;
+        flex-direction: column;
     }
 
         .ap-card:hover {
@@ -260,6 +260,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        flex-shrink: 0;
     }
 
         .ap-card-title i {
@@ -268,9 +269,30 @@
 
     .ap-list-group {
         border-radius: 12px;
-        overflow: hidden;
+        overflow-y: auto;
         border: 1px solid var(--line);
+        flex: 1;
+        min-height: 120px;
+        max-height: 250px;
     }
+
+        /* İnce Kaydırma Çubuğu (Scrollbar) */
+        .ap-list-group::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .ap-list-group::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .ap-list-group::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+            .ap-list-group::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
 
     .ap-list-item {
         background: transparent;
@@ -321,6 +343,98 @@
         font-size: 0.9rem;
         margin-top: 8px;
         text-align: right;
+    }
+
+    /* 📌 YENİ: KAYIT GEÇMİŞİ MODERN BAŞLIK KARTI */
+    .ap-history-header-card {
+        background: linear-gradient(135deg, rgba(23, 28, 40, 0.8), rgba(23, 28, 40, 0.4));
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--brand);
+        border-radius: 16px;
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+        .ap-history-header-card .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .ap-history-header-card .icon-box {
+            width: 48px;
+            height: 48px;
+            background: rgba(109, 94, 249, 0.15);
+            color: var(--brand-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .ap-history-header-card .title {
+            color: var(--text);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .ap-history-header-card .subtitle {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .ap-history-header-card .header-right {
+            text-align: right;
+        }
+
+        .ap-history-header-card .sync-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .ap-history-header-card .sync-datetime {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .ap-history-header-card .date-badge,
+        .ap-history-header-card .time-badge {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+    .text-accent {
+        color: var(--accent) !important;
+    }
+
+    .text-warning {
+        color: #ffc107 !important;
     }
 
     .delay-1 {
@@ -380,27 +494,15 @@
                 <div class="ap-stat-card"><div class="ap-stat-icon visitor-total"><i class="fa-solid fa-chart-line"></i></div><div class="ap-stat-info"><h3 id="cnt-total">0</h3><p>Toplam Ziyaret</p></div></div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="ap-card delay-1"><div class="ap-stat-card"><div class="ap-stat-icon project"><i class="fa-solid fa-diagram-project"></i></div><div class="ap-stat-info"><h3 id="cnt-project">0</h3><p>Projeler</p></div></div></div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="ap-card delay-1"><div class="ap-stat-card"><div class="ap-stat-icon skill"><i class="fa-solid fa-code"></i></div><div class="ap-stat-info"><h3 id="cnt-skill">0</h3><p>Yetenekler</p></div></div></div>
-        </div>
+        <div class="col-xl-3 col-md-6"><div class="ap-card delay-1"><div class="ap-stat-card"><div class="ap-stat-icon project"><i class="fa-solid fa-diagram-project"></i></div><div class="ap-stat-info"><h3 id="cnt-project">0</h3><p>Projeler</p></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="ap-card delay-1"><div class="ap-stat-card"><div class="ap-stat-icon skill"><i class="fa-solid fa-code"></i></div><div class="ap-stat-info"><h3 id="cnt-skill">0</h3><p>Yetenekler</p></div></div></div></div>
     </div>
 
     <div class="row g-4 mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon experience"><i class="fa-solid fa-briefcase"></i></div><div class="ap-stat-info"><h3 id="cnt-experience">0</h3><p>Deneyimler</p></div></div></div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon education"><i class="fa-solid fa-graduation-cap"></i></div><div class="ap-stat-info"><h3 id="cnt-education">0</h3><p>Eğitimler</p></div></div></div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon certificate"><i class="fa-solid fa-certificate"></i></div><div class="ap-stat-info"><h3 id="cnt-certificate">0</h3><p>Sertifikalar</p></div></div></div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon reference"><i class="fa-solid fa-user-tie"></i></div><div class="ap-stat-info"><h3 id="cnt-reference">0</h3><p>Referanslar</p></div></div></div>
-        </div>
+        <div class="col-xl-3 col-md-6"><div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon experience"><i class="fa-solid fa-briefcase"></i></div><div class="ap-stat-info"><h3 id="cnt-experience">0</h3><p>Deneyimler</p></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon education"><i class="fa-solid fa-graduation-cap"></i></div><div class="ap-stat-info"><h3 id="cnt-education">0</h3><p>Eğitimler</p></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon certificate"><i class="fa-solid fa-certificate"></i></div><div class="ap-stat-info"><h3 id="cnt-certificate">0</h3><p>Sertifikalar</p></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="ap-card delay-2"><div class="ap-stat-card"><div class="ap-stat-icon reference"><i class="fa-solid fa-user-tie"></i></div><div class="ap-stat-info"><h3 id="cnt-reference">0</h3><p>Referanslar</p></div></div></div></div>
     </div>
 
     <div class="row g-4 mb-4">
@@ -436,11 +538,34 @@
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="ap-card delay-3">
-                <h5 class="ap-card-title"><i class="fa-solid fa-diagram-project"></i> Son Projeler</h5>
-                <div class="ap-list-group">
+    <div class="row mb-4 delay-3">
+        <div class="col-12">
+            <div class="ap-history-header-card">
+                <div class="header-left">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <h4 class="title">Kayıt Geçmişi</h4>
+                        <p class="subtitle">Sisteme en son eklenen verilerin listesi</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="sync-label">Liste Senkronizasyonu</span>
+                    <div class="sync-datetime">
+                        <span class="date-badge"><i class="fa-regular fa-calendar-check text-accent"></i> <span id="history-sync-date">...</span></span>
+                        <span class="time-badge"><i class="fa-regular fa-clock text-warning"></i> <span id="history-sync-time">...</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 pb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="ap-card delay-3" style="padding: 15px;">
+                <h5 class="ap-card-title" style="font-size: 1rem;"><i class="fa-solid fa-diagram-project" style="color: #ffc107;"></i> Projeler</h5>
+                <div class="ap-list-group" id="list-project">
                     @if (Model.LastProjects?.Any() == true)
                     {
                         foreach (var p in Model.LastProjects)
@@ -450,15 +575,35 @@
                     }
                     else
                     {
-                        <div class="ap-list-item" style="justify-content:center;">Henüz eklenmemiş.</div>
+
+                        <div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>
                     }
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="ap-card delay-3">
-                <h5 class="ap-card-title"><i class="fa-solid fa-graduation-cap"></i> Son Eğitimler</h5>
-                <div class="ap-list-group">
+        <div class="col-xl-3 col-md-6">
+            <div class="ap-card delay-3" style="padding: 15px;">
+                <h5 class="ap-card-title" style="font-size: 1rem;"><i class="fa-solid fa-briefcase" style="color: var(--danger);"></i> Deneyimler</h5>
+                <div class="ap-list-group" id="list-experience">
+                    @if (Model.LastExperiences?.Any() == true)
+                    {
+                        foreach (var e in Model.LastExperiences)
+                        {
+                            <div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>@e.Position</span></div>
+                        }
+                    }
+                    else
+                    {
+
+                        <div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="ap-card delay-3" style="padding: 15px;">
+                <h5 class="ap-card-title" style="font-size: 1rem;"><i class="fa-solid fa-graduation-cap" style="color: var(--accent);"></i> Eğitimler</h5>
+                <div class="ap-list-group" id="list-education">
                     @if (Model.LastEducations?.Any() == true)
                     {
                         foreach (var e in Model.LastEducations)
@@ -468,15 +613,73 @@
                     }
                     else
                     {
-                        <div class="ap-list-item" style="justify-content:center;">Henüz eklenmemiş.</div>
+
+                        <div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>
                     }
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="ap-card delay-3">
-                <h5 class="ap-card-title"><i class="fa-solid fa-user-tie"></i> Son Referanslar</h5>
-                <div class="ap-list-group">
+        <div class="col-xl-3 col-md-6">
+            <div class="ap-card delay-3" style="padding: 15px;">
+                <h5 class="ap-card-title" style="font-size: 1rem;"><i class="fa-solid fa-code" style="color: #ff8800;"></i> Yetenekler</h5>
+                <div class="ap-list-group" id="list-skill">
+                    @if (Model.LastSkills?.Any() == true)
+                    {
+                        foreach (var s in Model.LastSkills)
+                        {
+                            <div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>@s.Name</span></div>
+                        }
+                    }
+                    else
+                    {
+
+                        <div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="ap-card delay-3" style="padding: 15px;">
+                <h5 class="ap-card-title" style="font-size: 1rem;"><i class="fa-solid fa-certificate" style="color: #0d6efd;"></i> Sertifikalar</h5>
+                <div class="ap-list-group" id="list-certificate">
+                    @if (Model.LastCertificates?.Any() == true)
+                    {
+                        foreach (var c in Model.LastCertificates)
+                        {
+                            <div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>@c.Title</span></div>
+                        }
+                    }
+                    else
+                    {
+
+                        <div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="ap-card delay-3" style="padding: 15px;">
+                <h5 class="ap-card-title" style="font-size: 1rem;"><i class="fa-solid fa-handshake-angle" style="color: #20c997;"></i> Gönüllü Çalışmalar</h5>
+                <div class="ap-list-group" id="list-volunteer">
+                    @if (Model.LastVolunteerWorks?.Any() == true)
+                    {
+                        foreach (var v in Model.LastVolunteerWorks)
+                        {
+                            <div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>@v.Organization</span></div>
+                        }
+                    }
+                    else
+                    {
+
+                        <div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="ap-card delay-3" style="padding: 15px;">
+                <h5 class="ap-card-title" style="font-size: 1rem;"><i class="fa-solid fa-user-tie" style="color: #6f42c1;"></i> Referanslar</h5>
+                <div class="ap-list-group" id="list-reference">
                     @if (Model.LastReferences?.Any() == true)
                     {
                         foreach (var r in Model.LastReferences)
@@ -486,7 +689,8 @@
                     }
                     else
                     {
-                        <div class="ap-list-item" style="justify-content:center;">Henüz eklenmemiş.</div>
+
+                        <div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>
                     }
                 </div>
             </div>
@@ -498,7 +702,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
 
-    // --- ZAMAN HESAPLAMA METODU (Dinamik Format) ---
+    // --- ZAMAN HESAPLAMA METODU ---
     function getRelativeTimeText(pastDate) {
     const diffMs = new Date() - pastDate;
     const diffMins = Math.floor(diffMs / 60000);
@@ -518,7 +722,22 @@
     setInterval(updateLiveClock, 1000);
     updateLiveClock();
 
-    // --- GİRİŞ ZAMANI (LOGIN) ---
+    // --- LİSTE SENKRONİZASYON ZAMANI ---
+    function updateHistorySyncTime() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    const historyDateEl = document.getElementById('history-sync-date');
+    const historyTimeEl = document.getElementById('history-sync-time');
+
+    if (historyDateEl) historyDateEl.innerText = dateStr;
+    if (historyTimeEl) historyTimeEl.innerText = timeStr;
+    }
+    // Sayfa açıldığında ilk senkronizasyon zamanını yazdır
+    updateHistorySyncTime();
+
+    // --- GİRİŞ VE GÜNCELLEME ZAMANI ---
     let loginTimeIso = sessionStorage.getItem('admin_login_time');
     if (!loginTimeIso) {
     loginTimeIso = new Date().toISOString();
@@ -527,7 +746,6 @@
     const loginTime = new Date(loginTimeIso);
     document.getElementById('last-login-time').innerText = loginTime.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
-    // --- GÜNCELLEME ZAMANI (UPDATE) ---
     let updateTime = new Date();
     document.getElementById('last-update-time').innerText = updateTime.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
@@ -538,7 +756,7 @@
     setInterval(refreshTimeBadges, 60000);
     refreshTimeBadges();
 
-    // 📌 SAYI SAYMA ANİMASYONU (COUNT UP)
+    // --- SAYI SAYMA ANİMASYONU ---
     const animateCountUp = (id, endValue, duration = 1000) => {
     const el = document.getElementById(id);
     if(!el) return;
@@ -559,20 +777,16 @@
 
     el.innerText = currentVal;
 
-    if (progress < 1) {
-    requestAnimationFrame(step);
-    } else {
+    if (progress < 1) requestAnimationFrame(step);
+    else {
     el.innerText = endValue;
-    setTimeout(() => {
-    el.style.color = 'var(--text)';
-    el.style.transform = 'scale(1)';
-    }, 300);
+    setTimeout(() => { el.style.color = 'var(--text)'; el.style.transform = 'scale(1)'; }, 300);
     }
     };
     requestAnimationFrame(step);
     };
 
-    // --- İLK YÜKLEMEDE SAYILARI GETİR ---
+    // İLK YÜKLEME
     setTimeout(() => {
     animateCountUp('cnt-today', @Model.TodayVisitors, 1200);
     animateCountUp('cnt-total', @Model.TotalVisitors, 1500);
@@ -594,7 +808,6 @@
     const colorTextDim = style.getPropertyValue('--text-dim').trim() || '#8b93a7';
     const colorLine = style.getPropertyValue('--line').trim() || '#242b3a';
 
-    // Gönüllü, Sertifika ve Referans için Tema Uyumlu Sabit Renkler
     const colorSkill = '#ff8800';
     const colorCert = '#0d6efd';
     const colorVol = '#20c997';
@@ -605,7 +818,7 @@
     let chartTrafficInstance = null;
     let chartStatsInstance = null;
 
-    // --- TRAFİK GRAFİĞİ (LINE CHART) ---
+    // --- GRAFİKLER ---
     const trafficCtx = document.getElementById('trafficChart');
     if(trafficCtx) {
     const ctx = trafficCtx.getContext('2d');
@@ -615,15 +828,11 @@
 
     chartTrafficInstance = new Chart(ctx, {
     type: 'line',
-    data: {
-    labels: @Html.Raw(Json.Serialize(Model.WeeklyVisitorDates)),
-    datasets: [{ label: 'Ziyaretçi', data: @Html.Raw(Json.Serialize(Model.WeeklyVisitorCounts)), borderColor: colorAccent, backgroundColor: gradientFill, borderWidth: 3, pointBackgroundColor: '#fff', pointBorderColor: colorAccent, pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, fill: true, tension: 0.4 }]
-    },
+    data: { labels: @Html.Raw(Json.Serialize(Model.WeeklyVisitorDates)), datasets: [{ label: 'Ziyaretçi', data: @Html.Raw(Json.Serialize(Model.WeeklyVisitorCounts)), borderColor: colorAccent, backgroundColor: gradientFill, borderWidth: 3, pointBackgroundColor: '#fff', pointBorderColor: colorAccent, pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, fill: true, tension: 0.4 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: commonTooltip }, scales: { y: { beginAtZero: true, grid: { color: colorLine, drawBorder: false }, ticks: { color: colorTextDim, stepSize: 1 } }, x: { grid: { display: false, drawBorder: false }, ticks: { color: colorTextDim } } } }
     });
     }
 
-    // --- 📌 İÇERİK DAĞILIMI (BAR CHART) - 7 KATEGORİYE ÇIKARILDI ---
     const statsCtx = document.getElementById('statsChart');
     if(statsCtx) {
     chartStatsInstance = new Chart(statsCtx.getContext('2d'), {
@@ -631,71 +840,49 @@
     data: {
     labels: ['Proje', 'Deneyim', 'Eğitim', 'Yetenek', 'Sertifika', 'Gönüllü', 'Referans'],
     datasets: [{
-    data: [
-    @Model.ProjectCount,
-    @Model.ExperienceCount,
-    @Model.EducationCount,
-    @Model.SkillCount,
-    @Model.CertificateCount,
-    @Model.VolunteerWorkCount,
-    @Model.ReferenceCount
-    ],
-    backgroundColor: [
-    '#ffc107',      // Proje (Sarı)
-    colorDanger,    // Deneyim (Kırmızı/Pembe)
-    colorAccent,    // Eğitim (Turkuaz)
-    colorSkill,     // Yetenek (Turuncu)
-    colorCert,      // Sertifika (Mavi)
-    colorVol,       // Gönüllü İşler (Yeşil)
-    colorRef        // Referans (Mor)
-    ],
-    borderRadius: 6,
-    borderWidth: 0,
-    barPercentage: 0.5
+    data: [@Model.ProjectCount, @Model.ExperienceCount, @Model.EducationCount, @Model.SkillCount, @Model.CertificateCount, @Model.VolunteerWorkCount, @Model.ReferenceCount],
+    backgroundColor: ['#ffc107', colorDanger, colorAccent, colorSkill, colorCert, colorVol, colorRef],
+    borderRadius: 6, borderWidth: 0, barPercentage: 0.5
     }]
     },
-    options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: commonTooltip },
-    scales: {
-    y: { beginAtZero: true, grid: { color: colorLine, drawBorder: false }, ticks: { color: colorTextDim, stepSize: 1 } },
-    x: { grid: { display: false, drawBorder: false }, ticks: { color: colorTextDim, font: { size: 10 } } }
-    }
-    }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: commonTooltip }, scales: { y: { beginAtZero: true, grid: { color: colorLine, drawBorder: false }, ticks: { color: colorTextDim, stepSize: 1 } }, x: { grid: { display: false, drawBorder: false }, ticks: { color: colorTextDim, font: { size: 10 } } } } }
     });
     }
 
-    // 📌 AJAX REFRESH MANTIĞI & EKRAN BLUR YÜKLEMESİ
+    // 📌 AJAX LİSTE OLUŞTURUCU
+    function buildListHtml(items) {
+    if (!items || items.length === 0) return `<div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>`;
+    return items.map(item => `<div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>${item.text}</span></div>`).join('');
+    }
+
+    // --- AJAX REFRESH MANTIĞI & EKRAN BLUR YÜKLEMESİ ---
     const refreshBtn = document.getElementById('btn-refresh-dashboard');
     const loaderOverlay = document.getElementById('dashboard-loader');
 
     if(refreshBtn) {
     refreshBtn.addEventListener('click', async function() {
-
     const icon = this.querySelector('i');
     const textSpan = this.querySelector('span');
 
-    // 1. Durum: Butonu devredışı yap, Dashboard'u Blur (Bulanık) yap
     this.disabled = true;
     icon.classList.add('spin-anim');
     textSpan.innerText = 'Yükleniyor...';
     loaderOverlay.classList.add('is-active');
 
     try {
-    // Yükleniyor ekranını en az 600ms görsün diye yapay bir gecikme ekliyoruz
     const minWaitPromise = new Promise(resolve => setTimeout(resolve, 600));
     const fetchPromise = fetch('/Admin/Dashboard/GetDashboardDataJson');
 
     const [response] = await Promise.all([fetchPromise, minWaitPromise]);
     const data = await response.json();
 
-    // --- BAŞARILI GÜNCELLEME: ZAMANI YENİLE ---
     updateTime = new Date();
     document.getElementById('last-update-time').innerText = updateTime.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     refreshTimeBadges();
 
-    // Rakamları Animasyonlu Güncelle
+    // 📌 Yeni eklediğimiz liste güncelleme tarihini de yenile
+    updateHistorySyncTime();
+
     animateCountUp('cnt-today', data.todayVisitors, 800);
     animateCountUp('cnt-total', data.totalVisitors, 800);
     animateCountUp('cnt-project', data.projectCount, 800);
@@ -710,7 +897,6 @@
     if(pb) pb.style.width = data.profileCompletion + '%';
     if(pText) pText.innerText = data.profileCompletion + '% Tamamlandı';
 
-    // 📌 Grafikleri Güncelle
     if(chartTrafficInstance) {
     chartTrafficInstance.data.labels = data.weeklyVisitorDates;
     chartTrafficInstance.data.datasets[0].data = data.weeklyVisitorCounts;
@@ -718,30 +904,24 @@
     }
 
     if(chartStatsInstance) {
-    // 7 Verinin tamamını grafiğe aktarıyoruz
-    chartStatsInstance.data.datasets[0].data = [
-    data.projectCount,
-    data.experienceCount,
-    data.educationCount,
-    data.skillCount,
-    data.certificateCount,
-    data.volunteerWorkCount,
-    data.referenceCount
-    ];
+    chartStatsInstance.data.datasets[0].data = [data.projectCount, data.experienceCount, data.educationCount, data.skillCount, data.certificateCount, data.volunteerWorkCount, data.referenceCount];
     chartStatsInstance.update();
     }
 
-    if(typeof toastr !== 'undefined') {
-    toastr.success('Veriler başarıyla yenilendi!', 'Sistem Güncel');
-    }
+    document.getElementById('list-project').innerHTML = buildListHtml(data.lastProjects);
+    document.getElementById('list-experience').innerHTML = buildListHtml(data.lastExperiences);
+    document.getElementById('list-education').innerHTML = buildListHtml(data.lastEducations);
+    document.getElementById('list-skill').innerHTML = buildListHtml(data.lastSkills);
+    document.getElementById('list-certificate').innerHTML = buildListHtml(data.lastCertificates);
+    document.getElementById('list-volunteer').innerHTML = buildListHtml(data.lastVolunteerWorks);
+    document.getElementById('list-reference').innerHTML = buildListHtml(data.lastReferences);
+
+    if(typeof toastr !== 'undefined') toastr.success('Veriler başarıyla yenilendi!', 'Sistem Güncel');
 
     } catch (error) {
     console.error("Veri güncellenirken hata oluştu:", error);
-    if(typeof toastr !== 'undefined') {
-    toastr.error('Sunucuya bağlanılamadı.', 'Bağlantı Hatası');
-    }
+    if(typeof toastr !== 'undefined') toastr.error('Sunucuya bağlanılamadı.', 'Bağlantı Hatası');
     } finally {
-    // 2. Durum: Her şeyi eski haline getir, Blur ekranını kaldır
     this.disabled = false;
     icon.classList.remove('spin-anim');
     textSpan.innerText = 'Yenile';

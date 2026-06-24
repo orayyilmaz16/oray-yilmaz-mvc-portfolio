@@ -2,7 +2,7 @@
 
 
 @{
-    ViewData["Title"] = $"{Model.Profile.FullName} - Portfolio";
+    ViewData["Title"] = $"{Model.Profile.FullName} | Ana Sayfa";
 }
 
 <style>
@@ -1470,36 +1470,36 @@
 </section>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" integrity="sha512-wC/a55305TuZ600s8fFh0y8t7Hl9y0+IweaPofxRzi8A0n5qI/DxtnQ8rWlZp0R5/yH4vHhNnbkO2oHovgX1QA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" integrity="sha512-wC/cunGGDjXSl9OHUH0RuqSyW4YNLlsPwhcLxwWW1CR4OeC2E1xpcdZz2DeQkEmums41laI+eGMw95IJ15SS3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var title = "@Model.Profile.Title";
-            var typed = new Typed('#typed-text', {
-                strings: [title, "AI Researcher", "Technical Consultant"],
-                typeSpeed: 60,
-                backSpeed: 40,
-                backDelay: 2000,
-                loop: true,
-                cursorChar: '|'
-            });
+        var title = "@Model.Profile.Title";
+        var typed = new Typed('#typed-text', {
+        strings: [title, "AI Researcher", "Technical Consultant"],
+        typeSpeed: 60,
+        backSpeed: 40,
+        backDelay: 2000,
+        loop: true,
+        cursorChar: '|'
+        });
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const fill = entry.target;
-                        const targetWidth = fill.getAttribute('data-width');
-                        fill.style.width = targetWidth;
-                        observer.unobserve(fill);
-                    }
-                });
-            }, { threshold: 0.1 });
+        const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+        if (entry.isIntersecting) {
+        const fill = entry.target;
+        const targetWidth = fill.getAttribute('data-width');
+        fill.style.width = targetWidth;
+        observer.unobserve(fill);
+        }
+        });
+        }, { threshold: 0.1 });
 
-            const progressFills = document.querySelectorAll('.port-progress-fill');
-            progressFills.forEach(fill => {
-                observer.observe(fill);
-            });
+        const progressFills = document.querySelectorAll('.port-progress-fill');
+        progressFills.forEach(fill => {
+        observer.observe(fill);
+        });
         });
     </script>
 }

@@ -1,7 +1,7 @@
 ﻿@model SearchViewModel
 @{
     var query = Model?.Query ?? "";
-    ViewData["Title"] = $"Arama Sonuçları - {query}";
+    ViewData["Title"] = $"Oray Yılmaz | Arama Sonuçları - {query}";
 
     // Toplam sonuç sayısını hesaplayalım
     int totalResults = (Model?.Projects?.Count() ?? 0) +
