@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ganss.Xss; // 📌 YENİ
+using Microsoft.AspNetCore.Mvc;
 using OrayPortfolio.Application.DTOs.Project;
 using OrayPortfolio.Application.Interfaces.Services;
 using OrayPortfolio.Web.Services;
@@ -6,7 +7,7 @@ using OrayPortfolio.Web.Services;
 namespace OrayPortfolio.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class ProjectController : Controller
+    public class ProjectController : BaseAdminController // 📌 GÜVENLİK
     {
         private readonly IProjectService _projectService;
         private readonly IFileService _fileService;
@@ -29,6 +30,7 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK
         public async Task<IActionResult> Create(ProjectCreateDto dto, IFormFile? CoverImage)
         {
             if (!ModelState.IsValid)
@@ -36,6 +38,9 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 TempData["Error"] = "Lütfen formdaki hataları düzeltin.";
                 return View(dto);
             }
+
+            var sanitizer = new HtmlSanitizer(); // 📌 GÜVENLİK
+            if (!string.IsNullOrEmpty(dto.Description)) dto.Description = sanitizer.Sanitize(dto.Description);
 
             if (CoverImage != null && CoverImage.Length > 0)
                 dto.CoverImageUrl = await _fileService.UploadAsync(CoverImage, "projects");
@@ -53,6 +58,7 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK
         public async Task<IActionResult> Edit(ProjectUpdateDto dto, IFormFile? CoverImage)
         {
             if (!ModelState.IsValid)
@@ -61,8 +67,16 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 return View(dto);
             }
 
+            var sanitizer = new HtmlSanitizer(); // 📌 GÜVENLİK
+            if (!string.IsNullOrEmpty(dto.Description)) dto.Description = sanitizer.Sanitize(dto.Description);
+
             if (CoverImage != null && CoverImage.Length > 0)
                 dto.CoverImageUrl = await _fileService.UploadAsync(CoverImage, "projects");
+            else
+            {
+                var existingData = await _projectService.GetByIdAsync(dto.Id);
+                if (existingData != null) dto.CoverImageUrl = existingData.CoverImageUrl;
+            }
 
             await _projectService.UpdateAsync(dto);
 
@@ -73,7 +87,6 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _projectService.DeleteAsync(id);
-
             TempData["Success"] = "Proje başarıyla silindi.";
             return RedirectToAction("Index");
         }

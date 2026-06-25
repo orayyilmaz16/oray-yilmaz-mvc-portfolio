@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OrayPortfolio.Application.DTOs.Dashboard;
 using OrayPortfolio.Application.DTOs.Profile;
 using OrayPortfolio.Application.Interfaces.Services;
@@ -84,6 +85,7 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         }
 
         [HttpGet("/Admin/Dashboard/GetDashboardDataJson")]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> GetDashboardDataJson()
         {
             var projects = await _projectService.GetAllAsync();

@@ -170,13 +170,16 @@
     }
 
     <!-- 📌 FOTOĞRAF YÜKLEYEBİLMEK İÇİN ENCTYPE EKLENDİ -->
-    <form method="post" enctype="multipart/form-data">
+    <form asp-area="Admin" asp-controller="Education" asp-action="Create" method="post" enctype="multipart/form-data">
+        
+        <!-- 📌 GÜVENLİK: CSRF (Sahte İstek) Kilidi Eklendi -->
+        @Html.AntiForgeryToken()
 
         <div class="row">
             <div class="col-md-8">
                 <div class="ap-form-group">
                     <label class="ap-form-label"><i class="fa-solid fa-building-columns"></i> Okul / Üniversite</label>
-                    <input asp-for="School" class="ap-input" placeholder="Örn: Boğaziçi Üniversitesi" />
+                    <input asp-for="School" class="ap-input" />
                     <span asp-validation-for="School" class="ap-hidden-validation"></span>
                 </div>
             </div>
@@ -194,7 +197,7 @@
             <div class="col-md-6">
                 <div class="ap-form-group">
                     <label class="ap-form-label"><i class="fa-solid fa-graduation-cap"></i> Derece</label>
-                    <input asp-for="Degree" class="ap-input" placeholder="Örn: Lisans, Yüksek Lisans" />
+                    <input asp-for="Degree" class="ap-input" />
                     <span asp-validation-for="Degree" class="ap-hidden-validation"></span>
                 </div>
             </div>
@@ -202,7 +205,7 @@
             <div class="col-md-6">
                 <div class="ap-form-group">
                     <label class="ap-form-label"><i class="fa-solid fa-book-open"></i> Bölüm</label>
-                    <input asp-for="Department" class="ap-input" placeholder="Örn: Bilgisayar Mühendisliği" />
+                    <input asp-for="Department" class="ap-input" />
                     <span asp-validation-for="Department" class="ap-hidden-validation"></span>
                 </div>
             </div>
@@ -228,12 +231,12 @@
 
         <div class="ap-form-group">
             <label class="ap-form-label"><i class="fa-solid fa-align-left"></i> Açıklama</label>
-            <textarea asp-for="Description" class="ap-input" placeholder="Aldığınız eğitim, başarılarınız veya kulüp faaliyetleriniz hakkında detaylar..."></textarea>
+            <textarea asp-for="Description" class="ap-input"></textarea>
             <span asp-validation-for="Description" class="ap-hidden-validation"></span>
         </div>
 
         <button type="submit" class="ap-btn-submit">
-            <i class="fa-solid fa-floppy-disk"></i> Kaydet
+            <i class="fa-solid fa-plus"></i> Ekle
         </button>
 
     </form>

@@ -204,6 +204,7 @@
 
     <form asp-area="Admin" asp-controller="Project" asp-action="Create"
           method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
 
         <div class="ap-form-group">
             <label class="ap-form-label"><i class="fa-solid fa-heading"></i> Başlık</label>

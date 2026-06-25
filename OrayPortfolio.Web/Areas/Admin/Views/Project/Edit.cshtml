@@ -200,6 +200,7 @@
 
     <form asp-area="Admin" asp-controller="Project" asp-action="Edit"
           method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="CoverImageUrl" />

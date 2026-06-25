@@ -1,7 +1,6 @@
 ﻿@model CertificateCreateDto
 
 <style>
-
     /* Input altı hataları tamamen gizle */
     .ap-hidden-validation {
         display: none !important;
@@ -140,8 +139,6 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 24px -6px rgba(109, 94, 249, 0.6);
         }
-
-    
 </style>
 
 <div class="ap-page-header">
@@ -153,7 +150,6 @@
 
 <div class="ap-form-card">
 
-    <!-- 🔥 TÜM VALIDASYON HATALARINI KIRMIZI KUTUDA GÖSTER -->
     @if (!ViewData.ModelState.IsValid)
     {
         <div class="ap-error-box">
@@ -168,6 +164,8 @@
 
     <form asp-area="Admin" asp-controller="Certificate" asp-action="Create"
           method="post" enctype="multipart/form-data">
+        
+        @Html.AntiForgeryToken()
 
         <div class="ap-form-group">
             <label>Başlık</label>
@@ -201,5 +199,4 @@
         <button type="submit" class="ap-btn-submit">Kaydet</button>
 
     </form>
-
 </div>

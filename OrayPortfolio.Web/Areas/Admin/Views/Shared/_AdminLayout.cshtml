@@ -536,7 +536,7 @@
                     display: none;
                 }
             }
-            
+
             @@media (prefers-reduced-motion: reduce) {
                 * {
                     animation-duration: .001ms !important;
@@ -553,6 +553,10 @@
 </head>
 
 <body>
+
+    <div style="display:none;" id="antiForgeryTokenWrapper">
+        @Html.AntiForgeryToken()
+    </div>
 
     <div class="ap-overlay" id="apOverlay"></div>
 
@@ -591,11 +595,6 @@
                     <span>Eğitim</span>
                 </a>
 
-               
-
-
-
-
                 <a class="ap-sidebar__link @(currentController == "Experience" ? "active" : "")"
                    style="animation-delay:.11s"
                    asp-area="Admin" asp-controller="Experience" asp-action="Index">
@@ -603,7 +602,6 @@
                     <span>Deneyimler</span>
                 </a>
 
-               
                 <a class="ap-sidebar__link @(currentController == "Certificate" ? "active" : "")"
                    style="animation-delay:.19s"
                    asp-area="Admin" asp-controller="Certificate" asp-action="Index">
@@ -747,6 +745,16 @@
         "positionClass": "toast-bottom-right",
         "timeOut": "3000"
         };
+
+        // 📌 GÜVENLİK: Admin panelindeki tüm AJAX POST işlemleri için güvenlik kilidini (Token) otomatik gönderen kod
+        $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+        if (options.type.toUpperCase() === "POST") {
+        var token = $('#antiForgeryTokenWrapper input[name="__RequestVerificationToken"]').val();
+        if (token) {
+        jqXHR.setRequestHeader("RequestVerificationToken", token);
+        }
+        }
+        });
     </script>
 
     @if (TempData["Success"] != null)

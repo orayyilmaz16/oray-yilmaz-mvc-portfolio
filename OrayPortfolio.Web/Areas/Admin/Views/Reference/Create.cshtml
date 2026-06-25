@@ -171,6 +171,7 @@
 
     <!-- 📌 FOTOĞRAF YÜKLEYEBİLMEK İÇİN ENCTYPE EKLENDİ -->
     <form method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
 
         <div class="row">
             <div class="col-md-8">

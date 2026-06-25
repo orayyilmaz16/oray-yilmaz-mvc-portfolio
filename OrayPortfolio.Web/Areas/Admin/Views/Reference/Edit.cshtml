@@ -171,6 +171,7 @@
 
     <!-- 📌 FOTOĞRAF YÜKLEYEBİLMEK İÇİN ENCTYPE EKLENDİ -->
     <form method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="Id" />
 

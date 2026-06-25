@@ -207,6 +207,7 @@
 
     <form asp-area="Admin" asp-controller="Experience" asp-action="Create"
           method="post" enctype="multipart/form-data">
+          @Html.AntiForgeryToken()
 
         <div class="ap-form-group">
             <label class="ap-form-label"><i class="fa-solid fa-building"></i> Şirket</label>

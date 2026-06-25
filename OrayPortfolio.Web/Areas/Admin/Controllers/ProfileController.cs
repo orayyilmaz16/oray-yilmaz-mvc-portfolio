@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ganss.Xss; // 📌 YENİ: Zararlı kodları temizlemek için eklendi
+using Microsoft.AspNetCore.Mvc;
 using OrayPortfolio.Application.DTOs.Profile;
 using OrayPortfolio.Application.Interfaces.Services;
 using OrayPortfolio.Web.Services;
@@ -6,7 +7,8 @@ using OrayPortfolio.Web.Services;
 namespace OrayPortfolio.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class ProfileController : Controller
+    // 📌 KRİTİK DÜZELTME: 'Controller' yerine 'BaseAdminController'dan miras aldık. Artık şifresiz girilemez!
+    public class ProfileController : BaseAdminController
     {
         private readonly IProfileService _profileService;
         private readonly IFileService _fileService;
@@ -33,13 +35,14 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 LinkedinUrl = data.LinkedinUrl,
                 InstagramUrl = data.InstagramUrl,
                 ProfileImageUrl = data.ProfileImageUrl,
-                CvFilePath = data.CvFilePath // 📌 EKLENDİ
+                CvFilePath = data.CvFilePath
             };
 
             return View(model);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK: Dışarıdan sahte form gönderilmesini engeller
         public async Task<IActionResult> Index(ProfileUpdateDto model, IFormFile? ProfileImage, IFormFile? CvFile)
         {
             if (!ModelState.IsValid)
@@ -48,11 +51,19 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            // 📌 KRİTİK GÜVENLİK: Mevcut veritabanı kaydını çekiyoruz
-            // Kullanıcı yeni dosya seçmezse, eski dosyaların silinmesini (null olmasını) engelleyeceğiz.
+            // 📌 GÜVENLİK (XSS): Veritabanına zehirli kod yazılmasını önlemek için HTML'i temizliyoruz
+            var sanitizer = new HtmlSanitizer();
+
+            if (!string.IsNullOrEmpty(model.ShortBio))
+                model.ShortBio = sanitizer.Sanitize(model.ShortBio);
+
+            if (!string.IsNullOrEmpty(model.LongBio))
+                model.LongBio = sanitizer.Sanitize(model.LongBio);
+
+            // Mevcut veritabanı kaydını çekiyoruz
             var existingProfile = await _profileService.GetAsync();
 
-            // 📌 Yeni profil fotoğrafı varsa yükle, YOKSA ESKİYİ KORU
+            // Yeni profil fotoğrafı varsa yükle, YOKSA ESKİYİ KORU
             if (ProfileImage != null && ProfileImage.Length > 0)
             {
                 model.ProfileImageUrl = await _fileService.UploadAsync(ProfileImage, "profile");
@@ -62,7 +73,7 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 model.ProfileImageUrl = existingProfile.ProfileImageUrl;
             }
 
-            // 📌 Yeni CV varsa yükle, YOKSA ESKİYİ KORU
+            // Yeni CV varsa yükle, YOKSA ESKİYİ KORU
             if (CvFile != null && CvFile.Length > 0)
             {
                 model.CvFilePath = await _fileService.UploadAsync(CvFile, "cv");
@@ -79,11 +90,11 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK
         public async Task<IActionResult> RemoveFile(string fileType)
         {
             var existingProfile = await _profileService.GetAsync();
 
-            // Mevcut verileri DTO'ya dolduruyoruz (Silinmeyenler kaybolmasın diye)
             var model = new ProfileUpdateDto
             {
                 Id = existingProfile.Id,
@@ -99,10 +110,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 CvFilePath = existingProfile.CvFilePath
             };
 
-            // Gelen komuta göre sadece ilgili alanı NULL yapıyoruz
             if (fileType == "profile")
             {
-                // TODO: İleride _fileService.DeleteAsync() yazarak sunucudaki resmi fiziksel olarak da sildirebilirsin
                 model.ProfileImageUrl = null;
                 TempData["Success"] = "Profil fotoğrafı başarıyla kaldırıldı.";
             }
@@ -112,7 +121,6 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 TempData["Success"] = "CV dosyası başarıyla kaldırıldı.";
             }
 
-            // Güncel (Null içeren) modeli veritabanına kaydet
             await _profileService.UpdateAsync(model);
 
             return RedirectToAction("Index");

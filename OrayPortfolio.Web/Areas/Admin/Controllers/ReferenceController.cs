@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ganss.Xss; // 📌 YENİ
+using Microsoft.AspNetCore.Mvc;
 using OrayPortfolio.Application.DTOs.Reference;
 using OrayPortfolio.Application.Interfaces.Services;
 using OrayPortfolio.Web.Services;
@@ -6,10 +7,10 @@ using OrayPortfolio.Web.Services;
 namespace OrayPortfolio.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class ReferenceController : Controller
+    public class ReferenceController : BaseAdminController // 📌 GÜVENLİK
     {
         private readonly IReferenceService _service;
-        private readonly IFileService _fileService; // 📌 Dosya yükleme servisi eklendi
+        private readonly IFileService _fileService;
 
         public ReferenceController(IReferenceService service, IFileService fileService)
         {
@@ -28,8 +29,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             return View(new ReferenceCreateDto());
         }
 
-        // 📌 CREATE POST: Yeni referans eklenirken fotoğraf varsa yükle
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK
         public async Task<IActionResult> Create(ReferenceCreateDto dto, IFormFile? ProfileImage)
         {
             if (!ModelState.IsValid)
@@ -38,11 +39,11 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 return View(dto);
             }
 
-            // Dosya seçilmişse sunucuya yükle ve yolunu DTO'ya ata
+            var sanitizer = new HtmlSanitizer(); // 📌 GÜVENLİK
+            if (!string.IsNullOrEmpty(dto.Comment)) dto.Comment = sanitizer.Sanitize(dto.Comment);
+
             if (ProfileImage != null && ProfileImage.Length > 0)
-            {
                 dto.ProfileImageUrl = await _fileService.UploadAsync(ProfileImage, "references");
-            }
 
             await _service.CreateAsync(dto);
 
@@ -58,8 +59,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             return View(data);
         }
 
-        // 📌 EDIT POST: Güncelleme yapılırken eski fotoğrafı koru veya yenisini yükle
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK
         public async Task<IActionResult> Edit(ReferenceDto dto, IFormFile? ProfileImage)
         {
             if (!ModelState.IsValid)
@@ -68,19 +69,17 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 return View(dto);
             }
 
-            // Eğer yeni bir fotoğraf yüklendiyse:
+            var sanitizer = new HtmlSanitizer(); // 📌 GÜVENLİK
+            if (!string.IsNullOrEmpty(dto.Comment)) dto.Comment = sanitizer.Sanitize(dto.Comment);
+
             if (ProfileImage != null && ProfileImage.Length > 0)
             {
                 dto.ProfileImageUrl = await _fileService.UploadAsync(ProfileImage, "references");
             }
             else
             {
-                // 📌 KRİTİK NOKTA: Yeni fotoğraf seçilmediyse mevcut olanı veritabanından çekip koruyoruz (Null olmasını engelliyoruz)
                 var existingReference = await _service.GetByIdAsync(dto.Id);
-                if (existingReference != null)
-                {
-                    dto.ProfileImageUrl = existingReference.ProfileImageUrl;
-                }
+                if (existingReference != null) dto.ProfileImageUrl = existingReference.ProfileImageUrl;
             }
 
             await _service.UpdateAsync(dto);

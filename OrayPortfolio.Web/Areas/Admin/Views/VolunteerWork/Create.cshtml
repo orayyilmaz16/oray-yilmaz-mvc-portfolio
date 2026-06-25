@@ -172,6 +172,7 @@
 
     <form asp-area="Admin" asp-controller="VolunteerWork" asp-action="Create"
           method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
 
         <div class="ap-form-group">
             <label class="ap-form-label">Organizasyon</label>

@@ -369,7 +369,7 @@
         });
     </script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -387,6 +387,9 @@
         return false;
         }
 
+        // 📌 GÜVENLİK: CSRF Token'ını Formdan Yakala
+        const token = $('input[name="__RequestVerificationToken"]').val();
+
         Swal.fire({
         title: "Gönderiliyor...",
         text: "Lütfen bekleyin",
@@ -403,6 +406,9 @@
         const data = {};
 
         formData.forEach((value, key) => {
+        // AntiForgeryToken'ı JSON datasına dahil ETME (Header'dan gidecek)
+        if (key === "__RequestVerificationToken") return;
+
         let cleanKey = key.includes(".") ? key.split(".")[1] : key;
         data[cleanKey] = value;
         });
@@ -412,6 +418,10 @@
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(data),
+        // 📌 ÇÖZÜM: Güvenlik Token'ını İstek Başlığına (Header) ekliyoruz
+        headers: {
+        "RequestVerificationToken": token
+        },
         success: function (res) {
         if (res.success) {
         Swal.fire({
@@ -438,7 +448,8 @@
         });
         }
         },
-        error: function () {
+        error: function (xhr, status, error) {
+        console.error("AJAX Hatası: ", status, error);
         Swal.fire({
         icon: "error",
         title: "Sunucu Hatası",

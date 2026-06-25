@@ -189,6 +189,7 @@
     }
 
     <form method="post">
+        @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="Id" />
 

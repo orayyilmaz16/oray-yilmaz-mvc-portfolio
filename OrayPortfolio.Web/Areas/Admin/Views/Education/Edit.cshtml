@@ -170,9 +170,13 @@
     }
 
     <!-- 📌 FOTOĞRAF YÜKLEYEBİLMEK İÇİN ENCTYPE EKLENDİ -->
-    <form method="post" enctype="multipart/form-data">
+    <form asp-area="Admin" asp-controller="Education" asp-action="Edit" method="post" enctype="multipart/form-data">
+
+        <!-- 📌 GÜVENLİK: CSRF (Sahte İstek) Kilidi Eklendi -->
+        @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="LogoImageUrl" />
 
         <div class="row">
             <div class="col-md-8">

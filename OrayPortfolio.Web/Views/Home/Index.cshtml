@@ -1,5 +1,5 @@
-﻿@model HomeViewModel
-
+﻿@using OrayPortfolio.Web.Models
+@model HomeViewModel
 
 @{
     ViewData["Title"] = $"{Model.Profile.FullName} | Ana Sayfa";
@@ -7,8 +7,6 @@
 
 <style>
     /* ----- SAYFA ÖZEL MİKRO-ANİMASYONLAR VE KUSURSUZ TASARIM ----- */
-
-  
 
     /* 📌 KESİN ÇÖZÜM: Tüm alt metinleri sistemin dinamik temasına bağladık */
     .text-muted,
@@ -308,7 +306,6 @@
         position: absolute;
         inset: 0;
         background: linear-gradient(to top, rgba(23, 28, 40, 0.95) 0%, transparent 70%);
-
         z-index: 1;
     }
 
@@ -507,8 +504,6 @@
         transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-   
-
     /* --- Referans Kartları --- */
     .port-ref-card {
         background: rgba(23, 28, 40, 0.6);
@@ -647,8 +642,6 @@
         backdrop-filter: blur(20px);
         margin-top: 20px;
     }
-
-
 
     /* 📌 LİGHT MODE OVERRİDES (Açık Tema Form Ayarları) */
     [data-theme="light"] .port-contact-wrapper {
@@ -879,18 +872,15 @@
         transition: all 0.3s ease;
     }
 
-    .port-contact-badge:hover {
-        background: rgba(109, 94, 249, 0.1);
-        border-color: rgba(109, 94, 249, 0.3);
-        color: var(--text-main) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    
+        .port-contact-badge:hover {
+            background: rgba(109, 94, 249, 0.1);
+            border-color: rgba(109, 94, 249, 0.3);
+            color: var(--text-main) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
 </style>
 
-<!-- HERO (KARŞILAMA) ALANI -->
 <section class="port-hero text-center">
     <div class="container d-flex flex-column align-items-center">
         <div class="port-avatar-wrapper" data-aos="zoom-in" data-aos-duration="1000">
@@ -939,7 +929,6 @@
 
 <div class="port-spacer" id="about"></div>
 
-<!-- KISACA BEN -->
 <section class="container" data-aos="fade-up">
     <div class="port-about-box shadow-lg">
         <i class="fa-solid fa-quote-right port-about-icon"></i>
@@ -959,7 +948,6 @@
 
 <div class="port-spacer"></div>
 
-<!-- ÖNE ÇIKAN PROJELER -->
 <section class="container">
     <div class="port-section-header" data-aos="fade-right">
         <h2 class="port-section-title"><i class="fa-solid fa-fire-flame-curved"></i> Öne Çıkan Projeler</h2>
@@ -1012,7 +1000,6 @@
 
 <div class="port-spacer"></div>
 
-<!-- PROFESYONEL YOLCULUĞUM (DENEYİMLER) -->
 <section class="container">
     <div class="port-section-header" data-aos="fade-right">
         <h2 class="port-section-title"><i class="fa-solid fa-compass"></i> Profesyonel Yolculuğum</h2>
@@ -1034,7 +1021,6 @@
                         <div class="port-timeline-dot"></div>
                         <div class="d-flex align-items-start gap-3 gap-md-4">
 
-                            <!-- 📌 DİNAMİK YUVARLAK LOGO (Yoksa Profil Fotoğrafı Gösterilir) -->
                             <div class="flex-shrink-0 pt-1">
                                 <img src="@(!string.IsNullOrEmpty(exp.LogoImageUrl) ? exp.LogoImageUrl : Model.Profile.ProfileImageUrl)" class="port-company-logo" alt="@exp.Company Logo" loading="lazy" />
                             </div>
@@ -1146,7 +1132,6 @@
     <div class="port-spacer"></div>
 }
 
-<!-- UZMANLIK ALANLARIM -->
 <section class="container" style="margin-bottom: 80px;">
 
     <div class="port-section-header text-center mb-5" data-aos="fade-down">
@@ -1180,12 +1165,10 @@
             else if (group.Key.Contains("Programlama")) { iconClass = "fa-code"; iconColor = "#f472b6"; }
             else if (group.Key.Contains("DevOps") || group.Key.Contains("Araçlar")) { iconClass = "fa-terminal"; iconColor = "#fb923c"; }
 
-            <!-- BAŞLIK (KUTU DIŞINDA) -->
             <h4 class="port-skill-category-title" data-aos="fade-right">
                 <i class="fa-solid @iconClass" style="color: @iconColor;"></i> @group.Key
             </h4>
 
-            <!-- 📌 KATEGORİ KUTUSU (İçinde 3 yetenek barındırır) -->
             <div class="port-skill-group-box" style="--cat-color: @iconColor;" data-aos="fade-up">
                 <div class="row g-3">
                     @{
@@ -1236,7 +1219,6 @@
 
 <div class="port-spacer"></div>
 
-<!-- SERTİFİKALAR VE GÖNÜLLÜ İŞLER -->
 <section class="container">
     <div class="row g-5">
         <div class="col-lg-6">
@@ -1284,7 +1266,6 @@
                 {
                     <div class="port-card" data-tilt data-tilt-max="3" style="padding: 25px; flex-direction: row; gap: 20px;" data-aos="fade-up">
 
-                        <!-- 📌 DİNAMİK YUVARLAK LOGO (Yoksa Profil Fotoğrafı Gösterilir) -->
                         <div class="flex-shrink-0 pt-1" style="transform: translateZ(20px);">
                             <img src="@(!string.IsNullOrWhiteSpace(vw.ImageUrl) ? vw.ImageUrl : Model.Profile.ProfileImageUrl)" class="port-company-logo" alt="@vw.Organization" loading="lazy" />
                         </div>
@@ -1325,7 +1306,6 @@
 
 <div class="port-spacer"></div>
 
-<!-- REFERANSLAR -->
 @if (Model.References != null && Model.References.Any())
 {
     <section class="container">
@@ -1345,10 +1325,8 @@
                         <i class="fa-solid fa-quote-right port-ref-quote-icon"></i>
                         <p class="port-ref-content">"@refer.Comment"</p>
 
-                        <!-- 📌 REFERANS ALT KISMI: İSİM, ŞİRKET, FOTOĞRAF VE İLETİŞİM -->
                         <div class="mt-auto pt-3 d-flex align-items-center gap-3" style="border-top: 1px solid var(--border-color); transform: translateZ(20px);">
 
-                            <!-- 📌 FOTOĞRAF VEYA BAŞ HARF -->
                             @if (!string.IsNullOrEmpty(refer.ProfileImageUrl))
                             {
                                 <img src="@refer.ProfileImageUrl" class="port-ref-avatar" alt="@refer.FullName" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.05);" />
@@ -1360,7 +1338,6 @@
                                 </div>
                             }
 
-                            <!-- 📌 KİŞİ BİLGİLERİ VE KUTULU LİNKLER -->
                             <div class="flex-grow-1">
                                 <h6 style="color: var(--text-main); font-weight: 700; margin-bottom: 2px;">@refer.FullName</h6>
                                 <p class="text-muted" style="font-size: 0.85rem; margin: 0; margin-bottom: 12px;">@refer.Position, @refer.Company</p>
@@ -1419,6 +1396,7 @@
     <div class="port-contact-wrapper">
 
         <form id="contactForm">
+            @Html.AntiForgeryToken()
             <div style="display: none; opacity: 0; position: absolute; top: -9999px; left: -9999px;" aria-hidden="true">
                 <input asp-for="ContactForm.WebsiteUrl" tabindex="-1" autocomplete="off" />
             </div>
@@ -1474,7 +1452,9 @@
     <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
+
+        // --- 1. TYPED.JS (Yazı Yazma Animasyonu) ---
         var title = "@Model.Profile.Title";
         var typed = new Typed('#typed-text', {
         strings: [title, "AI Researcher", "Technical Consultant"],
@@ -1485,6 +1465,7 @@
         cursorChar: '|'
         });
 
+        // --- 2. PROGRESS BAR ANİMASYONU (Scroll edilince dolar) ---
         const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
         if (entry.isIntersecting) {

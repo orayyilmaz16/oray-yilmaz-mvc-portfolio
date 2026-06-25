@@ -132,7 +132,6 @@
         border-radius: 16px;
         padding: 24px;
         text-align: center;
-        /* height: 100%;  <--- HATAYA SEBEP OLAN SATIR SİLİNDİ */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -246,10 +245,13 @@
         </div>
     }
 
-    <form method="post" enctype="multipart/form-data">
+    <form asp-area="Admin" asp-controller="Profile" asp-action="Index" method="post" enctype="multipart/form-data">
+        
+        @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="ProfileImageUrl" />
+        <input type="hidden" asp-for="CvFilePath" /> 
 
         <div class="row g-5">
             <div class="col-lg-8">
@@ -422,80 +424,80 @@
         const emptyBox = document.querySelector('.ap-photo-empty');
 
         if (fileInput) {
-        fileInput.addEventListener('change', function () {
-        const file = this.files[0];
-        if (!file) return;
+            fileInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-        // Boş avatar varsa gizle
-        if (emptyBox) emptyBox.style.display = "none";
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    // Boş avatar varsa gizle
+                    if (emptyBox) emptyBox.style.display = "none";
 
-        // Eğer önceden fotoğraf varsa sadece src değiştir
-        if (previewImg) {
-        previewImg.src = e.target.result;
-        } else {
-        // Fotoğraf yoksa yeni img oluştur
-        const img = document.createElement("img");
-        img.className = "ap-photo-preview";
-        img.src = e.target.result;
-        document.querySelector(".ap-photo-card").prepend(img);
-        }
-        };
-        reader.readAsDataURL(file);
-        });
+                    // Eğer önceden fotoğraf varsa sadece src değiştir
+                    if (previewImg) {
+                        previewImg.src = e.target.result;
+                    } else {
+                        // Fotoğraf yoksa yeni img oluştur
+                        const img = document.createElement("img");
+                        img.className = "ap-photo-preview";
+                        img.src = e.target.result;
+                        document.querySelector(".ap-photo-card").prepend(img);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
         // --- 3. DOSYA KALDIRMA İŞLEMİ (SweetAlert2 ve Güvenlik Token'ı) ---
         function removeFile(fileType) {
-        const isCv = fileType === 'cv';
-        const titleText = isCv ? "CV'yi Kaldır" : "Fotoğrafı Kaldır";
-        const messageText = isCv
-        ? "Sisteme yüklü olan CV dosyanızı kaldırmak istediğinize emin misiniz?"
-        : "Profil fotoğrafınızı kaldırmak istediğinize emin misiniz?";
+            const isCv = fileType === 'cv';
+            const titleText = isCv ? "CV'yi Kaldır" : "Fotoğrafı Kaldır";
+            const messageText = isCv
+                ? "Sisteme yüklü olan CV dosyanızı kaldırmak istediğinize emin misiniz?"
+                : "Profil fotoğrafınızı kaldırmak istediğinize emin misiniz?";
 
-        Swal.fire({
-        title: titleText,
-        text: messageText,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#fb4570',
-        cancelButtonColor: '#8b93a7',
-        confirmButtonText: '<i class="fa-solid fa-trash"></i> Evet, Kaldır',
-        cancelButtonText: 'İptal',
-        background: 'var(--surface)',
-        color: 'var(--text)'
-        }).then((result) => {
-        if (result.isConfirmed) {
+            Swal.fire({
+                title: titleText,
+                text: messageText,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#fb4570',
+                cancelButtonColor: '#8b93a7',
+                confirmButtonText: '<i class="fa-solid fa-trash"></i> Evet, Kaldır',
+                cancelButtonText: 'İptal',
+                background: 'var(--surface)',
+                color: 'var(--text)'
+            }).then((result) => {
+                if (result.isConfirmed) {
 
-        // 📌 ASP.NET Core Form Güvenlik Token'ını (CSRF) Yakala
-        const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
-        const token = tokenElement ? tokenElement.value : '';
+                    // 📌 ASP.NET Core Form Güvenlik Token'ını (CSRF) Yakala
+                    const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                    const token = tokenElement ? tokenElement.value : '';
 
-        // Gizli bir form oluşturup Backend'e gönderiyoruz
-        const form = document.createElement('form');
-        form.method = 'post';
-        form.action = '/Admin/Profile/RemoveFile';
+                    // Gizli bir form oluşturup Backend'e gönderiyoruz
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/Admin/Profile/RemoveFile';
 
-        // Dosya Tipi (cv veya profile)
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'fileType';
-        input.value = fileType;
+                    // Dosya Tipi (cv veya profile)
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'fileType';
+                    input.value = fileType;
 
-        // Güvenlik Token'ı
-        const tokenInput = document.createElement('input');
-        tokenInput.type = 'hidden';
-        tokenInput.name = '__RequestVerificationToken';
-        tokenInput.value = token;
+                    // Güvenlik Token'ı
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token;
 
-        form.appendChild(input);
-        form.appendChild(tokenInput);
-        document.body.appendChild(form);
+                    form.appendChild(input);
+                    form.appendChild(tokenInput);
+                    document.body.appendChild(form);
 
-        form.submit();
-        }
-        });
+                    form.submit();
+                }
+            });
         }
     </script>
 

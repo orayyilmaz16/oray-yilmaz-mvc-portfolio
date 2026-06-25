@@ -5,7 +5,7 @@ using OrayPortfolio.Application.DTOs.Skill;
 namespace OrayPortfolio.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class SkillController : Controller
+    public class SkillController : BaseAdminController // 📌 GÜVENLİK
     {
         private readonly ISkillService _service;
 
@@ -26,6 +26,7 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK
         public async Task<IActionResult> Create(SkillCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -35,7 +36,6 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             }
 
             await _service.CreateAsync(dto);
-
             TempData["Success"] = "Yetenek başarıyla eklendi.";
             return RedirectToAction("Index");
         }
@@ -47,6 +47,7 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK
         public async Task<IActionResult> Edit(SkillUpdateDto dto)
         {
             if (!ModelState.IsValid)
@@ -56,7 +57,6 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             }
 
             await _service.UpdateAsync(dto);
-
             TempData["Success"] = "Yetenek başarıyla güncellendi.";
             return RedirectToAction("Index");
         }
@@ -64,10 +64,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
-
             TempData["Success"] = "Yetenek başarıyla silindi.";
             return RedirectToAction("Index");
         }
     }
 }
-

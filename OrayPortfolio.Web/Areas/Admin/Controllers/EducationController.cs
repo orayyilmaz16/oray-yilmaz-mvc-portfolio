@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ganss.Xss; // 📌 YENİ
+using Microsoft.AspNetCore.Mvc;
 using OrayPortfolio.Application.DTOs.Education;
 using OrayPortfolio.Application.Interfaces.Services;
 using OrayPortfolio.Web.Services;
@@ -6,15 +7,15 @@ using OrayPortfolio.Web.Services;
 namespace OrayPortfolio.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class EducationController : Controller
+    public class EducationController : BaseAdminController // 📌 GÜVENLİK
     {
         private readonly IEducationService _service;
-        private readonly IFileService _fileService; // 📌 Dosya yükleme servisi eklendi
+        private readonly IFileService _fileService;
 
         public EducationController(IEducationService service, IFileService fileService)
         {
             _service = service;
-            _fileService = fileService; // 📌 Servis atandı
+            _fileService = fileService;
         }
 
         public async Task<IActionResult> Index()
@@ -28,8 +29,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             return View(new EducationCreateDto());
         }
 
-        // 📌 POST: Yeni eğitim eklenirken IFormFile eklendi
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK
         public async Task<IActionResult> Create(EducationCreateDto dto, IFormFile? LogoImage)
         {
             if (!ModelState.IsValid)
@@ -38,11 +39,11 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 return View(dto);
             }
 
-            // 📌 Eğer resim seçildiyse sunucuya yükle ve klasör adını "educations" yap
+            var sanitizer = new HtmlSanitizer(); // 📌 GÜVENLİK
+            if (!string.IsNullOrEmpty(dto.Description)) dto.Description = sanitizer.Sanitize(dto.Description);
+
             if (LogoImage != null && LogoImage.Length > 0)
-            {
                 dto.LogoImageUrl = await _fileService.UploadAsync(LogoImage, "educations");
-            }
 
             await _service.CreateAsync(dto);
 
@@ -58,8 +59,8 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
             return View(data);
         }
 
-        // 📌 POST: Düzenleme yapılırken IFormFile eklendi
         [HttpPost]
+        [ValidateAntiForgeryToken] // 📌 GÜVENLİK
         public async Task<IActionResult> Edit(EducationDto dto, IFormFile? LogoImage)
         {
             if (!ModelState.IsValid)
@@ -68,19 +69,17 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
                 return View(dto);
             }
 
-            // 📌 Eğer YENİ bir resim seçildiyse yükle
+            var sanitizer = new HtmlSanitizer(); // 📌 GÜVENLİK
+            if (!string.IsNullOrEmpty(dto.Description)) dto.Description = sanitizer.Sanitize(dto.Description);
+
             if (LogoImage != null && LogoImage.Length > 0)
             {
                 dto.LogoImageUrl = await _fileService.UploadAsync(LogoImage, "educations");
             }
             else
             {
-                // 📌 Eğer yeni resim SEÇİLMEDİYSE mevcut resmi kaybetmemek için veritabanından bul ve dto'ya ata
                 var existingEdu = await _service.GetByIdAsync(dto.Id);
-                if (existingEdu != null)
-                {
-                    dto.LogoImageUrl = existingEdu.LogoImageUrl;
-                }
+                if (existingEdu != null) dto.LogoImageUrl = existingEdu.LogoImageUrl;
             }
 
             await _service.UpdateAsync(dto);
@@ -92,7 +91,6 @@ namespace OrayPortfolio.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
-
             TempData["Success"] = "Eğitim başarıyla silindi.";
             return RedirectToAction("Index");
         }

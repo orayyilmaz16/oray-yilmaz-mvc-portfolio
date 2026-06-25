@@ -849,10 +849,16 @@
     });
     }
 
-    // 📌 AJAX LİSTE OLUŞTURUCU
+    // 📌 AJAX LİSTE OLUŞTURUCU (XSS Korumalı)
     function buildListHtml(items) {
-    if (!items || items.length === 0) return `<div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>`;
-    return items.map(item => `<div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>${item.text}</span></div>`).join('');
+        if (!items || items.length === 0) return `<div class="ap-list-item" style="justify-content:center;">Kayıt yok.</div>`;
+        // 📌 EKSİK OLAN YER: item.text değerini escapeHtml içine aldık!
+        return items.map(item => `<div class="ap-list-item"><i class="fa-solid fa-circle-check"></i><span>${escapeHtml(item.text)}</span></div>`).join('');
+    }
+
+    function escapeHtml(text) {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
     }
 
     // --- AJAX REFRESH MANTIĞI & EKRAN BLUR YÜKLEMESİ ---
