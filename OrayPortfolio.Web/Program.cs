@@ -1,7 +1,7 @@
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.Cookies; // 📌 YENİ: Kimlik Doğrulama İçin
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using OrayPortfolio.Application.Interfaces.Repositories;
@@ -15,129 +15,162 @@ using OrayPortfolio.Infrastructure.UnitOfWork;
 using OrayPortfolio.Web.Filters;
 using OrayPortfolio.Web.Services;
 using System.Threading.RateLimiting;
-
-var builder = WebApplication.CreateBuilder(args);
+// 📌 YENİ: Serilog ve Middleware namespace'leri
+using Serilog;
+using OrayPortfolio.Web.Middlewares;
 
 // ----------------------
-// 📌 GÜVENLİK: Rate Limiter (Spam Engelleme)
+// 📌 Serilog Başlangıç Kurulumu (Uygulama ayağa kalkmadan loglamayı başlatır)
 // ----------------------
-builder.Services.AddRateLimiter(options =>
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning) // Microsoft'un gereksiz loglarını filtreler
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/orayportfolio-log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30)
+    .CreateLogger();
+
+try
 {
-    options.AddFixedWindowLimiter(policyName: "fixed", limiterOptions =>
+    var builder = WebApplication.CreateBuilder(args);
+
+    // 📌 YENİ: Serilog'u .NET Uygulamasına Bağlama
+    builder.Host.UseSerilog();
+
+    // ----------------------
+    // 📌 GÜVENLİK: Rate Limiter (Spam Engelleme)
+    // ----------------------
+    builder.Services.AddRateLimiter(options =>
     {
-        limiterOptions.PermitLimit = 20;
-        limiterOptions.Window = TimeSpan.FromMinutes(1);
-        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        limiterOptions.QueueLimit = 2;
+        options.AddFixedWindowLimiter(policyName: "fixed", limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 20;
+            limiterOptions.Window = TimeSpan.FromMinutes(1);
+            limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            limiterOptions.QueueLimit = 2;
+        });
     });
-});
 
-// ----------------------
-// 📌 GÜVENLİK: Cookie Authentication (Giriş Sistemi İçin)
-// ----------------------
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+    // ----------------------
+    // 📌 GÜVENLİK: Cookie Authentication (Giriş Sistemi İçin)
+    // ----------------------
+    builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+            options.LoginPath = "/Admin/Auth/Login";
+            options.LogoutPath = "/Admin/Auth/Logout";
+            options.AccessDeniedPath = "/Home/Error";
+            options.ExpireTimeSpan = TimeSpan.FromHours(2);
+        });
+
+    // ----------------------
+    // Session & Cache
+    // ----------------------
+    builder.Services.AddSession();
+
+    // ----------------------
+    // AutoMapper
+    // ----------------------
+    builder.Services.AddAutoMapper(typeof(ProfileProfile).Assembly);
+
+    // ----------------------
+    // Database
+    // ----------------------
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+    // ----------------------
+    // Dependency Injection (Servis Kayıtları)
+    // ----------------------
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+    builder.Services.AddScoped<IExperienceService, ExperienceService>();
+    builder.Services.AddScoped<IProjectService, ProjectService>();
+    builder.Services.AddScoped<ICertificateService, CertificateService>();
+    builder.Services.AddScoped<IVolunteerWorkService, VolunteerWorkService>();
+    builder.Services.AddScoped<IProfileService, ProfileService>();
+    builder.Services.AddScoped<ISkillService, SkillService>();
+    builder.Services.AddScoped<IFileService, FileService>();
+    builder.Services.AddScoped<IEducationService, EducationService>();
+    builder.Services.AddScoped<IReferenceService, ReferenceService>();
+
+    // Ziyaretçi Takip Servisi
+    builder.Services.AddScoped<IVisitorService, VisitorService>();
+
+    // ----------------------
+    // MVC, Filters & FluentValidation
+    // ----------------------
+    builder.Services.AddControllersWithViews(options =>
     {
-        options.LoginPath = "/Admin/Auth/Login"; // Giriş yapmayanlar buraya atılır
-        options.LogoutPath = "/Admin/Auth/Logout";
-        options.AccessDeniedPath = "/Home/Error";
-        options.ExpireTimeSpan = TimeSpan.FromHours(2); // 2 Saat boşta kalırsa atar
+        options.Filters.Add<VisitorTrackingFilter>();
     });
 
-// ----------------------
-// Session & Cache
-// ----------------------
-builder.Services.AddSession();
+    // FluentValidation Ayarları
+    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddFluentValidationClientsideAdapters();
+    builder.Services.AddValidatorsFromAssembly(typeof(ProjectCreateDtoValidator).Assembly);
 
-// ----------------------
-// AutoMapper
-// ----------------------
-builder.Services.AddAutoMapper(typeof(ProfileProfile).Assembly);
+    var app = builder.Build();
 
-// ----------------------
-// Database
-// ----------------------
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    Console.WriteLine("Two Factor Key: " + TwoFactorKeyGenerator.GenerateSecretKey());
 
-// ----------------------
-// Dependency Injection (Servis Kayıtları)
-// ----------------------
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IExperienceService, ExperienceService>();
-builder.Services.AddScoped<IProjectService, ProjectService>();
-builder.Services.AddScoped<ICertificateService, CertificateService>();
-builder.Services.AddScoped<IVolunteerWorkService, VolunteerWorkService>();
-builder.Services.AddScoped<IProfileService, ProfileService>();
-builder.Services.AddScoped<ISkillService, SkillService>();
-builder.Services.AddScoped<IFileService, FileService>();
-builder.Services.AddScoped<IEducationService, EducationService>();
-builder.Services.AddScoped<IReferenceService, ReferenceService>();
+    // ----------------------
+    // 📌 Middleware Pipeline (İstek Hattı - SIRALAMA ÇOK ÖNEMLİ!)
+    // ----------------------
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Home/Error");
+        app.UseHsts();
+    }
 
-// Ziyaretçi Takip Servisi
-builder.Services.AddScoped<IVisitorService, VisitorService>();
+    app.UseHttpsRedirection();
 
-// ----------------------
-// MVC, Filters & FluentValidation
-// ----------------------
-builder.Services.AddControllersWithViews(options =>
-{
-    options.Filters.Add<VisitorTrackingFilter>();
-});
+    // 📌 GÜVENLİK: HTTP Güvenlik Başlıkları (Security Headers)
+    app.Use(async (context, next) =>
+    {
+        context.Response.Headers.Append("X-Frame-Options", "DENY");
+        context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+        context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+        context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+        await next();
+    });
 
-// FluentValidation Ayarları
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
-builder.Services.AddValidatorsFromAssembly(typeof(ProjectCreateDtoValidator).Assembly);
+    app.UseRouting();
 
-var app = builder.Build();
+    // 📌 YENİ: Serilog'un Kendi İstek Günlüğünü Aktif Etme (Routing'den hemen sonra)
+    app.UseSerilogRequestLogging();
 
-Console.WriteLine("Two Factor Key: " + TwoFactorKeyGenerator.GenerateSecretKey());
+    // 📌 YENİ: Yazdığımız Özel Ziyaretçi Takip Aracını Sisteme Dahil Etme
+    app.UseMiddleware<VisitorLoggingMiddleware>();
 
-// ----------------------
-// 📌 Middleware Pipeline (İstek Hattı - SIRALAMA ÇOK ÖNEMLİ!)
-// ----------------------
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    app.UseRateLimiter();
+    app.UseSession();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapStaticAssets(); // .NET 9/10 Static Assets
+
+    // ----------------------
+    // Routing (Yönlendirmeler)
+    // ----------------------
+    app.MapControllerRoute(
+        name: "areas",
+        pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}")
+        .WithStaticAssets();
+
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-
-// 📌 GÜVENLİK: HTTP Güvenlik Başlıkları (Security Headers)
-app.Use(async (context, next) =>
+catch (Exception ex)
 {
-    context.Response.Headers.Append("X-Frame-Options", "DENY"); // Clickjacking Koruması
-    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block"); // XSS Koruması
-    context.Response.Headers.Append("X-Content-Type-Options", "nosniff"); // MIME Koruması
-    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
-    await next();
-});
-
-app.UseRouting();
-
-// 📌 Rate Limiter KESİNLİKLE UseRouting'den sonra olmalıdır!
-app.UseRateLimiter();
-
-app.UseSession();
-
-// 📌 GÜVENLİK: Authentication (Kimlik Doğrulama) Authorization'dan ÖNCE gelmeli!
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapStaticAssets(); // .NET 9 Static Assets
-
-// ----------------------
-// Routing (Yönlendirmeler)
-// ----------------------
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
-app.Run();
+    // 📌 YENİ: Başlatma sırasında oluşan kritik hataları yakala
+    Log.Fatal(ex, "Uygulama başlatılırken kritik bir hata oluştu!");
+}
+finally
+{
+    // 📌 YENİ: Uygulama kapanırken bellekte kalan son logları dosyaya yazdır ve kapat
+    Log.CloseAndFlush();
+}
